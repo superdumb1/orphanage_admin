@@ -4,6 +4,9 @@ import { FormField } from "@/components/molecules/FormField";
 import { SelectField } from "@/components/molecules/SelectField";
 import { Button } from "@/components/atoms/Button";
 import { createTransaction } from "@/app/actions/finance";
+import AddAccountsHeader from "../AddAccountsHeader";
+import {AddCategoryModal} from "../AddCatagories";
+import {CategoriesSelection} from "../CatagoriesSelection";
 
 const expenseCategories = [
     { label: "Groceries & Food (राशन)", value: "GROCERY" },
@@ -20,7 +23,10 @@ const initialState = { error: null as string | null };
 export const ExpenseForm = () => {
     const [state, formAction, isPending] = useActionState(createTransaction, initialState);
 
-    return (
+    return (<>
+        <AddAccountsHeader />
+        
+        <CategoriesSelection options={expenseCategories} />
         <form action={formAction} className="bg-white rounded-xl shadow-sm border border-red-200 overflow-hidden">
             <input type="hidden" name="type" value="EXPENSE" />
 
@@ -33,7 +39,7 @@ export const ExpenseForm = () => {
             </div>
 
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                
+
                 {state?.error && (
                     <div className="col-span-1 md:col-span-2 p-4 bg-red-50 text-red-700 font-medium rounded-lg border border-red-200">
                         ⚠️ {state.error}
@@ -43,23 +49,23 @@ export const ExpenseForm = () => {
                 <FormField label="Amount Spent (NPR)" name="amount" type="number" required min={0} />
                 <FormField label="Date (मिति)" name="date" type="date" required />
                 <SelectField label="Category (वर्ग)" name="category" required options={expenseCategories} />
-                
-                <SelectField 
-                    label="Payment Method (माध्यम)" 
-                    name="paymentMethod" 
-                    required 
+
+                <SelectField
+                    label="Payment Method (माध्यम)"
+                    name="paymentMethod"
+                    required
                     options={[
                         { label: "Cash (नगद)", value: "CASH" },
                         { label: "Bank Transfer / Cheque (बैंक)", value: "BANK" }
-                    ]} 
+                    ]}
                 />
 
                 <div className="col-span-1 md:col-span-2">
-                    <FormField 
-                        label="Remarks / Receipt Ref (कैफियत)" 
-                        name="remarks" 
-                        placeholder="e.g. Bought 50kg Rice from Market, Bill No. 1024" 
-                        required 
+                    <FormField
+                        label="Remarks / Receipt Ref (कैफियत)"
+                        name="remarks"
+                        placeholder="e.g. Bought 50kg Rice from Market, Bill No. 1024"
+                        required
                     />
                 </div>
             </div>
@@ -70,5 +76,6 @@ export const ExpenseForm = () => {
                 </Button>
             </div>
         </form>
+    </>
     );
 };

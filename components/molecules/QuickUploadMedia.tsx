@@ -2,7 +2,6 @@
 import React, { useActionState, useRef, useEffect } from "react";
 import { quickUploadMedia } from "@/app/actions/child";
 
-// 1. Define the state to match exactly what the Server Action returns
 type ActionState =
     | { error: string; success: false }
     | { error: null; success: true }
@@ -24,8 +23,6 @@ export const QuickMediaUpload = ({
     accept: string;
     themeColor: 'amber' | 'indigo';
 }) => {
-    // 2. Cast the action to 'any' here if TS still complains about argument counts.
-    // React 19's useActionState can be finicky with specific Server Action signatures.
     const [state, formAction, isPending] = useActionState(quickUploadMedia as any, initialState);
     const formRef = useRef<HTMLFormElement>(null);
 

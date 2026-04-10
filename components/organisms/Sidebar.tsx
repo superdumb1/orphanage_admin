@@ -10,6 +10,10 @@ export const Sidebar = () => {
     { label: 'Staff', path: '/staff' }, 
     { label: 'Finances', path: '/finance' },
     { label: 'Inventory', path: '/inventory' },
+    { label: 'Accounts Headas', path: '/inventory' },//oncome expenses 
+    { label: 'Guardians', path: '/guardians' }
+    
+
   ];
 
   return (

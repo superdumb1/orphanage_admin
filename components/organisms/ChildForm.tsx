@@ -6,11 +6,9 @@ import { Button } from "../atoms/Button";
 import { createChild, updateChild } from "@/app/actions/child";
 import { ImageUploadField } from "../molecules/ImageUploadField";
 
-// Set up the initial state for the hook
 const initialState = { error: null as string | null };
 
 export const ChildForm = ({ initialData }: { initialData?: any }) => {
-    // ✨ USE THE HOOK: This fixes the TypeScript error and gives us an error state & loading state!
     const actionToUse = initialData ? updateChild : createChild;
     const [state, formAction, isPending] = useActionState(actionToUse, initialState);
 
@@ -25,7 +23,6 @@ export const ChildForm = ({ initialData }: { initialData?: any }) => {
     ];
 
     return (
-        // ✨ Swap 'action' for 'formAction' here
         <form action={formAction} className="bg-white p-6 rounded-xl shadow-sm border border-zinc-200 flex flex-col gap-4 max-w-4xl">     
             {initialData && <input type="hidden" name="_id" value={initialData._id} />}
             
@@ -81,10 +78,8 @@ export const ChildForm = ({ initialData }: { initialData?: any }) => {
 
             <FormField label="Medical Notes" name="medicalNotes" id="medicalNotes" defaultValue={initialData?.medicalNotes} />
 
-            {/* ✨ THE VAULT & GALLERY SECTION ✨ */}
             <div className="col-span-1 md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t border-zinc-100 mt-2">
                 
-                {/* LEFT: Legal & Medical Documents */}
                 <div className="flex flex-col gap-2 p-5 bg-amber-50/50 border border-amber-100 rounded-xl">
                     <div className="flex items-center gap-2 mb-1">
                         <span className="text-xl">📄</span>
@@ -144,7 +139,6 @@ export const ChildForm = ({ initialData }: { initialData?: any }) => {
             </div>
 
             <div className="flex justify-end mt-4 pt-4 border-t border-zinc-100">
-                {/* ✨ Disabled while pending to prevent double-clicks ✨ */}
                 <Button type="submit" disabled={isPending} className="disabled:opacity-50">
                     {isPending ? "Saving..." : (initialData ? "Update Record" : "Save Child Record")}
                 </Button>
