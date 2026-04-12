@@ -24,11 +24,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ i
 
   return (
     <div className="flex flex-col gap-6 max-w-5xl pb-10">
-
-      {/* 1. The Header */}
       <StaffProfileHeader staff={staff} staffId={cleanId} />
-
-      {/* 2. The Grid of Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <BasicInfoCard staff={staff} />
         <ComplianceCard staff={staff} />

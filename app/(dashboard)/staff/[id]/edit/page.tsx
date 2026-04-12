@@ -12,7 +12,6 @@ export default async function EditStaffPage({ params }: { params: Promise<{ id: 
     const staff = await Staff.findById(id).lean() as any;
     if (!staff) return notFound();
 
-    // We serialize the data so Next.js doesn't complain about passing raw MongoDB Dates/ObjectIDs to a Client Component
     const serializedStaff = JSON.parse(JSON.stringify(staff));
 
     return (
@@ -27,7 +26,6 @@ export default async function EditStaffPage({ params }: { params: Promise<{ id: 
                 </div>
             </div>
 
-            {/* We pass the existing data into our form! */}
             <StaffForm initialData={serializedStaff} />
         </div>
     );

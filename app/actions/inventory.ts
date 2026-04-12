@@ -1,98 +1,92 @@
 "use server";
 import dbConnect from "@/lib/db";
-import InventoryTransaction from "@/models/InventoryTransaction"; // Make sure this is imported at the top!
 import InventoryItem from "@/models/InventoryItem";
+import InventoryLog from "@/models/InventoryLog";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import Transaction from "@/models/Transaction";
 
-export async function createInventoryItem(prevState: any, formData: FormData) {
+export async function addInventoryItem(prevState: any, formData: FormData) {
     await dbConnect();
-    const raw = Object.fromEntries(formData.entries());
-
-    const initialQty = Number(raw.initialQuantity) || 0;
-    const source = raw.purposeOrSource as string || "Initial Catalog Setup";
-    
-    // Extract the new fields
-    const acquisitionType = raw.acquisitionType as string;
-    const totalCost = Number(raw.totalCost) || 0;
 
     try {
-        const newItem = await InventoryItem.create({
-            itemName: raw.itemName,
-            category: raw.category,
-            unit: raw.unit,
-            minQuantityAlert: Number(raw.minQuantityAlert) || 10,
-            location: raw.location,
-            currentQuantity: initialQty 
+        await InventoryItem.create({
+            name: formData.get("name"),
+            category: formData.get("category"),
+            unit: formData.get("unit"),
+            currentStock: 0, // Stock only changes when they "Receive" or "Consume" items
+            minimumStockLevel: Number(formData.get("minimumStockLevel")) || 10,
         });
 
-        // If they added starting stock, log it with the purchase details!
-        if (initialQty > 0) {
-            await InventoryTransaction.create({
-                itemId: newItem._id,
-                transactionType: "STOCK_IN",
-                quantity: initialQty,
-                purposeOrSource: source,
-                acquisitionType: acquisitionType, // Save if it was Bought or Donated
-                totalCost: acquisitionType === "PURCHASED" ? totalCost : 0, // Enforce 0 cost if donated
-                date: new Date()
+        revalidatePath("/inventory");
+        return { success: true };
+    } catch (error: any) {
+        // Prevent crashing if they try to add "Rice" twice
+        if (error.code === 11000) {
+            return { success: false, error: "An item with this exact name already exists." };
+        }
+        return { success: false, error: error.message };
+    }
+}
+
+export async function adjustStock(prevState: any, formData: FormData) {
+    await dbConnect();
+
+    try {
+        const itemId = formData.get("itemId") as string;
+        const quantity = Number(formData.get("quantity"));
+        const type = formData.get("type") as 'IN' | 'OUT';
+        const reason = formData.get("reason") as string;
+
+        // Capture financial details
+        const cost = Number(formData.get("cost") || 0);
+        const accountHead = formData.get("accountHead") as string;
+
+        // 🚨 THE FIX: Block the form if they add a cost but forget the account!
+        if (type === 'IN' && cost > 0 && !accountHead) {
+            throw new Error("You entered a cost, but forgot to select an Expense Account!");
+        }
+
+        const stockChange = type === 'IN' ? quantity : -quantity;
+
+        const updatedItem = await InventoryItem.findByIdAndUpdate(
+            itemId,
+            { $inc: { currentStock: stockChange } },
+            { returnDocument: 'after' }
+        );
+        if (!updatedItem) throw new Error("Item not found");
+
+        if (updatedItem.currentStock < 0) {
+            await InventoryItem.findByIdAndUpdate(itemId, { $inc: { currentStock: -stockChange } });
+            throw new Error(`Cannot remove ${quantity}. Only ${updatedItem.currentStock + quantity} left in stock.`);
+        }
+
+        const log = await InventoryLog.create({
+            item: itemId,
+            quantity,
+            type,
+            reason,
+            date: new Date()
+        });
+
+        // THE BRIDGE BETWEEN INVENTORY AND FINANCE!
+        if (type === 'IN' && cost > 0 && accountHead) {
+            await Transaction.create({
+                amount: cost,
+                date: new Date(formData.get("date") as string || Date.now()),
+                type: 'EXPENSE',
+                logId: log._id,
+                accountHead: accountHead,
+                paymentMethod: formData.get("paymentMethod") || 'CASH',
+                donorOrVendorName: formData.get("donorOrVendorName"),
+                referenceNumber: formData.get("referenceNumber"),
+                description: `Inventory Purchase: ${quantity} ${updatedItem.unit} of ${updatedItem.name}. Reason: ${reason}`
             });
         }
 
+        revalidatePath("/inventory");
+        revalidatePath("/finance"); // Update the ledger too!
+        return { success: true };
     } catch (error: any) {
-        console.error("Failed to create inventory item:", error);
-        if (error.code === 11000) return { error: `An item named "${raw.itemName}" already exists in your catalog!` };
-        if (error.name === "ValidationError") return { error: `Validation Error: ${error.message}` };
-        return { error: "Failed to add item to catalog: " + error.message };
+        return { success: false, error: error.message };
     }
-
-    revalidatePath("/inventory");
-    redirect("/inventory");
-}
-export async function recordStockTransaction(formData: FormData) {
-    await dbConnect();
-    const raw = Object.fromEntries(formData.entries());
-    
-    const itemId = raw.itemId as string;
-    const type = raw.transactionType as string; // "STOCK_IN" or "STOCK_OUT"
-    const qty = Number(raw.quantity);
-    const purposeOrSource = raw.purposeOrSource as string;
-
-    // ✨ NEW: Dynamically determine acquisition details based on transaction type
-    const acquisitionType = type === "STOCK_IN" ? (raw.acquisitionType as string || "DONATED") : "CONSUMED";
-    const totalCost = type === "STOCK_IN" && acquisitionType === "PURCHASED" ? (Number(raw.totalCost) || 0) : 0;
-
-    try {
-        const item = await InventoryItem.findById(itemId);
-        if (!item) throw new Error("Item not found");
-
-        if (type === "STOCK_OUT" && item.currentQuantity < qty) {
-            throw new Error(`Not enough stock! You only have ${item.currentQuantity} ${item.unit} left.`);
-        }
-
-        // 1. Save the transaction trail WITH cost details
-        await InventoryTransaction.create({
-            itemId: itemId,
-            transactionType: type,
-            quantity: qty,
-            purposeOrSource: purposeOrSource,
-            acquisitionType: acquisitionType, 
-            totalCost: totalCost,             
-            date: raw.date ? new Date(raw.date as string) : new Date(),
-        });
-
-        // 2. Update the main item's current quantity
-        const mathOperator = type === "STOCK_IN" ? qty : -qty; 
-        
-        await InventoryItem.findByIdAndUpdate(itemId, {
-            $inc: { currentQuantity: mathOperator }
-        });
-
-    } catch (error) {
-        console.error("Stock Transaction Error:", error);
-        throw new Error("Failed to record stock movement.");
-    }
-
-    revalidatePath("/inventory");
-    redirect("/inventory");
 }

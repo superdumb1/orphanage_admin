@@ -11,7 +11,6 @@ export default async function GuardiansPage() {
 
     return (
         <div className="flex flex-col gap-6 max-w-6xl">
-            {/* Header Area */}
             <div className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
                 <div>
                     <h1 className="text-2xl font-black text-zinc-900 tracking-tight">Guardian & Foster Registry</h1>
@@ -24,9 +23,7 @@ export default async function GuardiansPage() {
                 </Link>
             </div>
 
-            {/* Stats Overview */}
             <StatCards guardians={guardians} />
-            {/* Guardians Table */}
             <div className="bg-white rounded-2xl shadow-sm border border-zinc-200 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead>

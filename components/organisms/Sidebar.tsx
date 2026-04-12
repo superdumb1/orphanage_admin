@@ -10,7 +10,7 @@ export const Sidebar = () => {
     { label: 'Staff', path: '/staff' }, 
     { label: 'Finances', path: '/finance' },
     { label: 'Inventory', path: '/inventory' },
-    { label: 'Accounts Headas', path: '/inventory' },//oncome expenses 
+    { label: 'Accounts Headers', path: '/accounts_headers' },
     { label: 'Guardians', path: '/guardians' }
     
 

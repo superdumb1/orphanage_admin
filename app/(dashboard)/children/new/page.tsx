@@ -1,4 +1,4 @@
-import { ChildForm } from "@/components/organisms/ChildForm";
+import { ChildForm } from "@/components/organisms/child/ChildForm";
 import Link from "next/link";
 import { Button } from "@/components/atoms/Button";
 

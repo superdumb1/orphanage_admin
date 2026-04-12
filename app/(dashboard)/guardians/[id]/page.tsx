@@ -1,8 +1,5 @@
 import dbConnect from "@/lib/db";
 import Guardian from "@/models/Guardian";
-import Link from "next/link";
-import { notFound } from "next/navigation";
-import { Button } from "@/components/atoms/Button";
 import InfoRow from "@/components/organisms/guardian/InfoRow";
 import TopHeaderBar from "@/components/organisms/guardian/TopHeaderBar";
 import "@/models/Child";

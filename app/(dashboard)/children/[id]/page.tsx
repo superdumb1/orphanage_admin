@@ -3,20 +3,38 @@ import { DataRow, DetailCard } from "@/components/organisms/child-profile/Detail
 import { ProfileHeader } from "@/components/organisms/child-profile/ProfileHeader";
 import dbConnect from "@/lib/db";
 import Child from "@/models/Child";
+import ActionPlan from "@/models/ActionPlan"; 
 import { notFound } from "next/navigation";
-
+import { ActionPlanSection } from "@/components/organisms/child-profile/ActionPlanSection";
 
 export default async function ChildProfilePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
+    const cleanId = id.trim();
+
     await dbConnect();
-    const child = await Child.findById(id.trim()).lean() as any;
+
+    const child = await Child.findById(cleanId).lean() as any;
     if (!child) return notFound();
+
+    const actionPlans = await ActionPlan.find({ childId: cleanId }).sort({ createdAt: -1 }).lean();
+
+    const serializedActionPlans = actionPlans.map(task => ({
+        ...task,
+        _id: task._id.toString(),
+        childId: task.childId.toString(),
+        dueDate: task.dueDate ? task.dueDate.toISOString() : null
+    }));
 
     const age = new Date().getFullYear() - new Date(child.dateOfBirth).getFullYear();
 
     return (
         <div className="flex flex-col gap-6 max-w-5xl pb-10">
-            <ProfileHeader child={child} id={id.trim()} />
+            <ProfileHeader child={child} id={cleanId} />
+
+            <ActionPlanSection
+                childId={cleanId}
+                serializedTasks={serializedActionPlans}
+            />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <DetailCard title="Basic Info & Education">
@@ -40,7 +58,7 @@ export default async function ChildProfilePage({ params }: { params: Promise<{ i
                 </DetailCard>
             </div>
 
-            {/* MEDIA SECTION */}
+            {/* --- MEDIA SECTIONS --- */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Vault */}
                 <div className="bg-amber-50/40 p-6 rounded-xl shadow-sm border border-amber-200 flex flex-col h-full">
@@ -52,10 +70,9 @@ export default async function ChildProfilePage({ params }: { params: Promise<{ i
                             </a>
                         )) || <p className="text-xs text-amber-600">No documents yet.</p>}
                     </div>
-                    <QuickMediaUpload childId={id.trim()} type="documents" accept=".pdf,.doc,.docx,image/*" themeColor="amber" />
+                    <QuickMediaUpload accept="application/pdf/images" childId={cleanId} type="documents" themeColor="amber" />
                 </div>
 
-                {/* Gallery */}
                 <div className="bg-indigo-50/40 p-6 rounded-xl shadow-sm border border-indigo-200 flex flex-col h-full">
                     <h2 className="text-lg font-black text-indigo-900 mb-4 flex items-center gap-2 border-b border-indigo-200 pb-2">🖼️ Photo Gallery</h2>
                     <div className="grid grid-cols-3 gap-3 mb-4 overflow-y-auto max-h-60">
@@ -65,7 +82,7 @@ export default async function ChildProfilePage({ params }: { params: Promise<{ i
                             </a>
                         )) || <p className="text-xs text-indigo-600">No photos yet.</p>}
                     </div>
-                    <QuickMediaUpload childId={id.trim()} type="gallery" accept="image/*" themeColor="indigo" />
+                    <QuickMediaUpload childId={cleanId} accept="image" type="gallery" themeColor="indigo" />
                 </div>
             </div>
         </div>

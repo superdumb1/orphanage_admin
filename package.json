@@ -12,12 +12,15 @@
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
     "date-fns": "^4.1.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
     "mongoose": "^9.4.1",
     "next": "16.2.2",
     "next-auth": "^4.24.13",
     "react": "19.2.4",
     "react-datepicker": "^9.1.0",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

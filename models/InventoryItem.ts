@@ -1,43 +1,23 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
-const InventoryItemSchema = new Schema(
-  {
-    itemName: { 
-        type: String, 
-        required: true, 
-        unique: true,
-        trim: true 
-    },
-    category: { 
-        type: String, 
-        required: true,
-        enum: ["GROCERY", "CLOTHING", "EDUCATION", "MEDICAL", "ASSET", "OTHER"]
-    },
-    unit: { 
-        type: String, 
-        required: true,
-        enum: ["kg", "liters", "pieces", "packets", "boxes", "pairs"]
-    },
-    
-    // THE CURRENT STOCK LEVEL
-    currentQuantity: { 
-        type: Number, 
-        required: true, 
-        default: 0,
-        min: 0 // Prevents stock from magically becoming negative
-    },
-    
-    // SMART ALERTING
-    minQuantityAlert: { 
-        type: Number, 
-        default: 10,
-        // If currentQuantity drops below this number, the dashboard shows a red warning
-    },
-    
-    location: { type: String, default: "Main Storeroom" },
-    remarks: { type: String }
+export interface IInventoryItem extends Document {
+  name: string;
+  category: 'FOOD' | 'CLOTHING' | 'EDUCATION' | 'MEDICAL' | 'MAINTENANCE';
+  unit: string; // e.g., 'kg', 'liters', 'pieces', 'pairs'
+  currentStock: number;
+  minimumStockLevel: number; // To trigger low-stock alerts!
+}
+
+const InventoryItemSchema = new Schema({
+  name: { type: String, required: true, unique: true },
+  category: { 
+    type: String, 
+    enum: ['FOOD', 'CLOTHING', 'EDUCATION', 'MEDICAL', 'MAINTENANCE'], 
+    required: true 
   },
-  { timestamps: true }
-);
+  unit: { type: String, required: true },
+  currentStock: { type: Number, default: 0, required: true }, // Always starts at 0
+  minimumStockLevel: { type: Number, default: 10 },
+}, { timestamps: true });
 
-export default mongoose.models.InventoryItem || mongoose.model("InventoryItem", InventoryItemSchema);
+export default mongoose.models.InventoryItem || mongoose.model<IInventoryItem>('InventoryItem', InventoryItemSchema);

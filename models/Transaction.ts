@@ -1,52 +1,35 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Schema, Document } from 'mongoose';
 
-const TransactionSchema = new Schema(
-  {
-    // CORE DETAILS
-    type: { 
-        type: String, 
-        enum: ["INCOME", "EXPENSE"], 
-        required: true 
-    },
-    amount: { 
-        type: Number, 
-        required: true, 
-        min: 0 
-    },
-    date: { 
-        type: Date, 
-        required: true, 
-        default: Date.now 
-    },
-    
-    // CATEGORIZATION
-    category: { 
-        type: String, 
-        required: true,
-        // e.g., 'DONATION', 'GRANT', 'GROCERY', 'MEDICAL', 'UTILITIES', 'PAYROLL'
-    },
-    paymentMethod: { 
-        type: String, 
-        enum: ["CASH", "BANK", "KIND"], // "KIND" is for physical goods like rice/clothes
-        required: true 
-    },
-    
-    // DONATION SPECIFICS (Only used if type === 'INCOME')
-    donorName: { type: String },
-    donorPhone: { type: String },
-    isAnonymous: { type: Boolean, default: false },
-    
-    // IN-KIND SPECIFICS (Only used if paymentMethod === 'KIND')
-    itemDescription: { type: String }, // e.g., "50kg Jeera Masino Rice, 5 liters Oil"
-    
-    // GENERAL
-    remarks: { type: String },
-    receiptNumber: { type: String, unique: true, sparse: true }, // For official tax receipts
-    
-    // AUDIT TRAIL
-    recordedBy: { type: String }, // Who entered this into the system
+export interface ITransaction extends Document {
+  amount: number;
+  date: Date;
+  type: 'INCOME' | 'EXPENSE';
+  accountHead: mongoose.Types.ObjectId;
+  subTypeSelected: string;
+  paymentMethod: 'CASH' | 'BANK' | 'CHEQUE' | 'IN_KIND';
+  referenceNumber?: string;
+  description: string;
+  donorOrVendorName?: string;
+  logId?: string; // For linking to inventory logs if this is an inventory-related transaction
+}
+
+const TransactionSchema = new Schema({
+  amount: { type: Number, required: true, min: 0 },
+  date: { type: Date, required: true, default: Date.now },
+  type: { type: String, enum: ['INCOME', 'EXPENSE'], required: true },
+
+  accountHead: { type: Schema.Types.ObjectId, ref: 'AccountHead', required: true },
+  subTypeSelected: { type: String },
+  paymentMethod: { type: String, enum: ['CASH', 'BANK', 'CHEQUE', 'IN_KIND'], default: 'CASH' },
+  referenceNumber: { type: String },
+  description: { type: String, required: true },
+  donorOrVendorName: { type: String },
+  logId: {
+    type: Schema.Types.ObjectId,
+    ref: 'InventoryLog',
+    required:false
   },
-  { timestamps: true }
-);
+}, { timestamps: true });
 
-export default mongoose.models.Transaction || mongoose.model("Transaction", TransactionSchema);
+// Always use this pattern for Next.js to prevent model recompilation errors
+export default mongoose.models.Transaction || mongoose.model<ITransaction>('Transaction', TransactionSchema);

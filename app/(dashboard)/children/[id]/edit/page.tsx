@@ -2,7 +2,7 @@ import dbConnect from "@/lib/db";
 import Child from "@/models/Child";
 import Link from "next/link";
 import { Button } from "@/components/atoms/Button";
-import { ChildForm } from "@/components/organisms/ChildForm";
+import { ChildForm } from "@/components/organisms/child/ChildForm";
 import { notFound } from "next/navigation";
 
 export default async function EditChildPage({ params }: { params: Promise<{ id: string }> }) {
