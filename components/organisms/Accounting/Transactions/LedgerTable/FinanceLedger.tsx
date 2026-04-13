@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import ReportCenter from "../Report/ReportCenter";
 import TransactionTable from "./TransactionTable";
 import { Button } from "@/components/atoms/Button";
-import { AddTransactionModal } from "../modals/AddTransactionModal";
-import { EditTransactionModal } from "../modals/EditTransactionsModal";
+import { AddTransactionModal } from "../../modals/modals/AddTransactionModal";
+import { EditTransactionModal } from "../../modals/modals/EditTransactionsModal";
 export default function FinanceLedger({ transactions, accounts, inventory }: any) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [editItem, setEditItem] = useState<any>(null); 

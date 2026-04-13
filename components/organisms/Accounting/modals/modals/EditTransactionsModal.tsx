@@ -1,15 +1,13 @@
 "use client";
 import React from "react";
 import { Button } from "@/components/atoms/Button";
-import { ITransaction } from "@/models/Transaction";
-import { IAccountHead } from "@/models/AccountHead";
 import { AddTransactionModal } from "./AddTransactionModal";
-import { ManageStockModal } from "../../Inventory/ManageStockModal/ManageStockModal";
-import InventoryLog from "@/models/InventoryLog";
+import { ManageStockModal } from "../ManageStockModal/ManageStockModal";
+import { TTransaction ,TAccountHead} from "@/types/Transaction";
 
 interface EditDispatcherProps {
-    transaction: ITransaction | null;
-    accounts: IAccountHead[];
+    transaction: TTransaction|null
+    accounts: TAccountHead[];
     onClose: () => void;
 }
 

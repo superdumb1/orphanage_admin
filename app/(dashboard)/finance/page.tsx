@@ -1,11 +1,12 @@
 import dbConnect from "@/lib/db";
 import AccountHead from "@/models/AccountHead";
 import Transaction from "@/models/Transaction";
-import InventoryItem from "@/models/InventoryItem"; 
+import InventoryItem from "@/models/InventoryItem";
 import '@/models/AccountHead';
 import '@/models/InventoryLog';
-import PageHeader from "@/components/organisms/Transactions/PageHeader";
-import FinanceLedger from "@/components/organisms/Transactions/LedgerTable/FinanceLedger";
+import '@/models/InventoryItem'
+import PageHeader from "@/components/organisms/Accounting/Transactions/PageHeader";
+import FinanceLedger from "@/components/organisms/Accounting/Transactions/LedgerTable/FinanceLedger";
 
 export default async function FinancePage() {
     await dbConnect();
@@ -18,10 +19,13 @@ export default async function FinancePage() {
 
     const rawTransactions = await Transaction.find({})
         .populate('accountHead', 'name code')
-        .populate('logId')
+        .populate({
+            path: 'logId',
+            populate: { path: 'item' }
+        })
         .sort({ date: -1 })
         .lean();
-    
+
     const safeTransactions = JSON.parse(JSON.stringify(rawTransactions));
 
     let totalIncome = 0;
@@ -38,13 +42,13 @@ export default async function FinancePage() {
     return (
         <div className="p-6 max-w-7xl mx-auto space-y-8">
             <PageHeader accounts={accounts} />
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <SummaryCard label="Available Balance" value={netBalance} variant={netBalance >= 0 ? 'default' : 'danger'} />
                 <SummaryCard label="Total Inflow" value={totalIncome} variant="success" prefix="+ " />
                 <SummaryCard label="Total Outflow" value={totalExpense} variant="warning" prefix="- " />
             </div>
-            
+
             <FinanceLedger
                 transactions={transactions}
                 accounts={accounts}

@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/atoms/Button";
-import { AddInventoryModal } from "./AddInventoryModal";
-import { ManageStockModal } from "./ManageStockModal/ManageStockModal";
+import { AddInventoryModal } from "../modals/AddInventoryModal";
+import { ManageStockModal } from "../modals/ManageStockModal/ManageStockModal";
 
 export default function InventoryDashboard({ items, accounts }: { items: any[], accounts: any[] }) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -51,7 +51,7 @@ export default function InventoryDashboard({ items, accounts }: { items: any[], 
                                 </div>
                                 <Button
                                     variant="ghost"
-                                    onClick={() => setManageModalItem(item)} // 👈 Opens the modal with THIS item
+                                    onClick={() => setManageModalItem(item)} 
                                     className="text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-100 px-4 py-2 shadow-sm rounded-xl"
                                 >
                                     Manage

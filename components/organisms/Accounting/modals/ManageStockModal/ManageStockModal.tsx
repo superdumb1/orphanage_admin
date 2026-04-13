@@ -5,49 +5,53 @@ import { adjustStock } from "@/app/actions/inventory";
 import { StockFinanceFields } from "./StockFinanceFields";
 import { StockFormFields } from "./StockFormFields";
 
+import { TInventoryItem, TAccountHead } from "@/types/Transaction";
+
 interface ManageStockProps {
     isOpen: boolean;
     onClose: () => void;
-    item: any;
-    accounts?: any[];
+    item: TInventoryItem | any;
+    accounts?: TAccountHead[];
 }
 
+
+
 export const ManageStockModal: React.FC<ManageStockProps> = ({ isOpen, onClose, item, accounts = [] }) => {
+
     const [state, formAction, isPending] = useActionState(adjustStock as any, { error: null, success: false });
 
     const [actionType, setActionType] = useState<'IN' | 'OUT'>('IN');
-
-
+    const isFromFinance = !!item?.logId;
+    const ivnItem = isFromFinance ? item.logId.item : item;
+    const logId = isFromFinance ? item.logId : null;
+    const linkedTransaction = isFromFinance ? item : null;
     
-
     useEffect(() => { if (state?.success) onClose(); }, [state?.success, onClose]);
 
     if (!isOpen || !item) return null;
-
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4 animate-in fade-in">
             <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg flex flex-col max-h-[90vh] overflow-hidden border border-zinc-200 animate-in zoom-in-95">
 
-                <Header title={item.name} currentStock={item.currentStock} unit={item.unit} type={actionType} onClose={onClose} />
+                <Header title={ivnItem.name} currentStock={ivnItem.currentStock} unit={ivnItem.unit} type={actionType} onClose={onClose} />
 
                 <form action={formAction} className="flex flex-col overflow-hidden">
                     <div className="p-6 flex flex-col gap-6 overflow-y-auto">
                         {state?.error && <ErrorBox error={state.error} />}
 
-                        <input type="hidden" name="itemId" value={item._id} />
+                        <input type="hidden" name="itemId" value={ivnItem._id} />
                         <input type="hidden" name="type" value={actionType} />
-                        {item?.logId && <input type="hidden" name="logId" value={item.logId} />}
-
-                        <TypeToggle current={actionType} set={setActionType} disabled={!!item} />
+                        {logId && <input type="hidden" name="logId" value={logId._id} />}
+                        <TypeToggle current={actionType} set={setActionType} disabled={!!linkedTransaction} />
 
                         <StockFormFields
-                            unit={item.unit}
+                            unit={ivnItem.unit}
                             actionType={actionType}
-                            defaultValue={item.logId}
+                            defaultValue={logId}
                         />
 
                         {actionType === 'IN' && (
-                            <StockFinanceFields accounts={accounts} transaction={item} />
+                            <StockFinanceFields accounts={accounts} transaction={linkedTransaction} />
                         )}
                     </div>
 

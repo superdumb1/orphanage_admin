@@ -1,6 +1,6 @@
 import dbConnect from "@/lib/db";
 import InventoryItem from "@/models/InventoryItem";
-import InventoryDashboard from "@/components/organisms/Inventory/InventoryDashboard";
+import InventoryDashboard from "@/components/organisms/Accounting/Inventory/InventoryDashboard";
 import AccountHead from "@/models/AccountHead";
 
 export default async function InventoryPage() {

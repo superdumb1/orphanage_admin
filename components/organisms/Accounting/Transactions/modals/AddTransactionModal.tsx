@@ -4,13 +4,13 @@ import { FormField } from "@/components/molecules/FormField";
 import { SelectField } from "@/components/molecules/SelectField";
 import { Button } from "@/components/atoms/Button";
 import { addTransaction } from "@/app/actions/transactions";
-import { ITransaction } from "@/models/Transaction";
+import { TTransaction } from "@/types/Transaction";
 
 interface AddTransactionModalProps {
     isOpen: boolean;
     onClose: () => void;
     accounts: any[];
-    transaction?: ITransaction;
+    transaction?: TTransaction;
 }
 
 export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({ isOpen, onClose, accounts, transaction }) => {

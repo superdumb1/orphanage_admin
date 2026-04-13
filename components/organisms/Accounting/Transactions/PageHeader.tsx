@@ -1,7 +1,7 @@
 "use client"
 import { Button } from '@/components/atoms/Button'
 import React, { useState } from 'react'
-import { AddTransactionModal } from './modals/AddTransactionModal'
+import { AddTransactionModal } from '../modals/modals/AddTransactionModal'
 
 const PageHeader = ({accounts}: {accounts: any[]}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);

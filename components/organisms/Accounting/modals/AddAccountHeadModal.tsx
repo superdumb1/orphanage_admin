@@ -4,7 +4,7 @@ import { FormField } from "@/components/molecules/FormField";
 import { SelectField } from "@/components/molecules/SelectField";
 import { Button } from "@/components/atoms/Button";
 import { addAccountHead } from "@/app/actions/accounts";
-import AddSubType from "./AddSubType";
+import AddSubType from "../AccountsHead/AddSubType";
 
 export const AddAccountHeadModal: React.FC<{ isOpen: boolean, onClose: () => void, isIncomeHead: boolean }> = ({ isOpen, onClose, isIncomeHead }) => {
     const [state, formAction, isPending] = useActionState(addAccountHead as any, { error: null, success: false });

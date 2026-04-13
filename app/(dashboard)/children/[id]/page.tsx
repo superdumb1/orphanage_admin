@@ -1,11 +1,11 @@
 import { QuickMediaUpload } from "@/components/molecules/QuickUploadMedia";
-import { DataRow, DetailCard } from "@/components/organisms/child-profile/DetailCard";
-import { ProfileHeader } from "@/components/organisms/child-profile/ProfileHeader";
+import { DataRow, DetailCard } from "@/components/organisms/child/child-profile/DetailCard";
+import { ProfileHeader } from "@/components/organisms/child/child-profile/ProfileHeader";
 import dbConnect from "@/lib/db";
 import Child from "@/models/Child";
 import ActionPlan from "@/models/ActionPlan"; 
 import { notFound } from "next/navigation";
-import { ActionPlanSection } from "@/components/organisms/child-profile/ActionPlanSection";
+import { ActionPlanSection } from "@/components/organisms/child/child-profile/ActionPlanSection";
 
 export default async function ChildProfilePage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;

@@ -1,6 +1,6 @@
 import dbConnect from "@/lib/db";
 import AccountHead from "@/models/AccountHead";
-import ChartOfAccounts from "@/components/organisms/AccountsHead/ChartOfAccounts";
+import ChartOfAccounts from "@/components/organisms/Accounting/AccountsHead/ChartOfAccounts";
 
 export default async function FinancePage() {
     await dbConnect();

@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/atoms/Button";
-import { AddAccountHeadModal } from "./AddAccountHeadModal";
+import { AddAccountHeadModal } from "../modals/AddAccountHeadModal";
 import { AccountSection } from "./AccountSection";
 import { generateAccountsPDF } from "@/lib/generatePDF";
 

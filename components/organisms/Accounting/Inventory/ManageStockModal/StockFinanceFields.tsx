@@ -2,17 +2,15 @@
 import React from "react";
 import { FormField } from "@/components/molecules/FormField";
 import { SelectField } from "@/components/molecules/SelectField";
-import { IAccountHead } from "@/models/AccountHead";
-import Transaction, { ITransaction } from "@/models/Transaction";
+import {TAccountHead,} from "@/types/Transaction";
 
 interface FinanceBridgeProps {
-    accounts: IAccountHead[];
+    accounts: TAccountHead[];
     transaction: any
 }
 
 export const StockFinanceFields: React.FC<FinanceBridgeProps> = ({ accounts, transaction }) => {
     const expenseAccounts = accounts.filter(acc => acc.type === 'EXPENSE');
-    console.log(transaction.accountHead.name)
 
     return (
         <div className="bg-emerald-50/30 p-5 rounded-2xl border border-emerald-100 flex flex-col gap-5 animate-in fade-in zoom-in-95">
