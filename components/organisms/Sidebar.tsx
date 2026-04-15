@@ -2,17 +2,18 @@
 import React from 'react';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
+import { ThemeToggle } from '../molecules/ThemeToggle';
 
 export const Sidebar = () => {
   const navItems = [
     { label: 'Dashboard', path: '/' },
     { label: 'Children', path: '/children' },
-    { label: 'Staff', path: '/staff' }, 
+    { label: 'Staff', path: '/staff' },
     { label: 'Finances', path: '/finance' },
     { label: 'Inventory', path: '/inventory' },
     { label: 'Accounts Headers', path: '/accounts_headers' },
     { label: 'Guardians', path: '/guardians' }
-    
+
 
   ];
 
@@ -30,6 +31,10 @@ export const Sidebar = () => {
           </Link>
         ))}
       </nav>
+
+      <div className='p-4 ml-5' >
+         <ThemeToggle />
+      </div>
       <div className="p-4 border-t border-zinc-800">
         <button
           onClick={() => signOut()}

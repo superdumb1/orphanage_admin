@@ -1,7 +1,7 @@
 "use server";
 import dbConnect from "@/lib/db";
 import Guardian from "@/models/Guardian";
-import { uploadImage } from "@/lib/cloudinary";
+import { uploadFile, uploadImage } from "@/lib/cloudinary";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
@@ -53,5 +53,87 @@ export async function createGuardian(prevState: any, formData: FormData) {
     if (success) {
         revalidatePath("/guardians");
         redirect("/guardians");
+    }
+}
+
+export async function uploadGuardianDoc(guardianId: string, formData: FormData) {
+    await dbConnect();
+
+    try {
+        const file = formData.get("document") as File;
+        
+        // 1. Validate the file exists and isn't empty
+        if (!file || file.size === 0) {
+            throw new Error("No file was uploaded.");
+        }
+
+        // 2. Convert the standard web File into a Node.js Buffer
+        const buffer = Buffer.from(await file.arrayBuffer());
+
+        // 3. Upload to Cloudinary into the 'guardian_vault' folder
+        const cloudUrl = await uploadFile(buffer, "guardian_vault");
+
+        // 4. Save the new secure URL to MongoDB
+        await Guardian.findByIdAndUpdate(guardianId, {
+            $push: { backgroundCheckDocs: cloudUrl } 
+        });
+
+        // 5. Instantly refresh the UI
+        revalidatePath(`/guardians/${guardianId}`);
+        return { success: true };
+
+    } catch (error: any) {
+        console.error("Single Document Upload Error:", error);
+        return { success: false, error: error.message };
+    }
+}
+
+
+export async function deleteGuardianDoc(guardianId: string, docUrl: string) {
+    await dbConnect();
+    try {
+        // Remove the specific URL from the array
+        await Guardian.findByIdAndUpdate(guardianId, {
+            $pull: { backgroundCheckDocs: docUrl }
+        });
+
+            //use cloudinary delete
+
+        revalidatePath(`/guardians/${guardianId}`);
+        return { success: true };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}
+
+
+export async function updateGuardian(id: string, prevState: any, formData: FormData) {
+    await dbConnect();
+    let success = false;
+
+    try {
+        const updateData = {
+            primaryName: formData.get("primaryName"),
+            secondaryName: formData.get("secondaryName"),
+            email: formData.get("email"),
+            phone: formData.get("phone"),
+            address: formData.get("address"),
+            occupation: formData.get("occupation"),
+            annualIncome: Number(formData.get("annualIncome")) || 0,
+            type: formData.get("type"),
+        };
+
+        const result = await Guardian.findByIdAndUpdate(id, updateData, { runValidators: true });
+        if (!result) throw new Error("Guardian not found.");
+
+        success = true;
+    } catch (error: any) {
+        if (error.code === 11000) return { success: false, error: "This email is already in use." };
+        return { success: false, error: error.message };
+    }
+
+    if (success) {
+        revalidatePath(`/guardians/${id}`);
+        redirect(`/guardians/${id}`);
     }
 }

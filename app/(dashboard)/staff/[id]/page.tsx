@@ -1,9 +1,9 @@
 import dbConnect from "@/lib/db";
 import Staff from "@/models/Staff";
 import { notFound } from "next/navigation";
-import { StaffProfileHeader } from "@/components/organisms/staffpage/StaffProfileHeader";
-import { BasicInfoCard, ComplianceCard, BankCard } from "@/components/organisms/staffpage/StaffProfileCards";
-import { SalaryCard } from "@/components/organisms/staffpage/StaffSalaryCard";
+import { StaffProfileHeader } from "@/components/organisms/staffs/staffpage/StaffProfileHeader";
+import { BasicInfoCard, ComplianceCard, BankCard } from "@/components/organisms/staffs/staffpage/StaffProfileCards";
+import { SalaryCard } from "@/components/organisms/staffs/staffpage/StaffSalaryCard";
 
 export default async function StaffProfilePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

@@ -11,7 +11,7 @@ export interface IGuardian extends Document {
   annualIncome: number;
   type: 'FOSTER' | 'ADOPTIVE' | 'SPONSOR';
   vettingStatus: 'INQUIRY' | 'VETTING' | 'APPROVED' | 'REJECTED' | 'BLACKLISTED';
-  backgroundCheckDocs: string[]; // Links to Cloudinary (Police report, ID copies)
+  backgroundCheckDocs: string[]; 
   homeVisitNotes: string[];
   assignedChildren: mongoose.Types.ObjectId[];
 }
@@ -19,6 +19,8 @@ export interface IGuardian extends Document {
 const GuardianSchema = new Schema({
   primaryName: { type: String, required: true },
   secondaryName: { type: String },
+  profilePicture:{type:String},
+  Images:[{types:String}],
   relationshipStatus: { type: String, default: 'MARRIED' },
   email: { type: String, required: true, unique: true },
   phone: { type: String, required: true },

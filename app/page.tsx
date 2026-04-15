@@ -70,7 +70,7 @@ export default async function Home() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         
         {/* Children */}
-        <div className="bg-white p-5 rounded-xl border border-zinc-200 shadow-sm flex flex-col">
+        <div className="bg-primary p-5 rounded-xl border border-zinc-200 shadow-sm flex flex-col">
           <div className="flex justify-between items-start mb-4">
             <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-xl">👧</div>
             <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Children</span>
@@ -80,7 +80,7 @@ export default async function Home() {
         </div>
 
         {/* Staff */}
-        <div className="bg-white p-5 rounded-xl border border-zinc-200 shadow-sm flex flex-col">
+        <div className="bg-primary p-5 rounded-xl border border-zinc-200 shadow-sm flex flex-col">
           <div className="flex justify-between items-start mb-4">
             <div className="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center text-xl">👩‍🏫</div>
             <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Staff</span>
@@ -90,7 +90,7 @@ export default async function Home() {
         </div>
 
         {/* Finance Balance */}
-        <div className="bg-white p-5 rounded-xl border border-zinc-200 shadow-sm flex flex-col">
+        <div className="bg-primary p-5 rounded-xl border border-zinc-200 shadow-sm flex flex-col">
           <div className="flex justify-between items-start mb-4">
             <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">💰</div>
             <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Balance</span>
@@ -102,7 +102,7 @@ export default async function Home() {
         </div>
 
         {/* Action Alerts (Replacing Inventory Alert for higher priority) */}
-        <div className={`bg-white p-5 rounded-xl border shadow-sm flex flex-col relative overflow-hidden ${urgentActions.length > 0 ? 'border-amber-200' : 'border-zinc-200'}`}>
+        <div className={`bg-primary p-5 rounded-xl border shadow-sm flex flex-col relative overflow-hidden ${urgentActions.length > 0 ? 'border-amber-200' : 'border-zinc-200'}`}>
           {urgentActions.length > 0 && <div className="absolute top-0 left-0 w-1 h-full bg-amber-500"></div>}
           <div className="flex justify-between items-start mb-4">
             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl ${urgentActions.length > 0 ? 'bg-amber-50 text-amber-600' : 'bg-zinc-50 text-zinc-600'}`}>
@@ -126,7 +126,7 @@ export default async function Home() {
         <div className="lg:col-span-1 flex flex-col gap-3">
           <h2 className="text-sm font-bold text-zinc-900 uppercase tracking-wider mb-2">Quick Actions</h2>
           
-          <Link href="/children/new" className="group flex items-center gap-3 p-4 bg-white rounded-xl border border-blue-100 shadow-sm hover:border-blue-300 transition-all">
+          <Link href="/children/new" className="group flex items-center gap-3 p-4 bg-primary rounded-xl border border-blue-100 shadow-sm hover:border-blue-300 transition-all">
             <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">+</div>
             <div className="flex flex-col">
               <span className="font-bold text-blue-900 text-sm">Admit Child</span>
@@ -134,7 +134,7 @@ export default async function Home() {
             </div>
           </Link>
 
-          <Link href="/finance" className="group flex items-center gap-3 p-4 bg-white rounded-xl border border-emerald-100 shadow-sm hover:border-emerald-300 transition-all">
+          <Link href="/finance" className="group flex items-center gap-3 p-4 bg-primary rounded-xl border border-emerald-100 shadow-sm hover:border-emerald-300 transition-all">
             <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">↓</div>
             <div className="flex flex-col">
               <span className="font-bold text-emerald-900 text-sm">Open Ledger</span>
@@ -142,7 +142,7 @@ export default async function Home() {
             </div>
           </Link>
 
-          <Link href="/inventory" className="group flex items-center gap-3 p-4 bg-white rounded-xl border border-orange-100 shadow-sm hover:border-orange-300 transition-all">
+          <Link href="/inventory" className="group flex items-center gap-3 p-4 bg-primary rounded-xl border border-orange-100 shadow-sm hover:border-orange-300 transition-all">
             <div className="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-sm group-hover:scale-110 transition-transform">📦</div>
             <div className="flex flex-col">
               <span className="font-bold text-orange-900 text-sm">Manage Inventory</span>
@@ -161,7 +161,7 @@ export default async function Home() {
               Critical Care Feed
             </h2>
             
-            <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+            <div className="bg-primary rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
               {urgentActions.length === 0 ? (
                 <div className="p-8 text-center bg-zinc-50">
                   <span className="text-3xl mb-2 block">💙</span>
@@ -209,7 +209,7 @@ export default async function Home() {
           <div>
             <h2 className="text-sm font-bold text-zinc-900 uppercase tracking-wider mb-4">Inventory Alerts</h2>
             
-            <div className="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
+            <div className="bg-primary rounded-xl border border-zinc-200 shadow-sm overflow-hidden">
               {lowStockItems.length === 0 ? (
                 <div className="p-6 text-center bg-emerald-50/50">
                   <p className="font-bold text-emerald-900 text-sm">Everything is fully stocked!</p>

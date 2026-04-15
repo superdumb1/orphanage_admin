@@ -1,24 +1,70 @@
-import React, { useActionState } from "react";
+"use client"; // Make sure this is at the top if using useState!
+import React, { useActionState, useEffect, useState } from "react";
 import { FormField } from "@/components/molecules/FormField";
 import { SelectField } from "@/components/molecules/SelectField";
 import { Button } from "@/components/atoms/Button";
 import { createGuardian } from "@/app/actions/guardian";
+
 type GuardianState = {
     error: string | null;
     success?: boolean;
 };
+
 const initialState: GuardianState = {
     error: null,
 };
 
-export const GuardianForm = () => {
+export const GuardianForm = ({onClose}:{onClose:()=>void}) => {
     const [state, formAction, isPending] = useActionState(createGuardian as any, initialState);
+    
+    const [previewImage, setPreviewImage] = useState<string | null>(null);
+    
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setPreviewImage(URL.createObjectURL(file));
+        } else {
+            setPreviewImage(null);
+        }
+    };
+    useEffect(()=>{
+        if(state.success) onClose()
+    },[state])
+    
+    
+
     return (
         <form action={formAction} className="bg-white p-8 rounded-2xl shadow-sm border border-zinc-200 flex flex-col gap-6 max-w-4xl">
-            <div className="flex items-center gap-4 border-b border-zinc-100 pb-6">
-                <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl border border-blue-100">
-                    🏠
+            <div className="flex items-center gap-5 border-b border-zinc-100 pb-6">
+                
+                <div className="relative w-16 h-16 shrink-0 group cursor-pointer">
+                    {previewImage ? (
+                        <img 
+                            src={previewImage} 
+                            alt="Profile Preview" 
+                            className="w-full h-full object-cover rounded-2xl border border-zinc-200 shadow-sm" 
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl border border-blue-100 group-hover:bg-blue-100 transition-colors">
+                            👤
+                        </div>
+                    )}
+                    
+                    <input
+                        type="file"
+                        name="profilePicture"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="absolute inset-0 opacity-0 cursor-pointer z-10"
+                        title="Upload Profile Picture"
+                    />
+                    
+                    {/* Cute little camera badge */}
+                    <div className="absolute -bottom-2 -right-2 bg-white border border-zinc-200 rounded-full w-6 h-6 flex items-center justify-center text-[10px] shadow-sm pointer-events-none group-hover:scale-110 transition-transform z-20">
+                        📷
+                    </div>
                 </div>
+
                 <div>
                     <h2 className="text-xl font-black text-zinc-900 tracking-tight">Register Guardian / Foster Family</h2>
                     <p className="text-sm text-zinc-500">Initiate vetting for potential foster or adoptive parents.</p>
@@ -88,5 +134,4 @@ export const GuardianForm = () => {
             </div>
         </form>
     );
-
 };

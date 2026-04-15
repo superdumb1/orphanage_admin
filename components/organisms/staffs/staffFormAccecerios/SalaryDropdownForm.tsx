@@ -1,4 +1,4 @@
-import { FormField } from "../../molecules/FormField";
+import { FormField } from "../../../molecules/FormField";
 import React from "react";
 import { StaffFormInputs } from "@/types/StaffFormInputs";
 

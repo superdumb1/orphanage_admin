@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
-import { FormField } from "../../molecules/FormField";
-import { SelectField } from "../../molecules/SelectField";
+import { FormField } from "../../../molecules/FormField";
+import { SelectField } from "../../../molecules/SelectField";
 import { DatePickerField } from "@/components/molecules/DatePickerField";
 import { StaffFormInputs } from "@/types/StaffFormInputs";
 

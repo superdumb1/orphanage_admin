@@ -1,18 +1,26 @@
 "use client";
-import React, { useState } from "react";
+import React, { useActionState, useEffect, useState } from "react";
 import { Button } from "../atoms/Button";
 import { createStaff, updateStaff } from "@/app/actions/staff";
-import SalaryDropdownForm from "./staffFormAccecerios/SalaryDropdownForm";
-import BasicInfoFields from "./staffFormAccecerios/BasicInfoFeilds";
-import { EmploymentDetails } from "./staffFormAccecerios/EmployMentDetails";
-import SSFPFcontri from "./staffFormAccecerios/SSFPFcontri";
-import BankDetails from "./staffFormAccecerios/BankDetails";
-import { StaffFormInputs } from "@/types/StaffFormInputs";
+import SalaryDropdownForm from "./staffs/staffFormAccecerios/SalaryDropdownForm";
+import BasicInfoFields from "./staffs/staffFormAccecerios/BasicInfoFeilds";
+import { EmploymentDetails } from "./staffs/staffFormAccecerios/EmployMentDetails";
+import SSFPFcontri from "./staffs/staffFormAccecerios/SSFPFcontri";
+import BankDetails from "./staffs/staffFormAccecerios/BankDetails";
 
-export const StaffForm = ({ initialData }: { initialData?: StaffFormInputs }) => {
+type FormState = { error: string | null; success?: boolean };
+const initialState: FormState = { error: null };
+
+export const StaffForm = ({ initialData, onClose }: { initialData?: any, onClose?: () => void }) => {
     const [activeSection, setActiveSection] = useState("basic");
-    const formAction = initialData ? updateStaff : createStaff;
-    
+    const actionToUse = initialData ? updateStaff : createStaff;
+    const [state, formAction, isPending] = useActionState(actionToUse, initialState);
+    useEffect(() => {
+        if (state?.success && onClose) {
+            onClose();
+        }
+    }, [state?.success, onClose]);
+
     const [liveSalary, setLiveSalary] = useState(() => {
         if (!initialData || !initialData.salary) return { gross: 0, deduction: 0, net: 0 };
         // ... (keep your existing liveSalary initialization code here)
@@ -21,7 +29,7 @@ export const StaffForm = ({ initialData }: { initialData?: StaffFormInputs }) =>
         const basic = s.basicSalary || 0;
         const grade = s.grade || 0;
         const da = s.dearnessAllowance || 0;
-        
+
         const allowances = (a.houseRent || 0) + (a.medical || 0) + (a.transport || 0) + (a.food || 0) + (a.communication || 0) + (a.other || 0);
         const ssfPercent = initialData.ssf?.employeeContribution || 0;
         const insurance = s.insurancePremium || 0;
@@ -29,7 +37,7 @@ export const StaffForm = ({ initialData }: { initialData?: StaffFormInputs }) =>
         const gross = basic + grade + da + allowances;
         const ssfDeduction = (basic + grade + da) * (ssfPercent / 100);
         const totalDeductions = ssfDeduction + insurance;
-        
+
         return { gross, deduction: totalDeductions, net: gross - totalDeductions };
     });
 
@@ -86,13 +94,18 @@ export const StaffForm = ({ initialData }: { initialData?: StaffFormInputs }) =>
 
     return (
         // Add the onInvalid={handleFormError} listener right here!
-        <form 
-            action={formAction} 
-            onChange={calculateLiveSalary} 
-            onInvalid={handleFormError} 
+        <form
+            action={formAction}
+            onChange={calculateLiveSalary}
+            onInvalid={handleFormError}
             className="bg-white rounded-xl shadow-sm border border-zinc-200 overflow-hidden max-w-4xl relative pb-24"
         >
             {initialData && <input type="hidden" name="_id" value={initialData._id} />}
+            {state?.error && (
+                <div className="p-4 m-4 bg-rose-50 text-rose-700 font-bold rounded-xl border border-rose-200">
+                    ⚠️ {state.error}
+                </div>
+            )}
 
             <SectionHeader title="Basic Information" id="basic" label="आधारभूत जानकारी" />
             <div className={activeSection === "basic" ? "block" : "hidden"}><BasicInfoFields initialData={initialData} /></div>
@@ -126,10 +139,17 @@ export const StaffForm = ({ initialData }: { initialData?: StaffFormInputs }) =>
                         <p className="text-xl font-black text-emerald-400">Rs. {liveSalary.net.toLocaleString()}</p>
                     </div>
                 </div>
-
-                <Button type="submit" className="bg-white text-zinc-900 hover:bg-zinc-200">
-                    {initialData ? "Update Employee" : "Save Employee"}
-                </Button>
+                <div className="flex items-center gap-3">
+                    {/* ✨ Add Cancel Button for Modal */}
+                    {onClose && (
+                        <button type="button" onClick={onClose} disabled={isPending} className="text-zinc-300 hover:text-white text-sm font-bold px-4 transition-colors">
+                            Cancel
+                        </button>
+                    )}
+                    <Button type="submit" disabled={isPending} className="bg-white text-zinc-900 hover:bg-zinc-200 shadow-md font-bold disabled:opacity-50">
+                        {isPending ? "Saving..." : (initialData ? "Update Employee" : "Save Employee")}
+                    </Button>
+                </div>
             </div>
         </form>
     );
