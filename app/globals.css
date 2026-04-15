@@ -28,24 +28,24 @@
    DARK MODE (DEFAULT)
    ============================================================ */
 :root {
-  --bg-primary: #000000;
-  --bg-shaded: #09090b;
-  --card: #0c0c0e;
+  --bg-primary: #1f1f23;      /* was #3b3b3b → too gray, now softer dark */
+  --bg-shaded: #111113;      /* slightly lifted from pure near-black */
+  --card: #18181b;           /* lighter card for separation */
   --bg-invert: #ffffff;
 
-  --text-primary: #ffffff;
+  --text-primary: #f4f4f5;   /* slightly softer than pure white */
   --text-muted: #a1a1aa;
   --text-invert: #000000;
 
   --primary: #3b82f6;
-  --border-color: #27272a;
+  --border-color: #2f2f35;   /* lighter border for visibility */
 
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
   --accent: #a855f7;
 
-  --glow-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+  --glow-shadow: 0 0 18px rgba(59, 130, 246, 0.12);
 }
 
 /* ============================================================
