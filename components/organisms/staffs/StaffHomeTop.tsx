@@ -14,23 +14,25 @@ const StaffHomeTop = () => {
                 onClose={() => setViewAddStaffModal(false)}
             />
 
-            <div className="flex justify-between items-center bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
+            {/* Changed bg-white to bg-card and added shadow-glow */}
+            <div className="flex justify-between items-center bg-card p-6 rounded-dashboard shadow-glow border border-border transition-colors duration-500">
 
                 {/* LEFT TEXT */}
                 <div className="flex flex-col">
-                    <h1 className="text-2xl font-black text-zinc-900 tracking-tight">
+                    <h1 className="text-2xl font-black text-text tracking-tight">
                         Employees
                     </h1>
-                    <p className="text-sm text-zinc-500 font-medium">
+                    <p className="text-sm text-text-muted font-medium">
                         Manage workforce, roles, payroll & compliance
                     </p>
                 </div>
 
                 {/* ACTION */}
+                {/* Changed manual zinc-900 to your btn-primary utility */}
                 <Button
                     variant="primary"
                     onClick={() => setViewAddStaffModal(true)}
-                    className="bg-zinc-900 hover:bg-zinc-800 text-white font-bold px-5 py-2.5 rounded-xl shadow-sm transition-all"
+                    className="btn-primary"
                 >
                     + Add Employee
                 </Button>

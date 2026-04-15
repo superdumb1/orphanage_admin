@@ -1,3 +1,4 @@
+import React from "react";
 import dbConnect from "@/lib/db";
 import Staff from "@/models/Staff";
 import { notFound } from "next/navigation";
@@ -10,11 +11,13 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ i
   await dbConnect();
 
   const cleanId = id.trim();
-  const staff = await Staff.findById(cleanId).lean() as any;
+  
+  const rawStaff = await Staff.findById(cleanId).lean();
 
-  if (!staff) return notFound();
+  if (!rawStaff) return notFound();
 
-  // Dynamically calculate Gross Salary
+  const staff = JSON.parse(JSON.stringify(rawStaff));
+
   const s = staff.salary || {};
   const a = s.allowances || {};
   const grossSalary =
@@ -23,15 +26,36 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ i
     (a.food || 0) + (a.communication || 0) + (a.other || 0);
 
   return (
-    <div className="flex flex-col gap-6 max-w-5xl pb-10">
-      <StaffProfileHeader staff={staff} staffId={cleanId} />
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="flex flex-col gap-8 max-w-6xl mx-auto pb-20 pt-4 transition-colors duration-500">
+      
+      {/* Now passing a "Plain" object that won't crash the Client Components */}
+      <StaffProfileHeader 
+        staff={staff} 
+        staffId={cleanId} 
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
         <BasicInfoCard staff={staff} />
+        
         <ComplianceCard staff={staff} />
-        <SalaryCard staff={staff} grossSalary={grossSalary} />
+
+        <div className="md:col-span-1">
+            <SalaryCard 
+                staff={staff} 
+                grossSalary={grossSalary} 
+            />
+        </div>
+
         <BankCard staff={staff} />
+        
       </div>
 
+      <div className="px-2">
+          <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] opacity-50">
+            System Record ID: {cleanId} • Subject to Kree Corp Audit Protocols
+          </p>
+      </div>
     </div>
   );
 }

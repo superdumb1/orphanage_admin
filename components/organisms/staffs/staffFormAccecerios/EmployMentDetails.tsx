@@ -16,13 +16,13 @@ const departmentOptions = [
     { label: "Security & Maintenance (सुरक्षा र मर्मत)", value: "SECURITY" },
     { label: "Logistics & Transport (रसद र यातायात)", value: "LOGISTICS" },
     { label: "Other (अन्य)", value: "OTHER" },
-] ;
+];
 
 const employmentTypeOptions = [
     { label: "Full Time", value: "FULL_TIME" },
     { label: "Part Time", value: "PART_TIME" },
     { label: "Contract", value: "CONTRACT" },
-] 
+];
 
 type Props = {
     initialData?: StaffFormInputs;
@@ -32,19 +32,27 @@ export const EmploymentDetails = ({ initialData }: Props) => {
 
     const formattedDate = useMemo(() => {
         if (!initialData?.joinDate) return "";
-        return new Date(initialData.joinDate)
-            .toISOString()
-            .split("T")[0];
+        // Safely handle date formatting
+        try {
+            return new Date(initialData.joinDate)
+                .toISOString()
+                .split("T")[0];
+        } catch (e) {
+            return "";
+        }
     }, [initialData?.joinDate]);
 
     return (
-        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+        // Updated: Increased padding to p-8 and gap to 6 for a more spacious, premium feel
+        // Added bg-card and transition classes
+        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 bg-card transition-colors duration-500">
 
             <SelectField
                 label="Department (विभाग)"
                 name="department"
                 options={departmentOptions}
                 defaultValue={initialData?.department}
+                className="text-text"
             />
 
             <FormField
@@ -52,6 +60,7 @@ export const EmploymentDetails = ({ initialData }: Props) => {
                 name="designation"
                 placeholder="e.g. Caregiver, Nurse, Cook"
                 defaultValue={initialData?.designation}
+                className="text-text placeholder:text-text-muted/40"
             />
 
             <SelectField
@@ -59,6 +68,7 @@ export const EmploymentDetails = ({ initialData }: Props) => {
                 name="employmentType"
                 options={employmentTypeOptions}
                 defaultValue={initialData?.employmentType}
+                className="text-text"
             />
 
             <DatePickerField
@@ -67,6 +77,7 @@ export const EmploymentDetails = ({ initialData }: Props) => {
                 id="joinDate"
                 required
                 defaultValue={formattedDate}
+                // Ensure DatePicker handles border-border internally
             />
 
         </div>

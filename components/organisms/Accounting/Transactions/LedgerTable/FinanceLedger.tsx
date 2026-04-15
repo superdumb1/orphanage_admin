@@ -11,39 +11,41 @@ export default function FinanceLedger({ transactions, accounts, inventory }: any
     const [editItem, setEditItem] = useState<any>(null);
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8 transition-colors duration-500">
 
-            {/* REPORT SECTION */}
+            {/* REPORT SECTION - Already Themed */}
             <ReportCenter transactions={transactions} accounts={accounts} />
 
             {/* HEADER */}
             <div className="flex justify-between items-center px-2">
-                <h2 className="text-xl font-black text-zinc-900 tracking-tighter">
+                {/* Typography: text-zinc-900 -> text-text */}
+                <h2 className="text-xl md:text-2xl font-black text-text tracking-tighter">
                     Live Ledger
                 </h2>
 
+                {/* Button: bg-emerald-600 -> bg-success, removed hardcoded shadow */}
                 <Button
                     onClick={() => setIsAddModalOpen(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-black px-6 shadow-emerald-200"
+                    className="bg-success hover:bg-success/90 text-text-invert font-black px-6 h-10 shadow-glow active:scale-95 transition-all"
                 >
                     + New Transaction
                 </Button>
             </div>
 
-            {/* TABLE */}
+            {/* TABLE - Already Themed */}
             <TransactionTable
                 transactions={transactions}
                 onEdit={(txn) => setEditItem(txn)}
             />
 
-            {/* ADD MODAL */}
+            {/* ADD MODAL - Already Themed */}
             <AddTransactionModal
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 accounts={accounts}
             />
 
-            {/* EDIT MODAL */}
+            {/* EDIT MODAL - Already Themed */}
             {editItem && (
                 <EditTransactionModal
                     transaction={editItem}

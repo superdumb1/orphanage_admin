@@ -36,10 +36,11 @@ export const GuardianForm = ({ onClose }: { onClose: () => void }) => {
     return (
         <form
             action={formAction}
-            className="bg-white p-8 rounded-2xl shadow-sm border border-zinc-200 flex flex-col gap-6 max-w-4xl"
+            // Updated Container: bg-white -> bg-card, border-zinc-200 -> border-border
+            className="bg-card p-8 rounded-dashboard shadow-glow border border-border flex flex-col gap-6 max-w-4xl transition-colors duration-500"
         >
-            {/* HEADER */}
-            <div className="flex items-center gap-5 border-b border-zinc-100 pb-6">
+            {/* HEADER: Updated border-zinc-100 -> border-border */}
+            <div className="flex items-center gap-6 border-b border-border pb-6">
 
                 {/* AVATAR */}
                 <div className="relative w-16 h-16 shrink-0 group cursor-pointer">
@@ -48,10 +49,12 @@ export const GuardianForm = ({ onClose }: { onClose: () => void }) => {
                         <img
                             src={previewImage}
                             alt="Profile Preview"
-                            className="w-full h-full object-cover rounded-2xl border border-zinc-200"
+                            // Updated border-zinc-200 -> border-border
+                            className="w-full h-full object-cover rounded-2xl border border-border shadow-sm"
                         />
                     ) : (
-                        <div className="w-full h-full bg-zinc-50 text-zinc-400 rounded-2xl flex items-center justify-center text-2xl border border-zinc-200">
+                        // Updated Empty Avatar: bg-zinc-50 -> bg-shaded
+                        <div className="w-full h-full bg-shaded text-text-muted/50 rounded-2xl flex items-center justify-center text-2xl border border-border shadow-inner grayscale">
                             👤
                         </div>
                     )}
@@ -64,47 +67,50 @@ export const GuardianForm = ({ onClose }: { onClose: () => void }) => {
                         className="absolute inset-0 opacity-0 cursor-pointer"
                     />
 
-                    <div className="absolute -bottom-2 -right-2 bg-white border border-zinc-200 rounded-full w-6 h-6 flex items-center justify-center text-[10px] shadow-sm">
+                    {/* Updated Mini-Badge: bg-white -> bg-card, border-zinc-200 -> border-border */}
+                    <div className="absolute -bottom-2 -right-2 bg-card border border-border rounded-full w-7 h-7 flex items-center justify-center text-[10px] shadow-sm transition-colors">
                         📷
                     </div>
                 </div>
 
                 <div>
-                    <h2 className="text-xl font-black text-zinc-900 tracking-tight">
+                    {/* Updated Typography: text-zinc-900 -> text-text, text-zinc-500 -> text-text-muted */}
+                    <h2 className="text-xl font-black text-text tracking-tight">
                         Register Guardian / Foster Family
                     </h2>
-                    <p className="text-sm text-zinc-500">
+                    <p className="text-sm text-text-muted mt-0.5">
                         Initiate vetting for foster or adoptive parents
                     </p>
                 </div>
             </div>
 
-            {/* ERROR */}
+            {/* ERROR: Updated bg-rose-50 -> bg-danger/10, text-rose-600 -> text-danger */}
             {state?.error && (
-                <p className="p-3 bg-rose-50 text-rose-600 rounded-xl text-sm border border-rose-100 font-bold">
+                <p className="p-4 bg-danger/10 text-danger rounded-xl text-sm border border-danger/20 font-bold transition-colors">
                     ⚠ {state.error}
                 </p>
             )}
 
             {/* BASIC INFO */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <FormField label="Primary Applicant Name" name="primaryName" required />
-                <FormField label="Spouse / Secondary Name" name="secondaryName" />
-                <FormField label="Email Address" name="email" type="email" required />
-                <FormField label="Phone Number" name="phone" required />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField label="Primary Applicant Name" name="primaryName" required className="text-text" />
+                <FormField label="Spouse / Secondary Name" name="secondaryName" className="text-text" />
+                <FormField label="Email Address" name="email" type="email" required className="text-text" />
+                <FormField label="Phone Number" name="phone" required className="text-text" />
 
                 <div className="md:col-span-2">
-                    <FormField label="Residential Address" name="address" required />
+                    <FormField label="Residential Address" name="address" required className="text-text" />
                 </div>
             </div>
 
-            {/* CLASSIFICATION */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 pt-4 border-t border-zinc-100">
+            {/* CLASSIFICATION: Updated border-zinc-100 -> border-border */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-6 border-t border-border">
 
                 <SelectField
                     label="Vetting Status"
                     name="vettingStatus"
                     defaultValue="INQUIRY"
+                    className="text-text"
                     options={[
                         { label: "Inquiry", value: "INQUIRY" },
                         { label: "Vetting", value: "VETTING" },
@@ -118,6 +124,7 @@ export const GuardianForm = ({ onClose }: { onClose: () => void }) => {
                     label="Applicant Type"
                     name="type"
                     required
+                    className="text-text"
                     options={[
                         { label: "Foster Parent", value: "FOSTER" },
                         { label: "Adoptive Parent", value: "ADOPTIVE" },
@@ -129,16 +136,17 @@ export const GuardianForm = ({ onClose }: { onClose: () => void }) => {
                     label="Annual Income (NPR)"
                     name="annualIncome"
                     type="number"
+                    className="text-text"
                 />
             </div>
 
-            {/* DOCUMENTS */}
-            <div className="bg-zinc-50 p-5 rounded-xl border border-zinc-200">
-                <h3 className="text-sm font-bold text-zinc-900 mb-2 flex items-center gap-2">
+            {/* DOCUMENTS: Updated bg-zinc-50 -> bg-shaded, border-zinc-200 -> border-border */}
+            <div className="bg-shaded p-6 rounded-xl border border-border transition-colors">
+                <h3 className="text-sm font-bold text-text mb-1 flex items-center gap-2">
                     📎 Background Verification Docs
                 </h3>
 
-                <p className="text-[11px] text-zinc-500 mb-4">
+                <p className="text-[11px] text-text-muted mb-4 font-medium">
                     Police clearance, citizenship, marriage certificates
                 </p>
 
@@ -146,16 +154,18 @@ export const GuardianForm = ({ onClose }: { onClose: () => void }) => {
                     type="file"
                     name="documents"
                     multiple
-                    className="w-full text-xs text-zinc-600 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-zinc-900 file:text-white hover:file:bg-zinc-800"
+                    // Updated file button to use primary brand colors
+                    className="w-full text-xs text-text-muted file:mr-4 file:py-2.5 file:px-5 file:rounded-lg file:border-0 file:bg-primary file:text-text-invert file:font-bold hover:file:opacity-90 transition-all cursor-pointer"
                 />
             </div>
 
-            {/* ACTIONS */}
-            <div className="flex justify-end pt-4 border-t border-zinc-100">
+            {/* ACTIONS: Updated border-zinc-100 -> border-border */}
+            <div className="flex justify-end pt-4 border-t border-border">
+                {/* Updated Button to use your utility class */}
                 <Button
                     type="submit"
                     disabled={isPending}
-                    className="bg-zinc-900 text-white px-10 font-bold"
+                    className="btn-primary w-full sm:w-auto px-10"
                 >
                     {isPending ? "Processing..." : "Register Family"}
                 </Button>

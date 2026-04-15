@@ -29,16 +29,21 @@ export const AddAccountHeadModal: React.FC<{
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl flex flex-col max-h-[90vh] overflow-hidden border border-zinc-200">
+        // OVERLAY: Uses your bg-invert variable for a context-aware tint
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg-invert/20 backdrop-blur-md p-4 animate-in fade-in duration-300">
+            
+            {/* SHELL: Updated bg-white -> bg-card, border-zinc-200 -> border-border, rounded-3xl -> rounded-dashboard */}
+            <div className="bg-card rounded-dashboard shadow-glow w-full max-w-xl flex flex-col max-h-[90vh] overflow-hidden border border-border animate-in zoom-in-95 transition-colors duration-500">
 
-                {/* HEADER */}
-                <div className="p-6 border-b bg-zinc-50 flex justify-between items-center">
+                {/* HEADER: bg-zinc-50 -> bg-shaded, border-b -> border-border */}
+                <div className="p-6 md:px-8 border-b border-border bg-shaded flex justify-between items-center transition-colors">
                     <div>
-                        <h2 className="font-black text-xl text-zinc-900">
+                        {/* Typography: text-zinc-900 -> text-text */}
+                        <h2 className="font-black text-xl text-text tracking-tight">
                             Register Account Head
                         </h2>
-                        <p className="text-xs text-zinc-500">
+                        {/* Subtitle: text-zinc-500 -> text-text-muted */}
+                        <p className="text-xs text-text-muted font-medium mt-0.5">
                             Define structured financial classification
                         </p>
                     </div>
@@ -46,7 +51,7 @@ export const AddAccountHeadModal: React.FC<{
                     <button
                         type="button"
                         onClick={onClose}
-                        className="text-zinc-400 hover:text-zinc-900"
+                        className="w-10 h-10 flex items-center justify-center rounded-xl border border-transparent hover:border-border hover:bg-card text-text-muted hover:text-text transition-all active:scale-95"
                     >
                         ✕
                     </button>
@@ -55,32 +60,35 @@ export const AddAccountHeadModal: React.FC<{
                 {/* FORM */}
                 <form action={formAction} className="flex flex-col overflow-hidden">
 
-                    <div className="p-6 flex flex-col gap-6 overflow-y-auto">
+                    <div className="p-6 md:p-8 flex flex-col gap-6 overflow-y-auto custom-scrollbar">
 
+                        {/* ERROR: text-red-600 -> text-danger, bg-red-50 -> bg-danger/10 */}
                         {state?.error && (
-                            <p className="text-xs text-red-600 bg-red-50 p-3 rounded-xl border border-red-100 font-bold">
+                            <p className="text-sm text-danger bg-danger/10 p-4 rounded-xl border border-danger/20 font-bold transition-colors">
                                 ⚠️ {state.error}
                             </p>
                         )}
 
                         {/* IDENTITY */}
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 gap-5">
                             <FormField
                                 label="Account Name *"
                                 name="name"
                                 required
                                 placeholder="e.g. Education Grant"
+                                className="text-text"
                             />
 
                             <FormField
                                 label="GL Code"
                                 name="code"
                                 placeholder="e.g. INC-1001"
+                                className="text-text"
                             />
                         </div>
 
-                        {/* CLASSIFICATION */}
-                        <div className="grid grid-cols-2 gap-4 bg-zinc-50 p-5 rounded-2xl border">
+                        {/* CLASSIFICATION: bg-zinc-50 -> bg-shaded, border -> border-border */}
+                        <div className="grid grid-cols-2 gap-5 bg-shaded p-6 rounded-2xl border border-border transition-colors">
 
                             <SelectField
                                 id="type"
@@ -109,26 +117,33 @@ export const AddAccountHeadModal: React.FC<{
                             />
                         </div>
 
-                        {/* SUB TYPES */}
+                        {/* SUB TYPES - Ensure this component also uses text-text internaly */}
                         <AddSubType subTypes={subTypes} setSubTypes={setSubTypes} />
 
                         <FormField
                             label="Description"
                             name="description"
                             placeholder="Optional notes for audit trail"
+                            className="text-text"
                         />
                     </div>
 
-                    {/* FOOTER */}
-                    <div className="flex justify-end gap-3 p-6 border-t bg-white">
-                        <Button type="button" variant="ghost" onClick={onClose}>
+                    {/* FOOTER: bg-white -> bg-card, border-t -> border-border */}
+                    <div className="flex justify-end gap-3 p-6 md:px-8 border-t border-border bg-card shrink-0 transition-colors">
+                        <Button 
+                            type="button" 
+                            variant="ghost" 
+                            onClick={onClose}
+                            className="text-text-muted hover:text-text hover:bg-shaded transition-colors"
+                        >
                             Cancel
                         </Button>
 
+                        {/* Submit Button: Replaced manual classes with your btn-primary utility */}
                         <Button
                             type="submit"
                             disabled={isPending || subTypes.length === 0}
-                            className="bg-zinc-900 text-white font-black px-10"
+                            className="btn-primary px-10 h-11"
                         >
                             {isPending ? "Saving..." : "Create Head"}
                         </Button>

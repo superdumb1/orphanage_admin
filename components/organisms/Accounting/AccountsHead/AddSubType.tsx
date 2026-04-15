@@ -1,3 +1,4 @@
+"use client";
 import { Button } from '@/components/atoms/Button';
 import React, { useState } from 'react';
 
@@ -23,9 +24,10 @@ const AddSubType: React.FC<{
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3 transition-colors duration-500">
       
-      <label className="text-[10px] uppercase font-black text-zinc-400 dark:text-zinc-500 tracking-widest">
+      {/* LABEL: Swapped to text-text-muted with tracking-[0.15em] */}
+      <label className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em]">
         Account Sub-Groups (Categories)
       </label>
 
@@ -38,13 +40,12 @@ const AddSubType: React.FC<{
           onKeyDown={handleKeyDown}
           placeholder="e.g. Living, Education..."
           className="
-            flex-1 p-2 text-sm
-            bg-white dark:bg-zinc-900
-            text-zinc-900 dark:text-zinc-100
-            placeholder:text-zinc-400 dark:placeholder:text-zinc-500
-            border border-zinc-200 dark:border-zinc-700
+            flex-1 p-3 text-sm
+            bg-bg text-text
+            placeholder:text-text-muted/50
+            border border-border
             rounded-xl outline-none
-            focus:ring-2 focus:ring-zinc-900 dark:focus:ring-zinc-200
+            focus:ring-2 focus:ring-primary
             transition-all
           "
         />
@@ -52,43 +53,44 @@ const AddSubType: React.FC<{
         <Button
           type="button"
           onClick={handleAdd}
+          // Button: Replaced hardcoded zinc with shaded background and primary tint on hover
           className="
-            bg-zinc-100 dark:bg-zinc-800
-            text-zinc-900 dark:text-zinc-100
-            border border-zinc-200 dark:border-zinc-700
-            hover:bg-zinc-200 dark:hover:bg-zinc-700
-            px-4 py-2 rounded-xl text-xs font-bold
+            bg-shaded text-text
+            border border-border
+            hover:bg-primary/10 hover:border-primary/30
+            px-5 rounded-xl text-xs font-bold
+            transition-all active:scale-95
           "
         >
           + Add
         </Button>
       </div>
 
-      {/* Hidden input */}
+      {/* Hidden input for form submission */}
       <input type="hidden" name="subType" value={subTypes.join(",")} />
 
-      {/* LIST */}
-      <div className="flex flex-col gap-1 max-h-[150px] overflow-y-auto pr-1">
+      {/* LIST: bg-white -> transparent, items -> shaded */}
+      <div className="flex flex-col gap-1.5 max-h-[160px] overflow-y-auto pr-1 custom-scrollbar">
         {subTypes.map((tag) => (
           <div
             key={tag}
             className="
               flex items-center justify-between
-              px-3 py-2 rounded-xl
-              bg-zinc-50 dark:bg-zinc-900
-              border border-zinc-100 dark:border-zinc-800
-              hover:border-zinc-300 dark:hover:border-zinc-600
-              transition-colors
+              px-4 py-2.5 rounded-xl
+              bg-shaded/50 border border-border
+              hover:border-primary/30 hover:bg-shaded
+              transition-all group
             "
           >
-            <span className="text-xs font-bold text-zinc-700 dark:text-zinc-300">
+            <span className="text-xs font-bold text-text group-hover:text-primary transition-colors">
               {tag}
             </span>
 
             <button
               type="button"
               onClick={() => setSubTypes(subTypes.filter((t) => t !== tag))}
-              className="text-zinc-400 hover:text-red-500 transition-colors p-1"
+              // Delete Action: text-zinc -> text-text-muted, hover -> text-danger
+              className="w-6 h-6 flex items-center justify-center text-text-muted hover:text-danger hover:bg-danger/10 rounded-lg transition-all"
             >
               <span className="text-xs">✕</span>
             </button>
@@ -96,7 +98,7 @@ const AddSubType: React.FC<{
         ))}
 
         {subTypes.length === 0 && (
-          <p className="text-[10px] text-zinc-400 dark:text-zinc-500 italic py-2">
+          <p className="text-[10px] text-text-muted/60 uppercase font-black tracking-widest italic py-3 text-center border border-dashed border-border rounded-xl">
             No sub-groups added yet.
           </p>
         )}

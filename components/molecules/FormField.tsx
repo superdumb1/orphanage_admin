@@ -1,3 +1,4 @@
+"use client";
 import React from 'react';
 import { Input } from '../atoms/Input';
 
@@ -10,34 +11,37 @@ export const FormField: React.FC<FormFieldProps> = ({
   label, error, id, required, ...props 
 }) => {
   return (
-    <div className="flex flex-col gap-1 w-full">
+    <div className="flex flex-col gap-2 w-full transition-colors duration-500">
       
-      {/* Label */}
+      {/* LABEL: Upgraded to the wide-tracked Micro-caps aesthetic */}
       <label 
         htmlFor={id} 
-        className="text-sm font-medium text-text"
+        className="text-[10px] font-black uppercase tracking-[0.15em] text-text-muted opacity-90 px-1"
       >
         {label}{" "}
-        {required && <span className="text-danger">*</span>}
+        {required && <span className="text-danger ml-0.5">*</span>}
       </label>
       
-      {/* Input */}
+      {/* INPUT: Calibrated focus rings and error borders */}
       <Input 
         id={id} 
         required={required} 
         className={`
+          transition-all duration-300
           ${error 
-            ? "border-danger focus:ring-danger" 
-            : "border-border focus:ring-primary"
+            ? "border-danger focus:ring-danger/20" 
+            : "border-border focus:ring-primary/20 focus:border-primary"
           }
+          /* Ensure text inside inherits theme color */
+          text-text placeholder:text-text-muted/40
         `}
         {...props} 
       />
       
-      {/* Error */}
+      {/* ERROR: Animated for better UX feedback */}
       {error && (
-        <span className="text-xs text-danger mt-1 font-medium">
-          {error}
+        <span className="text-[11px] text-danger font-bold mt-1 px-1 animate-in fade-in slide-in-from-top-1">
+          ⚠️ {error}
         </span>
       )}
     </div>

@@ -27,28 +27,30 @@ export default function DocumentCard({
 
     return (
         <>
-            {/* CARD */}
-            <div className="flex items-center justify-between bg-white border border-zinc-200 rounded-2xl p-3 hover:shadow-sm hover:border-zinc-300 transition-all group">
+            {/* CARD: Updated bg-white -> bg-card, border-zinc-200 -> border-border */}
+            <div className="flex items-center justify-between bg-card border border-border rounded-xl p-3 hover:shadow-md hover:border-primary/30 transition-all duration-300 group">
 
                 {/* OPEN PREVIEW */}
                 <button
                     onClick={() => setIsPreviewOpen(true)}
                     className="flex items-center gap-3 flex-1 text-left"
                 >
-                    <span className="text-zinc-500 group-hover:text-zinc-900 transition-colors">
+                    {/* Icon: Updated text-zinc-500 -> text-text-muted, hover to primary */}
+                    <span className="text-text-muted group-hover:text-primary transition-colors grayscale group-hover:grayscale-0">
                         📄
                     </span>
 
-                    <span className="text-sm font-bold text-zinc-900">
+                    {/* Typography: Updated text-zinc-900 -> text-text */}
+                    <span className="text-sm font-bold text-text group-hover:text-primary transition-colors">
                         Document {index + 1}
                     </span>
                 </button>
 
-                {/* DELETE */}
+                {/* DELETE: Updated hover:bg-rose-50 -> hover:bg-danger/10, text-rose-600 -> text-danger */}
                 <button
                     onClick={handleDelete}
                     disabled={isPending}
-                    className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-400 hover:bg-rose-50 hover:text-rose-600 transition-colors disabled:opacity-50"
+                    className="w-8 h-8 flex items-center justify-center rounded-lg text-text-muted hover:bg-danger/10 hover:text-danger transition-colors disabled:opacity-50"
                     title="Delete Document"
                 >
                     {isPending ? "⏳" : "🗑️"}
@@ -57,37 +59,42 @@ export default function DocumentCard({
 
             {/* PREVIEW MODAL */}
             {isPreviewOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-900/70 backdrop-blur-sm p-4">
+                // Backdrop: Updated bg-zinc-900/70 -> bg-bg-invert/20
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-bg-invert/20 backdrop-blur-md p-4 animate-in fade-in">
 
-                    <div className="bg-white w-full max-w-5xl h-[85vh] rounded-3xl flex flex-col overflow-hidden shadow-2xl border border-zinc-200">
+                    {/* Modal Shell: bg-white -> bg-card, border-zinc-200 -> border-border */}
+                    <div className="bg-card w-full max-w-5xl h-[85vh] rounded-dashboard flex flex-col overflow-hidden shadow-glow border border-border transition-colors duration-500 animate-in zoom-in-95">
 
-                        {/* HEADER */}
-                        <div className="flex items-center justify-between p-4 border-b border-zinc-200 bg-zinc-50 shrink-0">
+                        {/* HEADER: Updated bg-zinc-50 -> bg-shaded/50 */}
+                        <div className="flex items-center justify-between p-5 md:px-6 border-b border-border bg-shaded/50 shrink-0">
 
                             <div>
-                                <h3 className="font-black text-zinc-900 text-lg tracking-tight">
+                                <h3 className="font-black text-text text-lg tracking-tight">
                                     Document Preview
                                 </h3>
 
-                                <p className="text-xs text-zinc-500 font-medium mt-1">
+                                {/* Subtitle: Upgraded to micro-caps aesthetic */}
+                                <p className="text-[10px] uppercase tracking-widest text-text-muted font-bold mt-0.5">
                                     Document {index + 1}
                                 </p>
                             </div>
 
-                            <div className="flex gap-2">
+                            <div className="flex items-center gap-3">
 
+                                {/* Open Button: Upgraded to use your btn-primary utility */}
                                 <a
                                     href={url}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="px-4 py-2 text-xs font-bold bg-zinc-900 text-white rounded-xl hover:bg-zinc-800 transition-colors"
+                                    className="btn-primary py-2 px-5 text-xs"
                                 >
                                     Open ↗
                                 </a>
 
+                                {/* Close Button: Styled to match inventory modal */}
                                 <button
                                     onClick={() => setIsPreviewOpen(false)}
-                                    className="w-8 h-8 flex items-center justify-center rounded-full bg-zinc-100 hover:bg-zinc-200 text-zinc-600 transition-colors"
+                                    className="w-9 h-9 flex items-center justify-center rounded-xl bg-shaded hover:border-border border border-transparent text-text-muted hover:text-text transition-all active:scale-95"
                                 >
                                     ✕
                                 </button>
@@ -95,12 +102,13 @@ export default function DocumentCard({
                             </div>
                         </div>
 
-                        {/* BODY */}
-                        <div className="flex-1 bg-zinc-50 p-4">
+                        {/* BODY: Updated bg-zinc-50 -> bg-shaded */}
+                        <div className="flex-1 bg-shaded p-4 md:p-6 custom-scrollbar">
 
+                            {/* Iframe: Kept bg-white intentionally so PDFs/Docs remain readable regardless of theme */}
                             <iframe
                                 src={url}
-                                className="w-full h-full rounded-2xl bg-white border border-zinc-200"
+                                className="w-full h-full rounded-2xl bg-white border border-border shadow-sm"
                                 title={`Document ${index + 1}`}
                             />
 

@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/atoms/Button";
 import Link from "next/link";
 import React from "react";
@@ -5,7 +7,8 @@ import VettingStatusBadge from "./VettingStatusBadge";
 
 const TopHeaderBar = ({ guardian, id }: { guardian: any; id: string }) => {
     return (
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        // Container: Updated bg-white -> bg-card, border-zinc-200 -> border-border
+        <div className="bg-card p-6 rounded-dashboard shadow-glow border border-border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-colors duration-500">
 
             {/* LEFT */}
             <div className="flex items-center gap-4">
@@ -13,18 +16,21 @@ const TopHeaderBar = ({ guardian, id }: { guardian: any; id: string }) => {
                 <Link href="/guardians">
                     <Button
                         variant="ghost"
-                        className="px-3 py-2 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 rounded-xl"
+                        // Updated text-zinc-600 -> text-text-muted, hover:bg-zinc-50 -> hover:bg-shaded
+                        className="px-3 py-2 text-text-muted hover:text-text hover:bg-shaded rounded-xl transition-all"
                     >
                         ← Back
                     </Button>
                 </Link>
 
                 <div>
-                    <h1 className="text-2xl font-black text-zinc-900 tracking-tight">
+                    {/* Updated text-zinc-900 -> text-text */}
+                    <h1 className="text-2xl font-black text-text tracking-tight">
                         {guardian?.primaryName || "Guardian"}
                     </h1>
 
-                    <p className="text-xs text-zinc-500 font-medium">
+                    {/* Updated text-zinc-500 -> text-text-muted */}
+                    <p className="text-xs text-text-muted font-medium mt-0.5">
                         Member since{" "}
                         {guardian?.createdAt
                             ? new Date(guardian.createdAt).toLocaleDateString()
@@ -34,14 +40,16 @@ const TopHeaderBar = ({ guardian, id }: { guardian: any; id: string }) => {
             </div>
 
             {/* RIGHT */}
-            <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="flex items-center gap-4 w-full md:w-auto">
 
+                {/* Your already-themed badge component */}
                 <VettingStatusBadge status={guardian?.vettingStatus} />
 
                 <Link href={`/guardians/${id}/edit`}>
                     <Button
                         variant="secondary"
-                        className="px-5 py-2 rounded-xl border border-zinc-200 text-zinc-700 font-bold hover:bg-zinc-50"
+                        // Updated text/border/hover classes to use theme tokens
+                        className="px-5 py-2.5 rounded-xl border border-border text-text font-bold hover:bg-shaded transition-all"
                     >
                         Edit Profile
                     </Button>

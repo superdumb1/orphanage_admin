@@ -1,3 +1,7 @@
+"use client";
+
+import React from "react";
+
 export const SalaryCard = ({ staff, grossSalary }: { staff: any; grossSalary: number }) => {
   const s = staff.salary || {};
   const ssf = staff.ssf || {};
@@ -18,80 +22,82 @@ export const SalaryCard = ({ staff, grossSalary }: { staff: any; grossSalary: nu
   const money = (v: number) => `Rs. ${v.toLocaleString()}`;
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 flex flex-col gap-5">
+    // Updated: bg-white -> bg-card, border-zinc-200 -> border-border
+    <div className="bg-card p-6 rounded-dashboard shadow-glow border border-border flex flex-col gap-5 transition-colors duration-500">
 
       {/* HEADER */}
-      <h2 className="text-lg font-black text-zinc-900 border-b border-zinc-100 pb-3">
+      <h2 className="text-lg font-black text-text border-b border-border pb-3">
         Salary & Payslip Overview
       </h2>
 
-      {/* GROSS */}
-      <div className="flex justify-between items-center bg-zinc-50 p-3 rounded-xl border border-zinc-200">
-        <span className="text-xs font-black uppercase tracking-widest text-zinc-600">
+      {/* GROSS: Updated bg-zinc-50 -> bg-shaded */}
+      <div className="flex justify-between items-center bg-shaded p-4 rounded-xl border border-border">
+        <span className="text-xs font-black uppercase tracking-widest text-text-muted">
           Gross Salary
         </span>
-        <span className="text-lg font-black text-zinc-900">
+        <span className="text-lg font-black text-text">
           {money(grossSalary)}
         </span>
       </div>
 
       {/* EARNINGS */}
-      <div className="space-y-2 text-sm text-zinc-600">
+      <div className="space-y-2 text-sm text-text-muted">
         <div className="flex justify-between">
           <span>Basic Salary</span>
-          <strong className="text-zinc-900">{money(s.basicSalary || 0)}</strong>
+          <strong className="text-text">{money(s.basicSalary || 0)}</strong>
         </div>
 
         <div className="flex justify-between">
           <span>Grade + DA</span>
-          <strong className="text-zinc-900">
+          <strong className="text-text">
             {money((s.grade || 0) + (s.dearnessAllowance || 0))}
           </strong>
         </div>
 
         <div className="flex justify-between">
           <span>Allowances</span>
-          <strong className="text-zinc-900">
+          <strong className="text-text">
             {money(grossSalary - baseForSSF)}
           </strong>
         </div>
       </div>
 
       {/* DEDUCTIONS */}
-      <div className="border-t border-zinc-100 pt-3 space-y-2">
-        <p className="text-xs font-black uppercase tracking-widest text-zinc-500">
+      <div className="border-t border-border pt-3 space-y-2">
+        <p className="text-xs font-black uppercase tracking-widest text-text-muted/60">
           Deductions
         </p>
 
-        <div className="flex justify-between text-sm text-zinc-600">
+        <div className="flex justify-between text-sm text-text-muted">
           <span>SSF ({employeeSsfPercent}%)</span>
-          <strong className="text-rose-600">- {money(ssfDeduction)}</strong>
+          {/* Updated text-rose-600 -> text-danger */}
+          <strong className="text-danger">- {money(ssfDeduction)}</strong>
         </div>
 
-        <div className="flex justify-between text-sm text-zinc-600">
+        <div className="flex justify-between text-sm text-text-muted">
           <span>Insurance</span>
-          <strong className="text-rose-600">- {money(insuranceDeduction)}</strong>
+          <strong className="text-danger">- {money(insuranceDeduction)}</strong>
         </div>
       </div>
 
-      {/* NET */}
-      <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-xl flex justify-between items-center">
+      {/* NET: Updated bg-emerald-50 -> bg-success/10, text-emerald -> text-success */}
+      <div className="bg-success/10 border border-success/20 p-4 rounded-xl flex justify-between items-center">
         <div>
-          <p className="text-xs font-black text-emerald-700 uppercase tracking-widest">
+          <p className="text-xs font-black text-success uppercase tracking-widest">
             Net Salary
           </p>
-          <p className="text-[11px] text-emerald-600">
+          <p className="text-[11px] text-success/80">
             Final take-home amount
           </p>
         </div>
 
-        <span className="text-2xl font-black text-emerald-700">
+        <span className="text-2xl font-black text-success">
           {money(netSalary)}
         </span>
       </div>
 
       {/* FOOTER */}
-      <div className="flex justify-between text-[11px] text-zinc-400 border-t border-zinc-100 pt-3">
+      <div className="flex justify-between text-[11px] text-text-muted/50 border-t border-border pt-3">
         <span>Bonus: {s.festivalBonusMonths || 0} month(s)</span>
         <span>Employer SSF: {ssf.employerContribution || 0}%</span>
       </div>

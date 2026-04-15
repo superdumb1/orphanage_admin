@@ -1,7 +1,5 @@
 "use client";
 import React, {
-  Dispatch,
-  SetStateAction,
   useActionState,
   useEffect,
   useState
@@ -53,29 +51,33 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
   const availableSubTypes = selectedAccount?.subType || [];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden border border-zinc-200">
+    // OVERLAY: Updated bg-zinc-900/60 -> bg-bg-invert/20 with blur
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-bg-invert/20 backdrop-blur-md p-4 animate-in fade-in duration-300">
+      
+      {/* MODAL SHELL: Updated to bg-card, border-border, rounded-dashboard */}
+      <div className="bg-card rounded-dashboard shadow-glow w-full max-w-2xl flex flex-col max-h-[90vh] overflow-hidden border border-border transition-colors duration-500 animate-in zoom-in-95">
 
         <Header onClose={onClose} transactionType={transactionType} />
 
         <form action={formAction} className="flex flex-col overflow-hidden">
-          <div className="p-6 md:p-8 flex flex-col gap-6 overflow-y-auto">
+          <div className="p-6 md:p-8 flex flex-col gap-6 overflow-y-auto custom-scrollbar">
 
+            {/* ERROR: Semantic danger colors */}
             {state?.error && (
-              <p className="text-xs text-red-600 bg-red-50 p-3 rounded-xl border border-red-100 font-bold">
+              <p className="text-sm text-danger bg-danger/10 p-4 rounded-xl border border-danger/20 font-bold transition-colors">
                 ⚠️ {state.error}
               </p>
             )}
 
-            {/* TYPE SWITCH */}
-            <div className="flex bg-zinc-100 p-1 rounded-xl">
+            {/* TYPE SWITCH: bg-zinc-100 -> bg-shaded */}
+            <div className="flex bg-shaded p-1.5 rounded-xl border border-border transition-colors">
               <button
                 type="button"
                 onClick={() => setTransactionType("EXPENSE")}
-                className={`flex-1 py-2 text-xs font-black rounded-lg ${
+                className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
                   transactionType === "EXPENSE"
-                    ? "bg-white text-zinc-900 shadow-sm"
-                    : "text-zinc-500"
+                    ? "bg-card text-danger shadow-sm border border-border/50"
+                    : "text-text-muted hover:text-text"
                 }`}
               >
                 EXPENSE
@@ -84,10 +86,10 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               <button
                 type="button"
                 onClick={() => setTransactionType("INCOME")}
-                className={`flex-1 py-2 text-xs font-black rounded-lg ${
+                className={`flex-1 py-2 text-xs font-black rounded-lg transition-all ${
                   transactionType === "INCOME"
-                    ? "bg-white text-zinc-900 shadow-sm"
-                    : "text-zinc-500"
+                    ? "bg-card text-success shadow-sm border border-border/50"
+                    : "text-text-muted hover:text-text"
                 }`}
               >
                 INCOME
@@ -96,18 +98,19 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
 
             <input type="hidden" name="type" value={transactionType} />
 
-            {/* CORE */}
-            <div className="grid bg-zinc-50 rounded-xl p-5 grid-cols-1 md:grid-cols-2 gap-6">
+            {/* CORE DETAILS: bg-zinc-50 -> bg-shaded */}
+            <div className="grid bg-shaded rounded-2xl p-6 grid-cols-1 md:grid-cols-2 gap-6 border border-border">
               <FormField
                 label="Amount (NPR) *"
                 name="amount"
                 type="number"
                 required
                 placeholder="e.g. 5000"
+                className="text-text"
               />
 
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] uppercase font-black text-zinc-600 tracking-widest">
+                <label className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em]">
                   Account Head *
                 </label>
 
@@ -116,7 +119,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
                   required
                   value={selectedAccountId}
                   onChange={(e) => setSelectedAccountId(e.target.value)}
-                  className="w-full p-3 text-sm border border-zinc-200 rounded-xl text-black focus:ring-2 focus:ring-zinc-900 outline-none"
+                  className="w-full p-3.5 text-sm border border-border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer"
                 >
                   <option value="">Select...</option>
                   {filteredAccounts.map((acc: any) => (
@@ -132,6 +135,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
                   id="subType"
                   name="subType"
                   label="Head Sub-Type"
+                  className="text-text"
                   options={availableSubTypes.map((t: string) => ({
                     label: t,
                     value: t
@@ -140,12 +144,13 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               )}
             </div>
 
-            {/* CONTEXT */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-zinc-50 p-5 rounded-xl border border-zinc-100">
+            {/* CONTEXT: bg-zinc-50 -> bg-shaded */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-shaded p-6 rounded-2xl border border-border">
               <SelectField
                 id="paymentMethod"
                 name="paymentMethod"
                 label="Payment Method"
+                className="text-text"
                 options={[
                   { label: "Cash", value: "CASH" },
                   { label: "Bank Transfer", value: "BANK" },
@@ -158,21 +163,24 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
                 name="date"
                 type="date"
                 required
+                className="text-text color-scheme-adaptive"
               />
             </div>
 
-            {/* EXTRA */}
+            {/* EXTRA FIELDS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
-                label={`${transactionType === "INCOME" ? "Donor / Vendor" : "Vendor Name"}`}
+                label={`${transactionType === "INCOME" ? "Donor / Source" : "Vendor Name"}`}
                 name="donorOrVendorName"
                 placeholder="e.g. John Doe"
+                className="text-text"
               />
 
               <FormField
                 label="Reference No."
                 name="referenceNumber"
                 placeholder="Optional"
+                className="text-text"
               />
             </div>
 
@@ -181,6 +189,7 @@ export const AddTransactionModal: React.FC<AddTransactionModalProps> = ({
               name="description"
               required
               placeholder="What was this transaction for?"
+              className="text-text"
             />
           </div>
 
@@ -203,17 +212,17 @@ const Header: React.FC<{
 }> = ({ onClose, transactionType }) => {
   return (
     <div
-      className={`p-6 border-b flex justify-between items-center ${
+      className={`p-6 md:px-8 md:py-7 border-b border-border flex justify-between items-center transition-colors duration-500 ${
         transactionType === "INCOME"
-          ? "bg-emerald-50/50"
-          : "bg-rose-50/50"
+          ? "bg-success/10"
+          : "bg-danger/10"
       }`}
     >
       <div>
-        <h2 className="font-black text-xl text-zinc-900">
+        <h2 className="font-black text-xl text-text tracking-tight">
           Record Transaction
         </h2>
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-text-muted font-medium mt-0.5">
           Log income or expense entry
         </p>
       </div>
@@ -221,7 +230,7 @@ const Header: React.FC<{
       <button
         type="button"
         onClick={onClose}
-        className="text-zinc-400 hover:text-zinc-900"
+        className="w-10 h-10 flex items-center justify-center rounded-xl border border-transparent hover:border-border hover:bg-card text-text-muted hover:text-text transition-all active:scale-95"
       >
         ✕
       </button>
@@ -237,18 +246,23 @@ const Footer: React.FC<{
   accountOptions: any[];
 }> = ({ isPending, transactionType, onClose, accountOptions }) => {
   return (
-    <div className="flex justify-end gap-3 p-6 border-t bg-white">
-      <Button type="button" variant="ghost" onClick={onClose}>
+    <div className="flex justify-end gap-3.5 p-6 md:px-8 border-t border-border bg-card shrink-0 transition-colors duration-500">
+      <Button 
+        type="button" 
+        variant="ghost" 
+        onClick={onClose}
+        className="text-text-muted hover:text-text hover:bg-shaded font-bold"
+      >
         Cancel
       </Button>
 
       <Button
         type="submit"
         disabled={isPending || accountOptions.length === 0}
-        className={`px-10 font-black text-white ${
+        className={`px-10 font-black text-text-invert shadow-glow active:scale-95 transition-all h-11 ${
           transactionType === "INCOME"
-            ? "bg-emerald-600 hover:bg-emerald-700"
-            : "bg-rose-600 hover:bg-rose-700"
+            ? "bg-success hover:bg-success/90"
+            : "bg-danger hover:bg-danger/90"
         }`}
       >
         {isPending ? "Saving..." : "Record Transaction"}

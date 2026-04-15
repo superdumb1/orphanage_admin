@@ -17,18 +17,21 @@ export default function ReportCommandBar({
     };
 
     return (
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 bg-white p-5 rounded-3xl border border-zinc-200 shadow-sm">
+        // Container: bg-white -> bg-card, border-zinc-200 -> border-border
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 bg-card p-6 rounded-dashboard border border-border shadow-glow transition-colors duration-500">
 
             {/* TIMEFRAME */}
-            <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] uppercase font-black text-zinc-500">
+            <div className="flex flex-col gap-2">
+                {/* Label: text-zinc-500 -> text-text-muted */}
+                <label className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em]">
                     Report Type
                 </label>
 
+                {/* Select: Added bg-bg, text-text, and updated focus rings to primary */}
                 <select
                     value={filter.timeframe}
                     onChange={(e) => handleTimeframeChange(e.target.value)}
-                    className="w-full p-3 text-sm border border-zinc-200 rounded-xl focus:ring-2 focus:ring-zinc-900 outline-none"
+                    className="w-full p-3.5 text-sm border border-border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer"
                 >
                     <option value="DAY">🌅 Daily Daybook</option>
                     <option value="WEEK">📅 Weekly Summary</option>
@@ -39,8 +42,8 @@ export default function ReportCommandBar({
             </div>
 
             {/* TYPE */}
-            <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] uppercase font-black text-zinc-500">
+            <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em]">
                     Transaction Type
                 </label>
 
@@ -49,7 +52,7 @@ export default function ReportCommandBar({
                     onChange={(e) =>
                         setFilter({ ...filter, type: e.target.value })
                     }
-                    className="w-full p-3 text-sm border border-zinc-200 rounded-xl focus:ring-2 focus:ring-zinc-900 outline-none"
+                    className="w-full p-3.5 text-sm border border-border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer"
                 >
                     <option value="ALL">All Cashflow</option>
                     <option value="INCOME">Income Only</option>
@@ -58,8 +61,8 @@ export default function ReportCommandBar({
             </div>
 
             {/* ACCOUNT */}
-            <div className="flex flex-col gap-1.5 lg:col-span-1">
-                <label className="text-[10px] uppercase font-black text-zinc-500">
+            <div className="flex flex-col gap-2 lg:col-span-1">
+                <label className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em]">
                     Account Head
                 </label>
 
@@ -68,7 +71,7 @@ export default function ReportCommandBar({
                     onChange={(e) =>
                         setFilter({ ...filter, accountId: e.target.value })
                     }
-                    className="w-full p-3 text-sm border border-zinc-200 rounded-xl focus:ring-2 focus:ring-zinc-900 outline-none"
+                    className="w-full p-3.5 text-sm border border-border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer"
                 >
                     <option value="ALL">All Account Heads</option>
                     {accounts.map((acc: any) => (
@@ -80,8 +83,8 @@ export default function ReportCommandBar({
             </div>
 
             {/* FORMAT */}
-            <div className="flex flex-col gap-1.5">
-                <label className="text-[10px] uppercase font-black text-zinc-500">
+            <div className="flex flex-col gap-2">
+                <label className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em]">
                     Format
                 </label>
 
@@ -90,7 +93,7 @@ export default function ReportCommandBar({
                     onChange={(e) =>
                         setFilter({ ...filter, format: e.target.value })
                     }
-                    className="w-full p-3 text-sm border border-zinc-200 rounded-xl focus:ring-2 focus:ring-zinc-900 outline-none"
+                    className="w-full p-3.5 text-sm border border-border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer"
                 >
                     <option value="PDF">PDF</option>
                     <option value="EXCEL">Excel</option>

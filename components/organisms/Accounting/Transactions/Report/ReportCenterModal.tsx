@@ -9,26 +9,30 @@ const ReportCenterModal: React.FC<{
 }> = ({ filter, setFilter, setIsModalOpen }) => {
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+        // Overlay: bg-zinc-900/60 -> bg-bg-invert/20
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-bg-invert/20 backdrop-blur-md p-4 animate-in fade-in duration-200">
 
-            <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-zinc-200 flex flex-col overflow-hidden animate-in zoom-in-95">
+            {/* Modal Shell: bg-white -> bg-card, border-zinc-200 -> border-border */}
+            <div className="bg-card w-full max-w-md rounded-dashboard shadow-glow border border-border flex flex-col overflow-hidden animate-in zoom-in-95 transition-colors duration-500">
 
-                {/* HEADER */}
-                <div className="p-6 border-b bg-zinc-50 shrink-0">
-                    <h3 className="text-xl font-black text-zinc-900 tracking-tight">
+                {/* HEADER: bg-zinc-50 -> bg-shaded, border-b -> border-border */}
+                <div className="p-6 md:p-8 border-b border-border bg-shaded shrink-0 transition-colors">
+                    {/* Typography: text-zinc-900 -> text-text, text-zinc-500 -> text-text-muted */}
+                    <h3 className="text-xl font-black text-text tracking-tight">
                         Select Custom Range
                     </h3>
-                    <p className="text-xs text-zinc-500 font-medium">
+                    <p className="text-xs text-text-muted font-medium mt-1">
                         Choose start and end dates for report generation
                     </p>
                 </div>
 
                 {/* BODY */}
-                <div className="p-6 flex flex-col gap-5">
+                <div className="p-6 md:p-8 flex flex-col gap-6">
 
                     {/* START DATE */}
-                    <div className="flex flex-col gap-1.5">
-                        <label className="text-[10px] uppercase font-black text-zinc-500">
+                    <div className="flex flex-col gap-2">
+                        {/* Label: Upgraded to Micro-caps aesthetic */}
+                        <label className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em]">
                             Start Date
                         </label>
                         <input
@@ -37,13 +41,14 @@ const ReportCenterModal: React.FC<{
                             onChange={(e) =>
                                 setFilter({ ...filter, startDate: e.target.value })
                             }
-                            className="w-full p-3 text-sm border border-zinc-200 rounded-xl focus:ring-2 focus:ring-zinc-900 outline-none"
+                            // Input: bg-bg, border-border, focus:ring-primary
+                            className="w-full p-3.5 text-sm border border-border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer color-scheme-adaptive"
                         />
                     </div>
 
                     {/* END DATE */}
-                    <div className="flex flex-col gap-1.5">
-                        <label className="text-[10px] uppercase font-black text-zinc-500">
+                    <div className="flex flex-col gap-2">
+                        <label className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em]">
                             End Date
                         </label>
                         <input
@@ -52,18 +57,19 @@ const ReportCenterModal: React.FC<{
                             onChange={(e) =>
                                 setFilter({ ...filter, endDate: e.target.value })
                             }
-                            className="w-full p-3 text-sm border border-zinc-200 rounded-xl focus:ring-2 focus:ring-zinc-900 outline-none"
+                            className="w-full p-3.5 text-sm border border-border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all cursor-pointer color-scheme-adaptive"
                         />
                     </div>
 
                 </div>
 
-                {/* FOOTER */}
-                <div className="p-6 border-t flex justify-end gap-3 bg-white">
+                {/* FOOTER: bg-white -> bg-card, border-t -> border-border */}
+                <div className="p-6 md:px-8 border-t border-border flex justify-end gap-3 bg-card transition-colors">
 
+                    {/* Cancel Button: Updated text and hover to match theme */}
                     <Button
                         variant="ghost"
-                        className="px-6 font-bold text-zinc-500"
+                        className="px-6 font-bold text-text-muted hover:bg-shaded hover:text-text transition-colors"
                         onClick={() => {
                             setIsModalOpen(false);
 
@@ -75,8 +81,9 @@ const ReportCenterModal: React.FC<{
                         Cancel
                     </Button>
 
+                    {/* Apply Button: Replaced manual classes with global utility */}
                     <Button
-                        className="bg-zinc-900 hover:bg-zinc-800 text-white font-black px-8"
+                        className="btn-primary px-8"
                         onClick={() => setIsModalOpen(false)}
                     >
                         Apply Range

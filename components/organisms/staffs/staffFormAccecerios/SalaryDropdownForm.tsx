@@ -1,3 +1,5 @@
+"use client";
+
 import { FormField } from "../../../molecules/FormField";
 import React from "react";
 import { StaffFormInputs } from "@/types/StaffFormInputs";
@@ -17,11 +19,6 @@ const AllowancesFields = [
   { name: "other", label: "Other Allowances (अन्य)" },
 ] as const;
 
-// Derived types (no manual typing needed)
-type Salary = StaffFormInputs["salary"];
-type BasicKey = typeof BasicFields[number]["name"];
-type AllowanceKey = typeof AllowancesFields[number]["name"];
-
 type Props = {
   initialData?: StaffFormInputs;
 };
@@ -31,10 +28,11 @@ const SalaryDropdownForm = ({ initialData }: Props) => {
   const allowances = salary?.allowances;
 
   return (
-    <div className="p-5 flex flex-col gap-6">
+    // Updated: Changed container padding and ensured it inherits bg-card from parent
+    <div className="p-6 flex flex-col gap-8 bg-card transition-colors duration-500">
 
       {/* BASIC FIELDS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {BasicFields.map(({ name, label }) => (
           <FormField
             key={name}
@@ -42,21 +40,22 @@ const SalaryDropdownForm = ({ initialData }: Props) => {
             type="number"
             label={label}
             defaultValue={salary?.[name]}
+            className="text-text"
           />
         ))}
       </div>
 
-      {/* DIVIDER */}
-      <div className="flex items-center gap-4">
-        <div className="flex-1 h-px bg-zinc-200" />
-        <span className="text-xs font-bold text-zinc-400 uppercase">
+      {/* DIVIDER: Updated bg-zinc-200 to bg-border and text-zinc-400 to text-text-muted */}
+      <div className="flex items-center gap-4 py-2">
+        <div className="flex-1 h-px bg-border" />
+        <span className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
           Allowances (भत्ता)
         </span>
-        <div className="flex-1 h-px bg-zinc-200" />
+        <div className="flex-1 h-px bg-border" />
       </div>
 
       {/* ALLOWANCES */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {AllowancesFields.map(({ name, label }) => (
           <FormField
             key={name}
@@ -64,17 +63,19 @@ const SalaryDropdownForm = ({ initialData }: Props) => {
             type="number"
             label={label}
             defaultValue={allowances?.[name]}
+            className="text-text"
           />
         ))}
       </div>
 
-      {/* BONUS + INSURANCE */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
+      {/* BONUS + INSURANCE: Updated border-t to border-border */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-border pt-6">
         <FormField
           label="Festival Bonus Months"
           name="festivalBonusMonths"
           type="number"
           defaultValue={salary?.festivalBonusMonths ?? 1}
+          className="text-text"
         />
 
         <FormField
@@ -82,6 +83,7 @@ const SalaryDropdownForm = ({ initialData }: Props) => {
           name="insurancePremium"
           type="number"
           defaultValue={salary?.insurancePremium}
+          className="text-text"
         />
       </div>
 

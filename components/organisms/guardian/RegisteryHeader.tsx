@@ -1,44 +1,40 @@
 "use client";
 
 import React, { useState } from "react";
-import { AddGuardianFormModal } from "./AddGuardianFormModal";
 import { Button } from "@/components/atoms/Button";
+import { useUIModals } from "@/hooks/useUIModal";
 
 export default function RegistryHeader() {
-    const [viewGuardianModal, setViewGuardianModal] = useState(false);
+    const { openGuardianModal } = useUIModals();
 
     return (
         <>
-            {/* MODAL */}
-            <AddGuardianFormModal
-                isOpen={viewGuardianModal}
-                onClose={() => setViewGuardianModal(false)}
-            />
-
-            {/* HEADER */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-zinc-200">
+  
+            {/* HEADER: Updated bg-white -> bg-card, border-zinc-200 -> border-border */}
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card p-6 rounded-dashboard shadow-glow border border-border transition-colors duration-500">
 
                 {/* LEFT SECTION */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
 
-                    <div className="w-12 h-12 bg-zinc-50 text-zinc-700 rounded-2xl flex items-center justify-center text-2xl border border-zinc-200 shrink-0">
+                    {/* ICON BOX: Updated bg-zinc-50 -> bg-shaded, border-zinc-200 -> border-border */}
+                    <div className="w-12 h-12 bg-shaded rounded-2xl flex items-center justify-center text-2xl border border-border shrink-0 shadow-inner">
                         🤝
                     </div>
 
                     <div>
-                        <h1 className="text-2xl font-black text-zinc-900 tracking-tight">
+                        {/* TYPOGRAPHY: Updated zinc-900 -> text-text, zinc-500 -> text-text-muted */}
+                        <h1 className="text-2xl font-black text-text tracking-tight">
                             Guardian Registry
                         </h1>
-                        <p className="text-sm text-zinc-500 font-medium">
+                        <p className="text-sm text-text-muted font-medium mt-0.5">
                             Manage vetting, background checks, and placements.
                         </p>
                     </div>
                 </div>
 
-                {/* ACTION */}
                 <Button
-                    onClick={() => setViewGuardianModal(true)}
-                    className="bg-zinc-900 hover:bg-zinc-800 text-white font-bold px-6 py-2.5 rounded-xl shadow-sm transition-all"
+                    onClick={() => openGuardianModal()}
+                    className="btn-primary shrink-0"
                 >
                     + Register Family
                 </Button>

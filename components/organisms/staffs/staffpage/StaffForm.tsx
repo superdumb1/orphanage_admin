@@ -20,14 +20,15 @@ const SSFPFcontri = ({ initialData }: { initialData?: StaffFormInputs }) => {
   }, [type]);
 
   return (
-    <div className="p-6 flex flex-col gap-6 bg-white">
+    // Updated bg-white to bg-card
+    <div className="p-6 flex flex-col gap-6 bg-card transition-colors duration-500">
       
-      {/* HEADER */}
-      <div className="border-b border-zinc-200 pb-2">
-        <h2 className="text-sm font-bold text-zinc-900 uppercase tracking-widest">
+      {/* HEADER: Updated text and border colors */}
+      <div className="border-b border-border pb-2">
+        <h2 className="text-sm font-bold text-text uppercase tracking-widest">
           Retirement Scheme
         </h2>
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-text-muted">
           SSF / PF contribution configuration
         </p>
       </div>
@@ -51,17 +52,20 @@ const SSFPFcontri = ({ initialData }: { initialData?: StaffFormInputs }) => {
           name="ssf.idNumber"
           disabled={type === "NONE"}
           required={type !== "NONE"}
-          className="border-zinc-200 focus:ring-zinc-900"
+          // Replaced zinc focus rings with primary theme color
+          className="border-border focus:ring-primary"
           defaultValue={initialData?.ssf?.idNumber}
         />
       </div>
 
       {/* CONTRIBUTIONS */}
       <div className="grid grid-cols-2 gap-4">
-        <div className="p-4 border border-zinc-200 rounded-xl bg-zinc-50">
-          <p className="text-xs font-bold text-zinc-500 uppercase">Employee %</p>
+        {/* Container: bg-zinc-50 -> bg-shaded */}
+        <div className="p-4 border border-border rounded-xl bg-shaded">
+          <p className="text-xs font-bold text-text-muted uppercase">Employee %</p>
           <input
-            className="w-full mt-2 bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm font-bold text-zinc-900"
+            // Input: bg-white -> bg-bg, text-zinc -> text-text
+            className="w-full mt-2 bg-bg border border-border rounded-lg px-3 py-2 text-sm font-bold text-text focus:outline-none focus:border-primary disabled:opacity-50 transition-all"
             value={empContri}
             readOnly={type === "SSF"}
             disabled={type === "NONE"}
@@ -69,10 +73,10 @@ const SSFPFcontri = ({ initialData }: { initialData?: StaffFormInputs }) => {
           />
         </div>
 
-        <div className="p-4 border border-zinc-200 rounded-xl bg-zinc-50">
-          <p className="text-xs font-bold text-zinc-500 uppercase">Employer %</p>
+        <div className="p-4 border border-border rounded-xl bg-shaded">
+          <p className="text-xs font-bold text-text-muted uppercase">Employer %</p>
           <input
-            className="w-full mt-2 bg-white border border-zinc-200 rounded-lg px-3 py-2 text-sm font-bold text-zinc-900"
+            className="w-full mt-2 bg-bg border border-border rounded-lg px-3 py-2 text-sm font-bold text-text focus:outline-none focus:border-primary disabled:opacity-50 transition-all"
             value={emprContri}
             readOnly={type === "SSF"}
             disabled={type === "NONE"}

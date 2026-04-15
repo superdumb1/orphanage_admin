@@ -8,7 +8,7 @@ import GuardianProfileHeader from "@/components/organisms/guardian/GuardianProfi
 import GuardianContactCard from "@/components/organisms/guardian/GuardianContactCard";
 import GuardianFinancialCard from "@/components/organisms/guardian/GuardianFinancialCard";
 import GuardianVettingVault from "@/components/organisms/guardian/GuardianVettingVault";
-import AssignedChildren from "@/components/organisms/guardian/AssignedChildren";
+import {AssignedChildren} from "@/components/organisms/guardian/AssignedChildren";
 
 export const dynamic = "force-dynamic";
 

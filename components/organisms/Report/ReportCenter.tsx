@@ -79,11 +79,12 @@ export default function ReportCenter({
     };
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm">
+        // Updated: bg-white -> bg-card, border-zinc-200 -> border-border
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-card p-6 rounded-dashboard border border-border shadow-glow transition-colors duration-500">
 
             {/* FINANCIAL */}
-            <div className="space-y-2">
-                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+            <div className="space-y-3">
+                <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
                     Financial Reports
                 </p>
 
@@ -91,7 +92,8 @@ export default function ReportCenter({
                     <Button
                         onClick={handleDaybook}
                         variant="ghost"
-                        className="justify-start bg-white border border-zinc-200 text-xs font-bold hover:bg-zinc-50"
+                        // Updated: bg-white -> bg-bg, border-zinc-200 -> border-border
+                        className="justify-start bg-bg border border-border text-xs font-bold hover:bg-shaded transition-all"
                     >
                         📄 Daybook (Today)
                     </Button>
@@ -99,7 +101,7 @@ export default function ReportCenter({
                     <Button
                         onClick={handleMonthly}
                         variant="ghost"
-                        className="justify-start bg-white border border-zinc-200 text-xs font-bold hover:bg-zinc-50"
+                        className="justify-start bg-bg border border-border text-xs font-bold hover:bg-shaded transition-all"
                     >
                         📅 Monthly Summary
                     </Button>
@@ -107,8 +109,8 @@ export default function ReportCenter({
             </div>
 
             {/* INVENTORY */}
-            <div className="space-y-2">
-                <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+            <div className="space-y-3">
+                <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">
                     Inventory Reports
                 </p>
 
@@ -116,18 +118,17 @@ export default function ReportCenter({
                     <Button
                         onClick={handleInventoryReport}
                         variant="ghost"
-                        className="justify-start bg-white border border-zinc-200 text-xs font-bold hover:bg-zinc-50"
+                        className="justify-start bg-bg border border-border text-xs font-bold hover:bg-shaded transition-all"
                     >
                         📦 Inventory Status
                     </Button>
                 </div>
             </div>
 
-            {/* INFO PANEL */}
-            <div className="flex items-center justify-center p-5 bg-zinc-900 rounded-2xl">
-                <p className="text-[10px] text-zinc-400 text-center font-medium leading-relaxed">
-                    Generate audit-ready PDF reports for finance and warehouse
-                    tracking.
+            {/* INFO PANEL: Updated to use Invert tokens for high contrast */}
+            <div className="flex items-center justify-center p-6 bg-bg-invert rounded-xl shadow-glow">
+                <p className="text-[11px] text-text-invert text-center font-black uppercase tracking-widest leading-relaxed opacity-80">
+                    Audit-Ready <br /> PDF Generation
                 </p>
             </div>
         </div>

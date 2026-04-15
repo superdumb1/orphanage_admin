@@ -8,23 +8,27 @@ const PageHeader = ({ accounts }: { accounts: any[] }) => {
 
     return (
         <>
-            <div className="flex items-end justify-between flex-wrap gap-4 mb-6">
+            <div className="flex items-end justify-between flex-wrap gap-4 mb-8 transition-colors duration-500">
 
                 {/* TITLE */}
                 <div>
-                    <h1 className="text-2xl font-black text-zinc-900 tracking-tighter">
+                    {/* Typography: Updated text-zinc-900 -> text-text */}
+                    <h1 className="text-2xl font-black text-text tracking-tighter">
                         Finance & Ledger
                     </h1>
-                    <p className="text-sm text-zinc-500 font-medium">
+                    
+                    {/* Subtitle: Updated text-zinc-500 -> text-text-muted */}
+                    <p className="text-sm text-text-muted font-medium mt-0.5">
                         Professional cashflow management & reporting system
                     </p>
                 </div>
 
                 {/* ACTION */}
                 <div className="flex gap-3">
+                    {/* Button: Replaced hardcoded zinc/white classes with your utility */}
                     <Button
                         onClick={() => setIsModalOpen(true)}
-                        className="bg-zinc-900 hover:bg-zinc-800 text-white font-black px-6 h-10"
+                        className="btn-primary font-black px-6 h-10"
                     >
                         + New Transaction
                     </Button>

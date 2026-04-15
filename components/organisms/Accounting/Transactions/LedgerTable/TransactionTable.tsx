@@ -10,12 +10,13 @@ export default function TransactionTable({
     onEdit: (t: any) => void;
 }) {
     return (
-        <div className="bg-white border border-zinc-200 rounded-[2rem] shadow-sm overflow-x-auto">
+        // Container: bg-white -> bg-card, border-zinc-200 -> border-border, shadow-sm -> shadow-glow
+        <div className="bg-card border border-border rounded-dashboard shadow-glow overflow-x-auto transition-colors duration-500">
 
             <table className="w-full text-left whitespace-nowrap">
 
-                {/* HEADER */}
-                <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-400 font-black uppercase text-[9px] tracking-[0.15em]">
+                {/* HEADER: bg-zinc-50 -> bg-shaded, text-zinc-400 -> text-text-muted */}
+                <thead className="bg-shaded/50 border-b border-border text-text-muted font-black uppercase text-[9px] tracking-[0.15em]">
                     <tr>
                         <th className="p-4 pl-6">Date</th>
                         <th className="p-4">Account Head</th>
@@ -25,16 +26,17 @@ export default function TransactionTable({
                     </tr>
                 </thead>
 
-                {/* BODY */}
-                <tbody className="divide-y divide-zinc-100">
+                {/* BODY: divide-zinc-100 -> divide-border */}
+                <tbody className="divide-y divide-border/50">
 
                     {transactions.length === 0 ? (
                         <tr>
-                            <td colSpan={5} className="p-10 text-center">
-                                <div className="text-zinc-400 font-medium">
+                            <td colSpan={5} className="p-16 text-center">
+                                {/* Empty State Typography: text-zinc-400 -> text-text-muted */}
+                                <div className="text-text-muted font-bold text-sm tracking-wide">
                                     No transactions found
                                 </div>
-                                <div className="text-xs text-zinc-300 mt-1">
+                                <div className="text-[10px] text-text-muted/50 uppercase tracking-widest mt-1 font-black">
                                     Start by adding a new income or expense
                                 </div>
                             </td>

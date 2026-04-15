@@ -1,8 +1,10 @@
+"use client";
+
 import React from "react";
 
 type Staff = any;
 
-// reusable row (IMPORTANT: keeps your UI consistent everywhere)
+// Updated Row: Now respects dark/light mode via theme tokens
 const Row = ({
   label,
   value,
@@ -14,11 +16,11 @@ const Row = ({
   mono?: boolean;
   highlight?: boolean;
 }) => (
-  <div className="flex justify-between gap-4 text-sm">
-    <span className="text-zinc-500 font-medium w-40">{label}</span>
+  <div className="flex justify-between gap-4 text-sm transition-colors">
+    <span className="text-text-muted font-medium w-40">{label}</span>
     <span
-      className={`font-medium ${
-        highlight ? "text-zinc-900 font-bold" : "text-zinc-700"
+      className={`font-medium transition-colors ${
+        highlight ? "text-text font-bold" : "text-text/80"
       } ${mono ? "font-mono tracking-wide" : ""}`}
     >
       {value ?? "N/A"}
@@ -27,8 +29,8 @@ const Row = ({
 );
 
 export const BasicInfoCard = ({ staff }: { staff: Staff }) => (
-  <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 flex flex-col gap-5">
-    <h2 className="text-lg font-black text-zinc-900 border-b pb-3">
+  <div className="bg-card p-6 rounded-dashboard shadow-glow border border-border flex flex-col gap-5 transition-colors duration-500">
+    <h2 className="text-lg font-black text-text border-b border-border pb-3">
       Basic Information
     </h2>
 
@@ -52,8 +54,8 @@ export const BasicInfoCard = ({ staff }: { staff: Staff }) => (
 
 
 export const ComplianceCard = ({ staff }: { staff: Staff }) => (
-  <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 flex flex-col gap-5">
-    <h2 className="text-lg font-black text-zinc-900 border-b pb-3">
+  <div className="bg-card p-6 rounded-dashboard shadow-glow border border-border flex flex-col gap-5 transition-colors duration-500">
+    <h2 className="text-lg font-black text-text border-b border-border pb-3">
       Identity & Compliance
     </h2>
 
@@ -66,9 +68,9 @@ export const ComplianceCard = ({ staff }: { staff: Staff }) => (
         highlight={staff?.applyTDS}
       />
 
-      {/* SSF BLOCK */}
-      <div className="mt-2 bg-zinc-50 border border-zinc-200 rounded-xl p-4 flex flex-col gap-2">
-        <p className="font-black text-zinc-900 text-sm">
+      {/* SSF BLOCK: bg-zinc-50 -> bg-shaded */}
+      <div className="mt-2 bg-shaded border border-border rounded-xl p-4 flex flex-col gap-2">
+        <p className="font-black text-text text-sm">
           Retirement Scheme ({staff?.ssf?.type || "NONE"})
         </p>
 
@@ -83,11 +85,13 @@ export const ComplianceCard = ({ staff }: { staff: Staff }) => (
             label="Contributions"
             value={
               <>
-                <span className="text-emerald-700 font-bold">
+                {/* emerald-700 -> success */}
+                <span className="text-success font-bold">
                   {staff?.ssf?.employeeContribution}%
                 </span>{" "}
                 /{" "}
-                <span className="text-blue-700 font-bold">
+                {/* blue-700 -> primary */}
+                <span className="text-primary font-bold">
                   {staff?.ssf?.employerContribution}%
                 </span>
               </>
@@ -104,8 +108,8 @@ export const BankCard = ({ staff }: { staff: Staff }) => {
   const bank = staff?.bank;
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 flex flex-col gap-5">
-      <h2 className="text-lg font-black text-zinc-900 border-b pb-3">
+    <div className="bg-card p-6 rounded-dashboard shadow-glow border border-border flex flex-col gap-5 transition-colors duration-500">
+      <h2 className="text-lg font-black text-text border-b border-border pb-3">
         Bank Details
       </h2>
 
@@ -115,12 +119,14 @@ export const BankCard = ({ staff }: { staff: Staff }) => {
           <Row label="Branch" value={bank.branch} />
           <Row label="Account Name" value={bank.accountName} />
 
-          <div className="mt-2 p-4 bg-zinc-900 text-white rounded-xl text-center font-mono tracking-widest text-lg">
+          {/* BANK ACC BLOCK: bg-zinc-900 -> bg-bg-invert / text-white -> text-text-invert */}
+          {/* This ensures the block is black in light mode and white in dark mode */}
+          <div className="mt-2 p-5 bg-bg-invert text-text-invert rounded-xl text-center font-mono tracking-[0.2em] text-lg shadow-inner">
             {bank.accountNumber}
           </div>
         </div>
       ) : (
-        <p className="text-sm text-zinc-400 italic">
+        <p className="text-sm text-text-muted italic">
           No banking information recorded.
         </p>
       )}

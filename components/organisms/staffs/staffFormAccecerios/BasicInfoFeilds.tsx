@@ -6,11 +6,12 @@ import { StaffFormInputs } from "@/types/StaffFormInputs";
 
 const BasicInfoFields = ({ initialData }: { initialData?: StaffFormInputs }) => {
     return (
-        <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4 bg-zinc-50 rounded-2xl border border-zinc-100 animate-in fade-in duration-300">
+        // Updated: bg-zinc-50 -> bg-shaded, border-zinc-100 -> border-border
+        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 bg-shaded/30 rounded-dashboard border border-border animate-in fade-in duration-300 transition-colors duration-500">
 
             {/* PROFILE IMAGE */}
             <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-zinc-700 mb-1">
+                <label className="block text-sm font-bold text-text mb-2">
                     Profile Image
                 </label>
 
@@ -19,13 +20,13 @@ const BasicInfoFields = ({ initialData }: { initialData?: StaffFormInputs }) => 
                     name="profileImage"
                     accept="image/jpeg,image/png,image/webp"
                     className="
-                        w-full text-sm text-zinc-500
-                        file:mr-4 file:py-2 file:px-4
+                        w-full text-sm text-text-muted
+                        file:mr-4 file:py-2.5 file:px-5
                         file:rounded-xl file:border-0
-                        file:text-sm file:font-bold
-                        file:bg-zinc-900 file:text-white
-                        hover:file:bg-zinc-800
-                        transition-all
+                        file:text-sm file:font-black
+                        file:bg-primary file:text-text-invert
+                        hover:file:opacity-90
+                        file:cursor-pointer transition-all
                     "
                 />
             </div>
@@ -36,12 +37,14 @@ const BasicInfoFields = ({ initialData }: { initialData?: StaffFormInputs }) => 
                 required
                 minLength={2}
                 defaultValue={initialData?.fullName || ""}
+                className="text-text"
             />
 
             <FormField
                 label="Nepali Name (नेपाली नाम)"
                 name="nepaliName"
                 defaultValue={initialData?.nepaliName || ""}
+                className="text-text"
             />
 
             <FormField
@@ -51,6 +54,7 @@ const BasicInfoFields = ({ initialData }: { initialData?: StaffFormInputs }) => 
                 required
                 pattern="^[0-9]{10}$"
                 defaultValue={initialData?.phone || ""}
+                className="text-text"
             />
 
             <FormField
@@ -59,12 +63,13 @@ const BasicInfoFields = ({ initialData }: { initialData?: StaffFormInputs }) => 
                 type="email"
                 required
                 defaultValue={initialData?.email || ""}
+                className="text-text"
             />
 
             <FormField
                 label="Address (ठेगाना)"
                 name="address"
-                className="md:col-span-2"
+                className="md:col-span-2 text-text"
                 defaultValue={initialData?.address || ""}
             />
 
@@ -98,6 +103,7 @@ const BasicInfoFields = ({ initialData }: { initialData?: StaffFormInputs }) => 
                 label="Citizenship No. (नागरिकता नं.)"
                 name="citizenshipNo"
                 defaultValue={initialData?.citizenshipNo || ""}
+                className="text-text"
             />
 
             {/* PAN */}
@@ -108,22 +114,25 @@ const BasicInfoFields = ({ initialData }: { initialData?: StaffFormInputs }) => 
                     pattern="^[0-9]{9}$"
                     maxLength={9}
                     defaultValue={initialData?.panNumber || ""}
+                    className="text-text"
                 />
 
-                <span className="text-xs text-rose-600 font-medium">
+                {/* Updated: text-rose-600 -> text-danger */}
+                <span className="text-[10px] text-danger font-bold uppercase tracking-wider ml-1">
                     Required for tax calculation (Must be exactly 9 digits)
                 </span>
             </div>
 
-            {/* TDS */}
-            <div className="md:col-span-2 flex items-center gap-3 bg-white border border-zinc-200 p-3 rounded-xl">
+            {/* TDS - Updated: bg-white -> bg-card, border-zinc-200 -> border-border */}
+            <div className="md:col-span-2 flex items-center gap-4 bg-card border border-border p-4 rounded-xl transition-all hover:border-primary/30">
                 <input
                     type="checkbox"
                     name="applyTDS"
-                    className="w-4 h-4 accent-zinc-900"
+                    // Updated: accent-zinc-900 -> accent-primary
+                    className="w-5 h-5 accent-primary cursor-pointer"
                     defaultChecked={initialData?.applyTDS || false}
                 />
-                <span className="text-sm font-medium text-zinc-700">
+                <span className="text-sm font-bold text-text">
                     Apply TDS (कर कट्टी लागू)
                 </span>
             </div>

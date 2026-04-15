@@ -9,21 +9,7 @@ import "@/models/InventoryItem";
 import PageHeader from "@/components/organisms/Accounting/Transactions/PageHeader";
 import FinanceLedger from "@/components/organisms/Accounting/Transactions/LedgerTable/FinanceLedger";
 
-type Variant = "default" | "success" | "warning" | "danger";
-
-const styles: Record<Variant, string> = {
-    default: "bg-white border-zinc-200 text-zinc-900",
-    success: "bg-emerald-50 border-emerald-100 text-emerald-900",
-    warning: "bg-amber-50 border-amber-100 text-amber-900",
-    danger: "bg-rose-50 border-rose-100 text-rose-900",
-};
-
-const iconStyles: Record<Variant, string> = {
-    default: "text-zinc-500",
-    success: "text-emerald-600",
-    warning: "text-amber-600",
-    danger: "text-rose-600",
-};
+export const dynamic = 'force-dynamic';
 
 export default async function FinancePage() {
     await dbConnect();
@@ -57,11 +43,12 @@ export default async function FinancePage() {
     const netBalance = totalIncome - totalExpense;
 
     return (
-        <div className="p-6 max-w-7xl mx-auto space-y-6 bg-zinc-50 min-h-screen">
+        // Wrapper: Removed bg-zinc-50 (handled by global layout) and adjusted spacing
+        <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 w-full transition-colors duration-500">
             <PageHeader accounts={accounts} />
 
             {/* SUMMARY GRID */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <SummaryCard
                     label="Available Balance"
                     value={netBalance}
@@ -94,6 +81,8 @@ export default async function FinancePage() {
    SUMMARY CARD COMPONENT
 ========================= */
 
+type Variant = "default" | "success" | "warning" | "danger";
+
 function SummaryCard({
     label,
     value,
@@ -105,18 +94,35 @@ function SummaryCard({
     variant?: Variant;
     prefix?: string;
 }) {
+    // 1. Map container backgrounds and borders to semantic tokens with opacity
+    const containerStyles: Record<Variant, string> = {
+        default: "bg-card border-border",
+        success: "bg-success/10 border-success/20",
+        warning: "bg-warning/10 border-warning/20",
+        danger: "bg-danger/10 border-danger/20",
+    };
+
+    // 2. Map the main value text colors to matching semantic tokens
+    const valueStyles: Record<Variant, string> = {
+        default: "text-text",
+        success: "text-success",
+        warning: "text-warning",
+        danger: "text-danger",
+    };
+
     return (
         <div
-            className={`p-4 rounded-2xl border shadow-sm flex flex-col gap-2 transition-all ${styles[variant]}`}
+            // 3. Upgraded structural classes: rounded-dashboard, shadow-glow
+            className={`p-6 rounded-dashboard border shadow-glow flex flex-col justify-center gap-2 transition-colors duration-500 ${containerStyles[variant]}`}
         >
-            {/* LABEL */}
-            <p className="text-[11px] font-bold uppercase tracking-widest text-zinc-500">
+            {/* LABEL: Upgraded to Micro-caps aesthetic with text-text-muted */}
+            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-text-muted">
                 {label}
             </p>
 
-            {/* VALUE */}
-            <p className="text-2xl font-bold tracking-tight">
-                <span className={iconStyles[variant]}>{prefix}</span>
+            {/* VALUE: Tinted based on variant, bumped to text-3xl for impact */}
+            <p className={`text-3xl font-black tracking-tight ${valueStyles[variant]}`}>
+                <span className="opacity-80 pr-1">{prefix}</span>
                 NPR {Number(value).toLocaleString("en-IN")}
             </p>
         </div>

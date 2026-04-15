@@ -26,29 +26,31 @@ export const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+    // Updated: bg-zinc-50 -> bg-bg (transitions smoothly)
+    <div className="flex min-h-screen items-center justify-center bg-bg px-4 transition-colors duration-500">
 
+      {/* Form Container: Updated to bg-card and border-border */}
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white border border-zinc-200 rounded-2xl shadow-sm overflow-hidden"
+        className="w-full max-w-md bg-card border border-border rounded-dashboard shadow-glow overflow-hidden"
       >
 
-        {/* HEADER */}
-        <div className="p-6 border-b border-zinc-100 text-center">
-          <h2 className="text-2xl font-black text-zinc-900 tracking-tight">
+        {/* HEADER: Updated text colors */}
+        <div className="p-8 border-b border-border text-center">
+          <h2 className="text-2xl font-black text-text tracking-tight">
             Admin Access
           </h2>
-          <p className="text-sm text-zinc-500 font-medium mt-1">
+          <p className="text-sm text-text-muted font-medium mt-1">
             Sign in to continue
           </p>
         </div>
 
         {/* BODY */}
-        <div className="p-6 flex flex-col gap-4">
+        <div className="p-8 flex flex-col gap-5">
 
-          {/* ERROR */}
+          {/* ERROR: Updated to use your 'danger' theme tokens */}
           {error && (
-            <div className="bg-rose-50 border border-rose-100 text-rose-600 text-sm font-bold p-3 rounded-xl text-center">
+            <div className="bg-danger/10 border border-danger/20 text-danger text-sm font-bold p-4 rounded-xl text-center">
               {error}
             </div>
           )}
@@ -58,6 +60,7 @@ export const Login = () => {
             type="email"
             id="email"
             required
+            className="text-text" // Ensure FormField internal text is themed
             onChange={(e) => setEmail(e.target.value)}
           />
 
@@ -66,12 +69,14 @@ export const Login = () => {
             type="password"
             id="password"
             required
+            className="text-text"
             onChange={(e) => setPassword(e.target.value)}
           />
 
+          {/* Button: Switched to your btn-primary utility or theme tokens */}
           <Button
             type="submit"
-            className="bg-zinc-900 hover:bg-zinc-800 text-white font-bold py-2.5 rounded-xl mt-2"
+            className="btn-primary w-full mt-2"
           >
             Sign In
           </Button>

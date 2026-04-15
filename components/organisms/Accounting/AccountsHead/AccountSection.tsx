@@ -6,52 +6,59 @@ import { AccountRow } from "./AccountRow";
 export const AccountSection = ({
   title,
   heads,
-  theme,
+  theme, // Now expects: "success" | "danger" | "primary" | "warning"
   subTypes,
   onAdd
 }: any) => {
-  const bgColors: any = {
-    emerald: "bg-emerald-50/30 dark:bg-emerald-950/20",
-    rose: "bg-rose-50/30 dark:bg-rose-950/20",
-    blue: "bg-blue-50/30 dark:bg-blue-950/20",
-    amber: "bg-amber-50/30 dark:bg-amber-950/20"
+  
+  // Mapping incoming themes to your global CSS variables with opacity washes
+  const bgStyles: any = {
+    success: "bg-success/5 border-success/20",
+    danger: "bg-danger/5 border-danger/20",
+    primary: "bg-primary/5 border-primary/20",
+    warning: "bg-warning/5 border-warning/20"
   };
 
-  const textColors: any = {
-    emerald: "text-emerald-500 dark:text-emerald-400",
-    rose: "text-rose-500 dark:text-rose-400",
-    blue: "text-blue-500 dark:text-blue-400",
-    amber: "text-amber-500 dark:text-amber-400"
+  const textStyles: any = {
+    success: "text-success",
+    danger: "text-danger",
+    primary: "text-primary",
+    warning: "text-warning"
   };
 
   return (
     <div
       className={`
-        ${bgColors[theme]}
-        p-8 rounded-[2.5rem]
-        border border-zinc-100 dark:border-zinc-800
-        h-full
+        ${bgStyles[theme]}
+        p-8 rounded-dashboard
+        border h-full
+        transition-all duration-500
       `}
     >
-      {/* HEADER */}
-      <div className="flex justify-between items-center mb-8">
+      {/* HEADER: Updated to text-text-muted with tracking-[0.2em] */}
+      <div className="flex justify-between items-center mb-10">
         <h2 className="
-          text-sm font-black uppercase tracking-[0.2em]
-          text-zinc-400 dark:text-zinc-500
+          text-[11px] font-black uppercase tracking-[0.2em]
+          text-text-muted opacity-80
         ">
           {title}
         </h2>
 
+        {/* Action Button: Styled as a micro-action that inherits the section theme */}
         <Button
           onClick={onAdd}
-          className="h-8 text-[10px] font-bold px-4"
+          className={`
+            h-8 text-[9px] font-black uppercase tracking-widest px-4 
+            border border-transparent hover:border-current
+            bg-card text-text shadow-sm hover:bg-shaded transition-all
+          `}
         >
           + Add Head
         </Button>
       </div>
 
-      {/* CONTENT */}
-      <div className="space-y-8">
+      {/* CONTENT FLOW */}
+      <div className="space-y-10">
         {subTypes.map((sub: string) => {
           const filtered = heads.filter((h: any) =>
             h.subType?.includes(sub)
@@ -60,18 +67,20 @@ export const AccountSection = ({
           if (!filtered.length) return null;
 
           return (
-            <div key={sub} className="space-y-3">
+            <div key={sub} className="space-y-4">
               
+              {/* SUB-CATEGORY TITLE: Micro-caps with semantic color */}
               <h3
                 className={`
-                  text-[10px] font-black uppercase tracking-widest px-2
-                  ${textColors[theme]}
+                  text-[10px] font-black uppercase tracking-[0.15em] px-1
+                  ${textStyles[theme]}
                 `}
               >
                 {sub}
               </h3>
 
-              <div className="space-y-2">
+              {/* ROWS LIST */}
+              <div className="space-y-2.5">
                 {filtered.map((head: any) => (
                   <AccountRow
                     key={head._id}

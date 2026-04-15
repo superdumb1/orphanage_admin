@@ -38,11 +38,16 @@ export const QuickMediaUpload = ({
     <form
       ref={formRef}
       action={formAction}
-      className="mt-auto pt-4 border-t border-border flex flex-col gap-2"
+      className="mt-auto pt-5 border-t border-border flex flex-col gap-3 transition-colors duration-500"
     >
-      {/* Error */}
+      {/* Label: Added OrphanAdmin Micro-caps style */}
+      <label className="text-[9px] uppercase font-black text-text-muted tracking-[0.2em] px-1 opacity-70">
+        {type === "documents" ? "📁 Attach Paperwork" : "🖼️ Add to Gallery"}
+      </label>
+
+      {/* Error: Enhanced with OrphanAdmin danger styling */}
       {state?.error && (
-        <p className="text-[10px] bg-danger/10 text-danger p-1 px-2 rounded font-bold border border-danger/30">
+        <p className="text-[10px] bg-danger/10 text-danger p-2 px-3 rounded-xl font-bold border border-danger/20 animate-in fade-in slide-in-from-top-1">
           ⚠️ {state.error}
         </p>
       )}
@@ -51,10 +56,10 @@ export const QuickMediaUpload = ({
       <input type="hidden" name="childId" value={childId} />
       <input type="hidden" name="uploadType" value={type} />
 
-      {/* Upload Row */}
-      <div className="flex items-center gap-2 bg-shaded p-1.5 rounded-lg border border-border">
+      {/* Upload Row: Refined background and borders */}
+      <div className="flex items-center gap-2 bg-shaded/80 p-1.5 rounded-xl border border-border hover:border-border/80 transition-all group">
 
-        {/* File Input */}
+        {/* File Input: Customized 'file:' button logic */}
         <input
           type="file"
           name="files"
@@ -62,27 +67,32 @@ export const QuickMediaUpload = ({
           accept={accept}
           required
           className={`
-            flex-1 text-xs text-text-muted
-            cursor-pointer
+            flex-1 text-[11px] font-medium text-text-muted
+            cursor-pointer outline-none
 
-            file:mr-2 file:py-1.5 file:px-3
+            file:mr-3 file:py-1.5 file:px-4
             file:rounded-lg file:border-0
-            file:text-xs file:font-bold
+            file:text-[10px] file:font-black file:uppercase file:tracking-widest
 
-            file:bg-primary/10 file:text-primary
-            hover:file:bg-primary/20
+            file:bg-bg file:text-text-muted
+            hover:file:bg-primary/10 hover:file:text-primary
+            file:cursor-pointer
+            file:transition-all
 
             transition-all
           `}
         />
 
-        {/* Button */}
+        {/* Action Button */}
         <button
           type="submit"
           disabled={isPending}
-          className="btn-primary text-xs px-4 py-1.5"
+          className={`
+            btn-primary text-[10px] uppercase tracking-widest px-5 py-2 h-9
+            ${isPending ? "opacity-50 grayscale cursor-not-allowed" : "active:scale-95"}
+          `}
         >
-          {isPending ? "Uploading..." : "Quick Upload"}
+          {isPending ? "Syncing..." : "Upload"}
         </button>
       </div>
     </form>

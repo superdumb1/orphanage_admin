@@ -27,31 +27,36 @@ export default async function StaffPage() {
     const pfCitCount = staffMembers.filter(s => s.ssf?.type === "PF_CIT").length;
     const activeCount = staffMembers.length;
 
-
     return (
-        <div className="flex flex-col gap-8 pb-10">
+        <div className="flex flex-col gap-8 pb-10 transition-colors duration-500">
        
-            <StaffHomeTop/>
-            <Stats activeCount={activeCount} totalMonthlyPayroll={totalMonthlyPayroll} ssfCount={ssfCount} pfCitCount={pfCitCount} />
+            <StaffHomeTop />
+            
+            <Stats 
+                activeCount={activeCount} 
+                totalMonthlyPayroll={totalMonthlyPayroll} 
+                ssfCount={ssfCount} 
+                pfCitCount={pfCitCount} 
+            />
 
-            <div className="bg-white rounded-xl shadow-sm border border-zinc-200 overflow-hidden">
+            <div className="bg-card rounded-dashboard shadow-glow border border-border overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="w-full text-left text-sm text-zinc-600 whitespace-nowrap">
-                        <thead className="bg-zinc-50 border-b border-zinc-200 text-zinc-900">
+                    <table className="w-full text-left text-sm text-text-muted whitespace-nowrap">
+                        <thead className="bg-shaded border-b border-border text-text">
                             <tr>
-                                <th className="p-4 font-bold tracking-wide">Employee Details</th>
-                                <th className="p-4 font-bold tracking-wide">Designation & Dept</th>
-                                <th className="p-4 font-bold tracking-wide">Employment</th>
-                                <th className="p-4 font-bold tracking-wide text-right">Gross Salary (NPR)</th>
-                                <th className="p-4 font-bold tracking-wide text-center">Actions</th>
+                                <th className="p-5 font-black uppercase tracking-widest text-[10px]">Employee Details</th>
+                                <th className="p-5 font-black uppercase tracking-widest text-[10px]">Designation & Dept</th>
+                                <th className="p-5 font-black uppercase tracking-widest text-[10px]">Employment</th>
+                                <th className="p-5 font-black uppercase tracking-widest text-[10px] text-right">Gross Salary (NPR)</th>
+                                <th className="p-5 font-black uppercase tracking-widest text-[10px] text-center">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-zinc-100">
+                        <tbody className="divide-y divide-border">
                             {staffMembers.length === 0 ? (
                                 <tr>
-                                    <td colSpan={5} className="p-8 text-center text-zinc-500">
-                                        <p className="text-lg mb-1">No employees found.</p>
-                                        <p className="text-sm">Click "Add Employee" to create your first staff record.</p>
+                                    <td colSpan={5} className="p-12 text-center text-text-muted">
+                                        <p className="text-xl font-bold text-text mb-1">No employees found.</p>
+                                        <p className="text-sm opacity-70">Click "Add Employee" to create your first staff record.</p>
                                     </td>
                                 </tr>
                             ) : (
@@ -68,90 +73,87 @@ export default async function StaffPage() {
 }
 
 const Stats = ({ activeCount, totalMonthlyPayroll, ssfCount, pfCitCount }: { activeCount: number, totalMonthlyPayroll: number, ssfCount: number, pfCitCount: number }) => {
-    return (<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatBox
-            label="Total Employees"
-            subLabel="कुल कर्मचारी"
-            value={activeCount}
-            icon={<span className="text-2xl">👥</span>}
-            color="text-blue-600"
-        />
-        <StatBox
-            label="Monthly Gross Payroll"
-            subLabel="मासिक कुल तलब"
-            value={`Rs. ${totalMonthlyPayroll.toLocaleString()}`}
-            icon={<span className="text-2xl">💵</span>}
-            color="text-emerald-600"
-        />
-        <StatBox
-            label="SSF Enrolled"
-            subLabel="SSF भर्ना (MANDATORY)"
-            value={ssfCount}
-            icon={<span className="text-2xl">🛡️</span>}
-            color="text-purple-600"
-        />
-        <StatBox
-            label="PF/CIT Enrolled"
-            subLabel="संचय कोष / नागरिक लगानी कोष"
-            value={pfCitCount}
-            icon={<span className="text-2xl">🏦</span>}
-            color="text-orange-600"
-        />
-    </div>)
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <StatBox
+                label="Total Employees"
+                subLabel="कुल कर्मचारी"
+                value={activeCount}
+                icon={<span className="text-2xl">👥</span>}
+            />
+            <StatBox
+                label="Monthly Gross Payroll"
+                subLabel="मासिक कुल तलब"
+                value={`Rs. ${totalMonthlyPayroll.toLocaleString()}`}
+                icon={<span className="text-2xl">💵</span>}
+            />
+            <StatBox
+                label="SSF Enrolled"
+                subLabel="SSF भर्ना"
+                value={ssfCount}
+                icon={<span className="text-2xl">🛡️</span>}
+            />
+            <StatBox
+                label="PF/CIT Enrolled"
+                subLabel="संचय कोष / नागरिक लगानी"
+                value={pfCitCount}
+                icon={<span className="text-2xl">🏦</span>}
+            />
+        </div>
+    )
 }
 
 const MemberCardRow = ({ person }: { person: any }) => {
     return (
-        <tr key={person._id.toString()} className="hover:bg-zinc-50/80 transition-colors group">
-
+        <tr className="hover:bg-shaded/50 transition-colors group">
             <td className="p-4 flex items-center gap-4">
                 {person.profileImageUrl ? (
-                    <img src={person.profileImageUrl} alt="Profile" className="w-10 h-10 rounded-full object-cover border border-zinc-200 shadow-sm" />
+                    <img src={person.profileImageUrl} alt="Profile" className="w-10 h-10 rounded-full object-cover border border-border shadow-sm" />
                 ) : (
-                    <div className="w-10 h-10 rounded-full bg-rose-50 text-rose-700 flex items-center justify-center font-bold text-sm border border-rose-100">
+                    <div className="w-10 h-10 rounded-full bg-danger/10 text-danger flex items-center justify-center font-black text-xs border border-danger/20">
                         {person.fullName.charAt(0).toUpperCase()}
                     </div>
                 )}
                 <div className="flex flex-col">
-                    <span className="font-bold text-zinc-900">
-                        {person.fullName} {person.nepaliName && <span className="font-normal text-zinc-400 text-xs ml-1">({person.nepaliName})</span>}
+                    <span className="font-bold text-text group-hover:text-primary transition-colors">
+                        {person.fullName} 
+                        {person.nepaliName && <span className="font-normal text-text-muted text-[10px] ml-2 italic">({person.nepaliName})</span>}
                     </span>
-                    <span className="text-xs text-zinc-500">{person.email} • {person.phone}</span>
+                    <span className="text-[11px] text-text-muted/70">{person.email} • {person.phone}</span>
                 </div>
             </td>
 
             <td className="p-4">
                 <div className="flex flex-col">
-                    <span className="font-medium text-zinc-900">{person.designation || 'Not Assigned'}</span>
-                    <span className="text-xs text-zinc-500">{person.department?.replace("_", " ") || 'General'}</span>
+                    <span className="font-bold text-text/90 text-xs">{person.designation || 'Not Assigned'}</span>
+                    <span className="text-[10px] font-medium text-text-muted uppercase tracking-wider">{person.department?.replace("_", " ") || 'General'}</span>
                 </div>
             </td>
 
             <td className="p-4">
-                <div className="flex flex-col gap-1 items-start">
-                    <span className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 text-[10px] font-bold uppercase tracking-wider border border-blue-100">
+                <div className="flex flex-col gap-1.5 items-start">
+                    <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">
                         {person.employmentType?.replace("_", " ") || 'ACTIVE'}
                     </span>
                     {person.ssf?.type === "SSF" && (
-                        <span className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[10px] font-bold border border-purple-100">SSF Enrolled</span>
+                        <span className="px-2 py-0.5 rounded-md bg-accent/10 text-accent text-[10px] font-black border border-accent/20 uppercase tracking-tighter">SSF Enrolled</span>
                     )}
                 </div>
             </td>
 
             <td className="p-4 text-right">
-                <span className="font-bold text-emerald-700">
-                    {person.grossSalary > 0 ? person.grossSalary.toLocaleString() : 'Not Set'}
+                <span className="font-black text-success tabular-nums">
+                    {person.grossSalary > 0 ? `Rs. ${person.grossSalary.toLocaleString()}` : 'Not Set'}
                 </span>
             </td>
 
             <td className="p-4 text-center">
                 <Link href={`/staff/${person._id.toString()}`}>
-                    <Button variant="ghost" className="text-xs text-zinc-600 border border-zinc-200 hover:bg-zinc-100 hover:text-zinc-900 px-3">
+                    <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-text-muted border border-border hover:bg-bg hover:text-text px-4 py-1.5 transition-all">
                         Manage
                     </Button>
                 </Link>
             </td>
         </tr>
     )
-
 }

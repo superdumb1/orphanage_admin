@@ -15,25 +15,28 @@ export default function InventoryDashboard({
     const [manageModalItem, setManageModalItem] = useState<any | null>(null);
 
     return (
-        <div className="space-y-6">
-            {/* Header */}
-            <div className="flex justify-end bg-white dark:bg-zinc-900 p-4 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm">
+        <div className="space-y-8 transition-colors duration-500">
+            
+            {/* ACTION HEADER: bg-white -> bg-card, border-zinc -> border-border */}
+            <div className="flex justify-end bg-card p-5 rounded-dashboard border border-border shadow-glow">
+                {/* Button: Replaced manual blue styles with global btn-primary utility */}
                 <Button
                     onClick={() => setIsAddModalOpen(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 shadow-md"
+                    className="btn-primary"
                 >
                     + Register New Item
                 </Button>
             </div>
 
             {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {items.length === 0 ? (
-                    <div className="col-span-full p-12 text-center bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 shadow-sm rounded-3xl">
-                        <p className="text-zinc-500 dark:text-zinc-400 font-medium">
+                    // EMPTY STATE: bg-zinc -> bg-shaded, border-zinc -> border-border
+                    <div className="col-span-full py-20 text-center bg-shaded/50 border border-dashed border-border rounded-dashboard shadow-inner">
+                        <p className="text-text-muted font-bold text-lg tracking-tight">
                             Your inventory catalog is empty.
                         </p>
-                        <p className="text-xs text-zinc-400 dark:text-zinc-500 mt-2">
+                        <p className="text-[10px] uppercase tracking-[0.2em] font-black text-text-muted opacity-60 mt-2">
                             Click "Register New Item" to start building your warehouse.
                         </p>
                     </div>
@@ -41,46 +44,51 @@ export default function InventoryDashboard({
                     items.map((item) => (
                         <div
                             key={item._id}
-                            className="bg-white dark:bg-zinc-900 p-5 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm flex flex-col justify-between hover:shadow-md hover:-translate-y-0.5 transition-all"
+                            // CARD: bg-white -> bg-card, border-zinc -> border-border, added card-hover
+                            className="bg-card p-6 rounded-dashboard border border-border shadow-sm flex flex-col justify-between card-hover transition-all duration-300 group"
                         >
                             {/* Top */}
                             <div>
-                                <div className="flex justify-between items-start mb-2">
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-blue-500 bg-blue-50 dark:bg-blue-950/40 px-2 py-1 rounded-md">
+                                <div className="flex justify-between items-start mb-4">
+                                    {/* CATEGORY BADGE: blue-500 -> primary */}
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-lg">
                                         {item.category}
                                     </span>
 
+                                    {/* LOW STOCK BADGE: rose-600 -> danger */}
                                     {item.currentStock <= item.minimumStockLevel && (
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-rose-600 bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900 px-2 py-1 rounded-md animate-pulse">
-                                            Low Stock
+                                        <span className="text-[9px] font-black uppercase tracking-widest text-danger bg-danger/10 border border-danger/20 px-2.5 py-1 rounded-lg animate-pulse">
+                                            ⚠️ Low Stock
                                         </span>
                                     )}
                                 </div>
 
-                                <h3 className="font-bold text-zinc-900 dark:text-zinc-100 text-lg">
+                                <h3 className="font-black text-text text-xl tracking-tight group-hover:text-primary transition-colors">
                                     {item.name}
                                 </h3>
                             </div>
 
                             {/* Bottom */}
-                            <div className="mt-6 flex items-end justify-between border-t border-zinc-100 dark:border-zinc-800 pt-4">
+                            <div className="mt-8 flex items-end justify-between border-t border-border/50 pt-5">
                                 <div>
-                                    <p className="text-[10px] text-zinc-400 dark:text-zinc-500 font-bold uppercase">
+                                    {/* MICRO-CAPS typography for labels */}
+                                    <p className="text-[10px] text-text-muted font-black uppercase tracking-[0.15em] opacity-80">
                                         Current Stock
                                     </p>
 
-                                    <p className="font-black font-mono text-3xl text-zinc-800 dark:text-zinc-100 tracking-tighter">
+                                    <p className="font-black font-mono text-3xl text-text tracking-tighter mt-1">
                                         {item.currentStock}{" "}
-                                        <span className="text-sm text-zinc-500 dark:text-zinc-400 tracking-normal">
+                                        <span className="text-sm text-text-muted font-sans tracking-normal opacity-60">
                                             {item.unit}
                                         </span>
                                     </p>
                                 </div>
 
+                                {/* MANAGE BUTTON: Upgraded to a themed ghost variant */}
                                 <Button
                                     variant="ghost"
                                     onClick={() => setManageModalItem(item)}
-                                    className="text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900 border border-blue-100 dark:border-blue-900 px-4 py-2 shadow-sm rounded-xl"
+                                    className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 hover:bg-primary/20 border border-primary/20 px-4 h-9 shadow-sm rounded-xl transition-all active:scale-95"
                                 >
                                     Manage
                                 </Button>
@@ -90,7 +98,7 @@ export default function InventoryDashboard({
                 )}
             </div>
 
-            {/* Modals */}
+            {/* Modals - Already themed in previous steps */}
             <AddInventoryModal
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}

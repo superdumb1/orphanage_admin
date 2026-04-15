@@ -32,7 +32,18 @@ const SSFPFcontri = ({ initialData }: { initialData?: StaffFormInputs }) => {
   }, [type]);
 
   return (
-    <div className="p-6 flex flex-col gap-6 bg-white rounded-2xl border border-zinc-200">
+    // Updated bg-white -> bg-card, border-zinc-200 -> border-border
+    <div className="p-8 flex flex-col gap-8 bg-card rounded-dashboard border border-border shadow-glow transition-colors duration-500">
+
+      {/* HEADER: Added a small header section for consistency with your other cards */}
+      <div className="border-b border-border pb-4">
+        <h2 className="text-lg font-black text-text tracking-tight uppercase">
+          Retirement Scheme
+        </h2>
+        <p className="text-xs text-text-muted font-medium mt-1">
+          Configure SSF, EPF, and CIT contribution percentages
+        </p>
+      </div>
 
       {/* TOP SELECT */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -42,7 +53,7 @@ const SSFPFcontri = ({ initialData }: { initialData?: StaffFormInputs }) => {
           value={type}
           onChange={(e) => setType(e.target.value)}
           options={[
-            { value: "SSF", label: "SSF" },
+            { value: "SSF", label: "SSF (Social Security)" },
             { value: "PF_CIT", label: "EPF + CIT" },
             { value: "NONE", label: "None" },
           ]}
@@ -55,10 +66,12 @@ const SSFPFcontri = ({ initialData }: { initialData?: StaffFormInputs }) => {
           required={!isNone}
           pattern={isSSF ? "[0-9]{11}" : undefined}
           defaultValue={initialData?.ssf?.idNumber}
+          // Passing standard text color to internal FormField
+          className="text-text"
         />
       </div>
 
-      {/* CONTRIBUTIONS (THEMED FIELDS) */}
+      {/* CONTRIBUTIONS */}
       <div className="grid grid-cols-2 gap-6">
         <FormField
           label="Employee Contribution (%)"
@@ -68,6 +81,8 @@ const SSFPFcontri = ({ initialData }: { initialData?: StaffFormInputs }) => {
           onChange={(e: any) => setEmpContri(Number(e.target.value))}
           disabled={isNone}
           readOnly={isSSF}
+          // Themed "Locked" appearance for SSF fixed values
+          className={`${isSSF ? "bg-shaded cursor-not-allowed opacity-80" : "bg-bg"} text-text`}
         />
 
         <FormField
@@ -78,6 +93,8 @@ const SSFPFcontri = ({ initialData }: { initialData?: StaffFormInputs }) => {
           onChange={(e: any) => setEmprContri(Number(e.target.value))}
           disabled={isNone}
           readOnly={isSSF}
+          // Themed "Locked" appearance
+          className={`${isSSF ? "bg-shaded cursor-not-allowed opacity-80" : "bg-bg"} text-text`}
         />
       </div>
 

@@ -87,37 +87,37 @@ export default function ReportCenter({ transactions, accounts }: any) {
     };
 
     return (
-        <div className="bg-white border border-zinc-200 rounded-3xl shadow-sm mb-6 overflow-hidden">
+        // Wrapper: bg-white -> bg-card, border-zinc-200 -> border-border, rounded-3xl -> rounded-dashboard
+        <div className="bg-card border border-border rounded-dashboard shadow-glow mb-8 overflow-hidden transition-colors duration-500">
 
-            {/* HEADER */}
-            <div className="p-6 md:p-8 border-b border-zinc-100 flex justify-between items-start gap-6">
+            {/* HEADER: border-zinc-100 -> border-border */}
+            <div className="p-6 md:p-8 border-b border-border flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-colors">
 
                 <div>
-                    <h2 className="text-xl font-black text-zinc-900 tracking-tighter">
+                    {/* Typography: text-zinc-900 -> text-text */}
+                    <h2 className="text-xl md:text-2xl font-black text-text tracking-tighter">
                         Report Command Center
                     </h2>
 
-                    <p className="text-xs text-zinc-500 font-medium mt-1">
+                    {/* Subtitle: text-zinc-500 -> text-text-muted */}
+                    <p className="text-sm text-text-muted font-medium mt-1">
                         {filter.timeframe === "CUSTOM" && filter.startDate
                             ? `Selected Range: ${filter.startDate} → ${filter.endDate}`
                             : "Generate structured financial audit reports"}
                     </p>
                 </div>
 
+                {/* Button: Replaced hardcoded zinc classes with btn-primary */}
                 <Button
                     onClick={handleGenerate}
-                    className="
-                        bg-zinc-900 text-white font-black px-8 h-11
-                        rounded-xl shadow-sm
-                        hover:bg-zinc-800 transition
-                    "
+                    className="btn-primary w-full md:w-auto px-10 h-11 shadow-sm shrink-0"
                 >
-                    Generate
+                    Generate Report
                 </Button>
             </div>
 
-            {/* COMMAND BAR */}
-            <div className="p-6 md:p-8 bg-zinc-50 border-b border-zinc-100">
+            {/* COMMAND BAR WRAPPER: bg-zinc-50 -> bg-shaded/50 */}
+            <div className="p-6 md:p-8 bg-shaded/50 transition-colors">
                 <ReportCommandBar
                     filter={filter}
                     setFilter={setFilter}

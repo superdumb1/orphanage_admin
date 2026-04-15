@@ -1,114 +1,82 @@
 "use client";
-import React, { useActionState, useEffect } from "react";
+import React, { useActionState } from "react";
 import { FormField } from "@/components/molecules/FormField";
 import { SelectField } from "@/components/molecules/SelectField";
 import { Button } from "@/components/atoms/Button";
-import { addInventoryItem } from "@/app/actions/inventory";
+import { updateGuardian } from "@/app/actions/guardian";
+import Link from "next/link";
 
-export const AddInventoryModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
-    isOpen,
-    onClose
-}) => {
-    const [state, formAction, isPending] = useActionState(addInventoryItem as any, {
-        error: null,
-        success: false
-    });
-
-    useEffect(() => {
-        if (state?.success) onClose();
-    }, [state?.success, onClose]);
-
-    if (!isOpen) return null;
+export default function EditGuardianForm({ guardian }: { guardian: any }) {
+    // Bind the ID to the action for the server update
+    const updateWithId = updateGuardian.bind(null, guardian._id);
+    const [state, formAction, isPending] = useActionState(updateWithId as any, { error: null, success: false });
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
-            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl flex flex-col max-h-[90vh] overflow-hidden border border-zinc-200">
-
-                {/* HEADER */}
-                <div className="p-6 md:p-8 border-b border-zinc-100 bg-zinc-50 shrink-0 flex justify-between items-center">
-                    <div>
-                        <h2 className="font-black text-xl text-zinc-900 tracking-tight">
-                            Add Inventory Item
-                        </h2>
-                        <p className="text-xs text-zinc-500">
-                            Register physical stock or consumables
-                        </p>
-                    </div>
-
-                    <button onClick={onClose} className="text-zinc-400 hover:text-zinc-900">
-                        ✕
-                    </button>
+        <form 
+            action={formAction} 
+            className="bg-card p-8 md:p-10 rounded-dashboard shadow-glow border border-border flex flex-col gap-10 transition-all duration-500"
+        >
+            {/* ERROR ALERT: Swapped rose/zinc for danger semantic tokens */}
+            {state?.error && (
+                <div className="bg-danger/10 border border-danger/20 text-danger p-5 rounded-2xl text-xs font-black uppercase tracking-widest animate-in fade-in slide-in-from-top-2">
+                    ⚠️ Error: {state.error}
                 </div>
+            )}
 
-                <form action={formAction} className="flex flex-col overflow-hidden">
-
-                    <div className="p-6 md:p-8 flex flex-col gap-6 overflow-y-auto">
-
-                        {state?.error && (
-                            <p className="text-xs text-rose-600 bg-rose-50 p-3 rounded-xl border border-rose-100 font-bold">
-                                ⚠ {state.error}
-                            </p>
-                        )}
-
-                        <FormField
-                            label="Item Name *"
-                            name="name"
-                            required
-                            placeholder="e.g. Rice, Blanket"
-                        />
-
-                        <div className="grid grid-cols-2 gap-6">
-
-                            <SelectField
-                                label="Category *"
-                                name="category"
-                                required
-                                options={[
-                                    { label: "Food & Groceries", value: "FOOD" },
-                                    { label: "Clothing & Bedding", value: "CLOTHING" },
-                                    { label: "Education Supplies", value: "EDUCATION" },
-                                    { label: "Medical & Hygiene", value: "MEDICAL" },
-                                    { label: "Maintenance", value: "MAINTENANCE" }
-                                ]}
-                            />
-
-                            <FormField
-                                label="Unit *"
-                                name="unit"
-                                required
-                                placeholder="kg, pcs, liters"
-                            />
-                        </div>
-
-                        <div className="bg-zinc-50 p-5 rounded-2xl border border-zinc-100">
-                            <FormField
-                                label="Low Stock Alert Level"
-                                name="minimumStockLevel"
-                                type="number"
-                                placeholder="e.g. 10"
-                            />
-                            <p className="text-[10px] text-zinc-400 mt-2 italic">
-                                Alert triggers when stock goes below this level.
-                            </p>
-                        </div>
-                    </div>
-
-                    {/* FOOTER */}
-                    <div className="flex justify-end gap-3 p-6 border-t border-zinc-100 bg-white shrink-0">
-                        <Button type="button" variant="ghost" onClick={onClose}>
-                            Cancel
-                        </Button>
-
-                        <Button
-                            type="submit"
-                            disabled={isPending}
-                            className="bg-zinc-900 text-white font-bold px-10"
-                        >
-                            {isPending ? "Saving..." : "Add Item"}
-                        </Button>
-                    </div>
-                </form>
+            {/* SECTION: Personal Details */}
+            <div className="space-y-6">
+                <h3 className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em] border-b border-border/50 pb-3 opacity-70">
+                    Dossier: Personal Details
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <FormField label="Primary Name *" name="primaryName" defaultValue={guardian.primaryName} required />
+                    <FormField label="Spouse / Partner Name" name="secondaryName" defaultValue={guardian.secondaryName} />
+                    <FormField label="Email *" name="email" type="email" defaultValue={guardian.email} required />
+                    <FormField label="Phone *" name="phone" defaultValue={guardian.phone} required />
+                </div>
             </div>
-        </div>
+
+            {/* SECTION: Vetting Details */}
+            <div className="space-y-6">
+                <h3 className="text-[10px] font-black text-text-muted uppercase tracking-[0.3em] border-b border-border/50 pb-3 opacity-70">
+                    Vetting & Financial Parameters
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <FormField label="Address *" name="address" defaultValue={guardian.address} required />
+                    <FormField label="Occupation" name="occupation" defaultValue={guardian.occupation} />
+                    <FormField label="Annual Income (NPR)" name="annualIncome" type="number" defaultValue={guardian.annualIncome} />
+                    
+                    <SelectField 
+                        label="Applicant Type *" 
+                        name="type" 
+                        defaultValue={guardian.type}
+                        options={[
+                            { label: 'Foster Parent', value: 'FOSTER' },
+                            { label: 'Adoptive Parent', value: 'ADOPTIVE' },
+                            { label: 'Financial Sponsor', value: 'SPONSOR' }
+                        ]}
+                    />
+                </div>
+            </div>
+
+            {/* ACTIONS: Synced with OrphanAdmin button logic */}
+            <div className="flex justify-end items-center gap-6 pt-8 border-t border-border/50 mt-4">
+                <Link 
+                    href={`/guardians/${guardian._id}`} 
+                    className="text-[10px] font-black text-text-muted hover:text-text uppercase tracking-[0.2em] transition-all"
+                >
+                    Discard Changes
+                </Link>
+                
+                <Button 
+                    type="submit" 
+                    disabled={isPending} 
+                    variant="primary"
+                    className="px-12 h-12 shadow-glow"
+                >
+                    {isPending ? "Syncing Record..." : "Update Dossier"}
+                </Button>
+            </div>
+        </form>
     );
-};
+}
