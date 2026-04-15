@@ -18,25 +18,41 @@ export const ImageUploadField = ({ defaultValue }: { defaultValue?: string }) =>
   };
 
   return (
-    <div className="flex flex-col gap-2 w-full">
-      <label className="text-sm font-medium text-zinc-700">
+    <div className="flex flex-col gap-3 w-full">
+
+      {/* Label */}
+      <label className="text-sm font-medium text-text">
         Profile Photo
       </label>
 
+      {/* Preview */}
       {preview && (
         <img
           src={preview}
           alt="Profile preview"
-          className="w-16 h-16 rounded-full object-cover border border-zinc-200"
+          className="w-16 h-16 rounded-full object-cover border border-border shadow-sm"
         />
       )}
 
+      {/* File Input */}
       <input
         type="file"
         name="photo"
         accept="image/*"
         onChange={handleChange}
-        className="w-full text-sm text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-rose-50 file:text-rose-700 hover:file:bg-rose-100 transition"
+        className={`
+          w-full text-sm text-text-muted
+          cursor-pointer
+
+          file:mr-4 file:py-2 file:px-4
+          file:rounded-xl file:border-0
+          file:text-sm file:font-medium
+
+          file:bg-primary/10 file:text-primary
+          hover:file:bg-primary/20
+
+          transition-all duration-200
+        `}
       />
     </div>
   );

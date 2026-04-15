@@ -1,6 +1,5 @@
 "use client";
 import React, { useState } from "react";
-import Link from "next/link";
 import { Button } from "@/components/atoms/Button";
 import { EditChildModal } from "./EditChildModal";
 import { ViewChildModal } from "./ViewChildModal";
@@ -25,63 +24,68 @@ export default function InteractiveChildrenTable({ children }: { children: any[]
 
     return (
         <>
-            <div className="bg-white rounded-[2rem] shadow-sm border border-zinc-200 overflow-hidden">
+            {/* ✨ Themed Container */}
+            <div className="bg-card rounded-[2rem] shadow-sm border border-border overflow-hidden transition-colors duration-500">
                 <table className="w-full text-left border-collapse">
                     <TableHead />
-                    <tbody className="divide-y divide-zinc-100">
+                    <tbody className="divide-y divide-border">
                         {children.map((child) => (
-                            <tr key={child._id} className="hover:bg-zinc-50/80 transition-colors group">
+                            <tr key={child._id} className="hover:bg-shaded/80 transition-colors group">
 
-                                {/* 1. Name & Avatar (With safe fallback) */}
+                                {/* 1. Name & Avatar */}
                                 <td className="p-4">
                                     <div className="flex items-center gap-3">
                                         {child.profileImageUrl ? (
                                             <img
                                                 src={child.profileImageUrl}
                                                 alt={`${child.firstName} ${child.lastName}`}
-                                                className="w-10 h-10 rounded-full object-cover border border-zinc-200 shadow-sm shrink-0"
+                                                className="w-10 h-10 rounded-full object-cover border border-border shadow-sm shrink-0"
                                             />
                                         ) : (
-                                            <div className="w-10 h-10 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 text-sm font-black shadow-sm shrink-0">
+                                            /* ✨ Themed Avatar Fallback using primary with opacity */
+                                            <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-primary text-sm font-black shadow-sm shrink-0">
                                                 {child.firstName?.charAt(0) || "👤"}
                                             </div>
                                         )}
-                                        <span className="font-bold text-zinc-900 group-hover:text-blue-600 transition-colors">
+                                        {/* ✨ Themed Text */}
+                                        <span className="font-bold text-text group-hover:text-primary transition-colors">
                                             {child.firstName} {child.lastName}
                                         </span>
                                     </div>
                                 </td>
 
-                                {/* 2. Status Badge (Fixed p4 typo to p-4) */}
+                                {/* 2. Status Badge */}
                                 <td className="p-4">
                                     <ChildStatusBadge status={child.status} />
                                 </td>
 
                                 {/* 3. Admitted Date */}
-                                <td className="p-4 text-xs font-medium text-zinc-600">
+                                <td className="p-4 text-xs font-medium text-text-muted">
                                     {formatDate(child.admissionDate)}
                                 </td>
 
                                 {/* 4. Date of Birth */}
-                                <td className="p-4 text-xs font-medium text-zinc-600">
+                                <td className="p-4 text-xs font-medium text-text-muted">
                                     {formatDate(child.dateOfBirth)}
                                 </td>
 
                                 {/* 5. Actions */}
                                 <td className="p-4">
                                     <div className="flex items-center justify-end gap-2">
+                                        {/* ✨ Themed Edit Button (Warning/Amber tint on hover) */}
                                         <Button
                                             variant="ghost"
                                             onClick={() => setEditingChild(child)}
-                                            className="text-xs font-bold text-zinc-500 bg-white hover:bg-amber-50 hover:text-amber-700 rounded-xl px-3 border border-zinc-200 shadow-sm hover:border-amber-200 transition-all"
+                                            className="text-xs font-bold text-text-muted bg-card hover:bg-warning/10 hover:text-warning rounded-xl px-3 border border-border shadow-sm hover:border-warning/30 transition-all"
                                         >
                                             ✏️ Edit
                                         </Button>
 
+                                        {/* ✨ Themed View Button (Primary/Blue tint on hover) */}
                                         <Button
                                             variant="ghost"
-                                            onClick={() => setViewingChild(child)} // ✨ Trigger View Modal
-                                            className="text-xs font-bold text-zinc-500 bg-white hover:bg-blue-50 hover:text-blue-700 rounded-xl px-3 border border-zinc-200 shadow-sm hover:border-blue-200 transition-all"
+                                            onClick={() => setViewingChild(child)}
+                                            className="text-xs font-bold text-text-muted bg-card hover:bg-primary/10 hover:text-primary rounded-xl px-3 border border-border shadow-sm hover:border-primary/30 transition-all"
                                         >
                                             👁️ View
                                         </Button>
@@ -106,16 +110,17 @@ export default function InteractiveChildrenTable({ children }: { children: any[]
     );
 }
 
+// ✨ Status Badge using your semantic State Colors
 function ChildStatusBadge({ status }: { status: string }) {
     const statusMap: Record<string, { color: string, icon: string, label: string }> = {
-        IN_CARE: { color: "bg-blue-50 text-blue-700 border-blue-200", icon: "🏠", label: "In Care" },
-        ADOPTED: { color: "bg-emerald-50 text-emerald-700 border-emerald-200", icon: "🕊️", label: "Adopted" },
-        FOSTERED: { color: "bg-purple-50 text-purple-700 border-purple-200", icon: "🤝", label: "Fostered" },
-        GRADUATED: { color: "bg-amber-50 text-amber-700 border-amber-200", icon: "🎓", label: "Graduated" }
+        IN_CARE: { color: "bg-primary/10 text-primary border-primary/20", icon: "🏠", label: "In Care" },
+        ADOPTED: { color: "bg-success/10 text-success border-success/20", icon: "🕊️", label: "Adopted" },
+        FOSTERED: { color: "bg-accent/10 text-accent border-accent/20", icon: "🤝", label: "Fostered" },
+        GRADUATED: { color: "bg-warning/10 text-warning border-warning/20", icon: "🎓", label: "Graduated" }
     };
 
     const config = statusMap[status] || {
-        color: "bg-zinc-50 text-zinc-600 border-zinc-200",
+        color: "bg-shaded text-text-muted border-border",
         icon: "📌",
         label: status ? status.replace("_", " ") : "UNKNOWN"
     };
@@ -128,25 +133,27 @@ function ChildStatusBadge({ status }: { status: string }) {
     );
 }
 
+// ✨ Empty State using semantic colors
 function EmptyChildrenState() {
     return (
-        <div className="bg-white rounded-[2rem] shadow-sm border border-zinc-200 overflow-hidden p-16 text-center flex flex-col items-center gap-3">
-            <div className="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center text-3xl shadow-sm border border-zinc-200">
+        <div className="bg-card rounded-[2rem] shadow-sm border border-border overflow-hidden p-16 text-center flex flex-col items-center gap-3 transition-colors duration-500">
+            <div className="w-16 h-16 bg-shaded rounded-full flex items-center justify-center text-3xl shadow-sm border border-border text-text-muted">
                 🧸
             </div>
             <div>
-                <p className="text-zinc-900 font-bold">No children registered yet.</p>
-                <p className="text-sm text-zinc-500 mt-1">Click "Admit Child" to create the first profile.</p>
+                <p className="text-text font-bold">No children registered yet.</p>
+                <p className="text-sm text-text-muted mt-1">Click "Admit Child" to create the first profile.</p>
             </div>
         </div>
     );
 }
 
+// ✨ Table Head using shaded backgrounds and muted text
 const TableHead = () => {
     return (
         <thead>
-            <tr className="bg-zinc-50/50 border-b border-zinc-100">
-                <th className="p-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+            <tr className="bg-shaded/50 border-b border-border">
+                <th className="p-5 text-[10px] font-black text-text-muted uppercase tracking-widest">
                     <div className="flex items-center gap-2">
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -154,7 +161,7 @@ const TableHead = () => {
                         Name & Profile
                     </div>
                 </th>
-                <th className="p-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                <th className="p-5 text-[10px] font-black text-text-muted uppercase tracking-widest">
                     <div className="flex items-center gap-2">
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -162,7 +169,7 @@ const TableHead = () => {
                         Care Status
                     </div>
                 </th>
-                <th className="p-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                <th className="p-5 text-[10px] font-black text-text-muted uppercase tracking-widest">
                     <div className="flex items-center gap-2">
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -170,7 +177,7 @@ const TableHead = () => {
                         Admitted
                     </div>
                 </th>
-                <th className="p-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                <th className="p-5 text-[10px] font-black text-text-muted uppercase tracking-widest">
                     <div className="flex items-center gap-2">
                         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                             <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -178,7 +185,7 @@ const TableHead = () => {
                         DOB
                     </div>
                 </th>
-                <th className="p-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-right">
+                <th className="p-5 text-[10px] font-black text-text-muted uppercase tracking-widest text-right">
                     Actions
                 </th>
             </tr>

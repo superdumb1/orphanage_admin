@@ -11,13 +11,35 @@ export const FormField: React.FC<FormFieldProps> = ({
 }) => {
   return (
     <div className="flex flex-col gap-1 w-full">
-      <label htmlFor={id} className="text-sm font-medium text-zinc-700">
-        {label} {required && <span className="text-red-500">*</span>}
+      
+      {/* Label */}
+      <label 
+        htmlFor={id} 
+        className="text-sm font-medium text-text"
+      >
+        {label}{" "}
+        {required && <span className="text-danger">*</span>}
       </label>
       
-      <Input id={id} required={required} {...props} />
+      {/* Input */}
+      <Input 
+        id={id} 
+        required={required} 
+        className={`
+          ${error 
+            ? "border-danger focus:ring-danger" 
+            : "border-border focus:ring-primary"
+          }
+        `}
+        {...props} 
+      />
       
-      {error && <span className="text-xs text-red-500 mt-1">{error}</span>}
+      {/* Error */}
+      {error && (
+        <span className="text-xs text-danger mt-1 font-medium">
+          {error}
+        </span>
+      )}
     </div>
   );
 };

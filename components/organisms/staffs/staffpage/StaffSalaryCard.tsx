@@ -1,63 +1,99 @@
-export const SalaryCard = ({ staff, grossSalary }: { staff: any, grossSalary: number }) => {
+export const SalaryCard = ({ staff, grossSalary }: { staff: any; grossSalary: number }) => {
   const s = staff.salary || {};
   const ssf = staff.ssf || {};
 
-  // 1. Calculate the Base for SSF (Basic + Grade + DA)
-  const baseForSSF = (s.basicSalary || 0) + (s.grade || 0) + (s.dearnessAllowance || 0);
-  
-  // 2. Calculate Deductions
-  const employeeSsfPercent = Number(ssf.employeeContribution) || 0;
-  const ssfDeduction = (baseForSSF * employeeSsfPercent) / 100;
-  const insuranceDeduction = s.insurancePremium || 0;
-  const totalDeductions = ssfDeduction + insuranceDeduction;
+  const baseForSSF =
+    (s.basicSalary || 0) +
+    (s.grade || 0) +
+    (s.dearnessAllowance || 0);
 
-  // 3. Calculate Final Take-Home
+  const employeeSsfPercent = Number(ssf.employeeContribution) || 0;
+
+  const ssfDeduction = (baseForSSF * employeeSsfPercent) / 100;
+  const insuranceDeduction = Number(s.insurancePremium) || 0;
+
+  const totalDeductions = ssfDeduction + insuranceDeduction;
   const netSalary = grossSalary - totalDeductions;
 
+  const money = (v: number) => `Rs. ${v.toLocaleString()}`;
+
   return (
-    <div className="bg-white p-6 rounded-xl shadow-sm border border-emerald-200 flex flex-col gap-4">
-      <h2 className="text-lg font-bold text-emerald-900 border-b border-emerald-100 pb-2">Salary & Payslip Overview</h2>
-      
-      {/* GROSS SALARY */}
-      <div className="flex justify-between items-center bg-emerald-50 p-3 rounded-lg border border-emerald-100">
-         <span className="font-bold text-emerald-900 uppercase text-xs tracking-wider">Gross Monthly Salary</span>
-         <span className="text-lg font-black text-emerald-700">Rs. {grossSalary.toLocaleString()}</span>
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 flex flex-col gap-5">
+
+      {/* HEADER */}
+      <h2 className="text-lg font-black text-zinc-900 border-b border-zinc-100 pb-3">
+        Salary & Payslip Overview
+      </h2>
+
+      {/* GROSS */}
+      <div className="flex justify-between items-center bg-zinc-50 p-3 rounded-xl border border-zinc-200">
+        <span className="text-xs font-black uppercase tracking-widest text-zinc-600">
+          Gross Salary
+        </span>
+        <span className="text-lg font-black text-zinc-900">
+          {money(grossSalary)}
+        </span>
       </div>
 
-      {/* EARNINGS BREAKDOWN */}
-      <div className="space-y-2 text-sm text-zinc-600 mt-2 px-1">
-        <div className="flex justify-between"><span className="w-32">Basic Salary:</span> <strong>Rs. {(s.basicSalary || 0).toLocaleString()}</strong></div>
-        <div className="flex justify-between"><span className="w-32">Grade / DA:</span> <strong>Rs. {( (s.grade || 0) + (s.dearnessAllowance || 0) ).toLocaleString()}</strong></div>
-        <div className="flex justify-between"><span className="w-32">Allowances:</span> <strong>Rs. {(grossSalary - baseForSSF).toLocaleString()}</strong></div>
-      </div>
+      {/* EARNINGS */}
+      <div className="space-y-2 text-sm text-zinc-600">
+        <div className="flex justify-between">
+          <span>Basic Salary</span>
+          <strong className="text-zinc-900">{money(s.basicSalary || 0)}</strong>
+        </div>
 
-      {/* DEDUCTIONS BREAKDOWN */}
-      <div className="border-t border-red-100 pt-3 mt-1">
-        <p className="text-xs font-bold text-red-800 uppercase tracking-wider mb-2">Deductions</p>
-        <div className="space-y-2 text-sm text-red-600/80 px-1">
-            <div className="flex justify-between">
-                <span>SSF/Retirement ({employeeSsfPercent}%):</span> 
-                <strong>- Rs. {ssfDeduction.toLocaleString()}</strong>
-            </div>
-            <div className="flex justify-between">
-                <span>Insurance Premium:</span> 
-                <strong>- Rs. {insuranceDeduction.toLocaleString()}</strong>
-            </div>
+        <div className="flex justify-between">
+          <span>Grade + DA</span>
+          <strong className="text-zinc-900">
+            {money((s.grade || 0) + (s.dearnessAllowance || 0))}
+          </strong>
+        </div>
+
+        <div className="flex justify-between">
+          <span>Allowances</span>
+          <strong className="text-zinc-900">
+            {money(grossSalary - baseForSSF)}
+          </strong>
         </div>
       </div>
 
-      {/* TAKE HOME PAY (NET) */}
-      <div className="mt-2 flex justify-between items-center bg-zinc-900 p-4 rounded-xl shadow-inner text-white">
-         <div>
-            <p className="font-bold text-emerald-400 uppercase text-xs tracking-wider mb-1">Take-Home Pay (Net)</p>
-            <p className="text-[10px] text-zinc-400">Actual amount credited to bank</p>
-         </div>
-         <span className="text-2xl font-black text-emerald-400">Rs. {netSalary.toLocaleString()}</span>
+      {/* DEDUCTIONS */}
+      <div className="border-t border-zinc-100 pt-3 space-y-2">
+        <p className="text-xs font-black uppercase tracking-widest text-zinc-500">
+          Deductions
+        </p>
+
+        <div className="flex justify-between text-sm text-zinc-600">
+          <span>SSF ({employeeSsfPercent}%)</span>
+          <strong className="text-rose-600">- {money(ssfDeduction)}</strong>
+        </div>
+
+        <div className="flex justify-between text-sm text-zinc-600">
+          <span>Insurance</span>
+          <strong className="text-rose-600">- {money(insuranceDeduction)}</strong>
+        </div>
       </div>
 
-      <div className="border-t border-zinc-100 pt-3 mt-1 flex justify-between text-[11px] text-zinc-400 font-medium">
-          <span>Festival Bonus: {s.festivalBonusMonths || 0} Month(s)</span>
-          <span>Employer SSF Contribution: {ssf.employerContribution || 0}%</span>
+      {/* NET */}
+      <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-xl flex justify-between items-center">
+        <div>
+          <p className="text-xs font-black text-emerald-700 uppercase tracking-widest">
+            Net Salary
+          </p>
+          <p className="text-[11px] text-emerald-600">
+            Final take-home amount
+          </p>
+        </div>
+
+        <span className="text-2xl font-black text-emerald-700">
+          {money(netSalary)}
+        </span>
+      </div>
+
+      {/* FOOTER */}
+      <div className="flex justify-between text-[11px] text-zinc-400 border-t border-zinc-100 pt-3">
+        <span>Bonus: {s.festivalBonusMonths || 0} month(s)</span>
+        <span>Employer SSF: {ssf.employerContribution || 0}%</span>
       </div>
     </div>
   );

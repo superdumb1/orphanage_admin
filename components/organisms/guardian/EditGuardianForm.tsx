@@ -1,70 +1,114 @@
 "use client";
-import React, { useActionState } from "react";
+import React, { useActionState, useEffect } from "react";
 import { FormField } from "@/components/molecules/FormField";
 import { SelectField } from "@/components/molecules/SelectField";
 import { Button } from "@/components/atoms/Button";
-import { updateGuardian } from "@/app/actions/guardian";
-import Link from "next/link";
+import { addInventoryItem } from "@/app/actions/inventory";
 
-export default function EditGuardianForm({ guardian }: { guardian: any }) {
-    // Bind the ID to the action so we know exactly who we are updating
-    const updateWithId = updateGuardian.bind(null, guardian._id);
-    const [state, formAction, isPending] = useActionState(updateWithId as any, { error: null, success: false });
+export const AddInventoryModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({
+    isOpen,
+    onClose
+}) => {
+    const [state, formAction, isPending] = useActionState(addInventoryItem as any, {
+        error: null,
+        success: false
+    });
+
+    useEffect(() => {
+        if (state?.success) onClose();
+    }, [state?.success, onClose]);
+
+    if (!isOpen) return null;
 
     return (
-        <form action={formAction} className="bg-white p-8 rounded-[2rem] shadow-sm border border-zinc-200 flex flex-col gap-8">
-            
-            {state?.error && (
-                <div className="bg-rose-50 border border-rose-100 text-rose-600 p-4 rounded-xl text-sm font-bold">
-                    ⚠️ {state.error}
-                </div>
-            )}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-900/60 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-3xl shadow-2xl w-full max-w-xl flex flex-col max-h-[90vh] overflow-hidden border border-zinc-200">
 
-            {/* Core Details */}
-            <div>
-                <h3 className="text-xs font-black text-zinc-400 uppercase tracking-widest border-b border-zinc-100 pb-2 mb-4">
-                    Personal Details
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField label="Primary Name *" name="primaryName" defaultValue={guardian.primaryName} required />
-                    <FormField label="Spouse / Partner Name" name="secondaryName" defaultValue={guardian.secondaryName} />
-                    <FormField label="Email *" name="email" type="email" defaultValue={guardian.email} required />
-                    <FormField label="Phone *" name="phone" defaultValue={guardian.phone} required />
-                </div>
-            </div>
+                {/* HEADER */}
+                <div className="p-6 md:p-8 border-b border-zinc-100 bg-zinc-50 shrink-0 flex justify-between items-center">
+                    <div>
+                        <h2 className="font-black text-xl text-zinc-900 tracking-tight">
+                            Add Inventory Item
+                        </h2>
+                        <p className="text-xs text-zinc-500">
+                            Register physical stock or consumables
+                        </p>
+                    </div>
 
-            {/* Vetting Details */}
-            <div>
-                <h3 className="text-xs font-black text-zinc-400 uppercase tracking-widest border-b border-zinc-100 pb-2 mb-4">
-                    Vetting & Financial Info
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField label="Address *" name="address" defaultValue={guardian.address} required />
-                    <FormField label="Occupation" name="occupation" defaultValue={guardian.occupation} />
-                    <FormField label="Annual Income (NPR)" name="annualIncome" type="number" defaultValue={guardian.annualIncome} />
-                    
-                    <SelectField 
-                        label="Applicant Type *" 
-                        name="type" 
-                        defaultValue={guardian.type}
-                        options={[
-                            { label: 'Foster Parent', value: 'FOSTER' },
-                            { label: 'Adoptive Parent', value: 'ADOPTIVE' },
-                            { label: 'Financial Sponsor', value: 'SPONSOR' }
-                        ]}
-                    />
+                    <button onClick={onClose} className="text-zinc-400 hover:text-zinc-900">
+                        ✕
+                    </button>
                 </div>
-            </div>
 
-            {/* Actions */}
-            <div className="flex justify-end gap-4 pt-4 border-t border-zinc-100">
-                <Link href={`/guardians/${guardian._id}`} className="px-6 py-3 font-bold text-zinc-500 hover:text-zinc-800 transition-colors">
-                    Cancel
-                </Link>
-                <Button type="submit" disabled={isPending} className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-10 shadow-lg shadow-blue-200">
-                    {isPending ? "Saving Changes..." : "Save Profile"}
-                </Button>
+                <form action={formAction} className="flex flex-col overflow-hidden">
+
+                    <div className="p-6 md:p-8 flex flex-col gap-6 overflow-y-auto">
+
+                        {state?.error && (
+                            <p className="text-xs text-rose-600 bg-rose-50 p-3 rounded-xl border border-rose-100 font-bold">
+                                ⚠ {state.error}
+                            </p>
+                        )}
+
+                        <FormField
+                            label="Item Name *"
+                            name="name"
+                            required
+                            placeholder="e.g. Rice, Blanket"
+                        />
+
+                        <div className="grid grid-cols-2 gap-6">
+
+                            <SelectField
+                                label="Category *"
+                                name="category"
+                                required
+                                options={[
+                                    { label: "Food & Groceries", value: "FOOD" },
+                                    { label: "Clothing & Bedding", value: "CLOTHING" },
+                                    { label: "Education Supplies", value: "EDUCATION" },
+                                    { label: "Medical & Hygiene", value: "MEDICAL" },
+                                    { label: "Maintenance", value: "MAINTENANCE" }
+                                ]}
+                            />
+
+                            <FormField
+                                label="Unit *"
+                                name="unit"
+                                required
+                                placeholder="kg, pcs, liters"
+                            />
+                        </div>
+
+                        <div className="bg-zinc-50 p-5 rounded-2xl border border-zinc-100">
+                            <FormField
+                                label="Low Stock Alert Level"
+                                name="minimumStockLevel"
+                                type="number"
+                                placeholder="e.g. 10"
+                            />
+                            <p className="text-[10px] text-zinc-400 mt-2 italic">
+                                Alert triggers when stock goes below this level.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* FOOTER */}
+                    <div className="flex justify-end gap-3 p-6 border-t border-zinc-100 bg-white shrink-0">
+                        <Button type="button" variant="ghost" onClick={onClose}>
+                            Cancel
+                        </Button>
+
+                        <Button
+                            type="submit"
+                            disabled={isPending}
+                            className="bg-zinc-900 text-white font-bold px-10"
+                        >
+                            {isPending ? "Saving..." : "Add Item"}
+                        </Button>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     );
-}
+};

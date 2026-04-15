@@ -1,5 +1,6 @@
 "use client";
-import React from "react";
+
+import React, { useMemo } from "react";
 import { FormField } from "../../../molecules/FormField";
 import { SelectField } from "../../../molecules/SelectField";
 import { DatePickerField } from "@/components/molecules/DatePickerField";
@@ -15,20 +16,59 @@ const departmentOptions = [
     { label: "Security & Maintenance (सुरक्षा र मर्मत)", value: "SECURITY" },
     { label: "Logistics & Transport (रसद र यातायात)", value: "LOGISTICS" },
     { label: "Other (अन्य)", value: "OTHER" },
-];
+] ;
 
-export const EmploymentDetails = ({ initialData }: { initialData?: StaffFormInputs }) => {
-    // Format date for standard input fields (YYYY-MM-DD)
-    const formattedDate = initialData?.joinDate ? new Date(initialData.joinDate).toISOString().split('T')[0] : "";
+const employmentTypeOptions = [
+    { label: "Full Time", value: "FULL_TIME" },
+    { label: "Part Time", value: "PART_TIME" },
+    { label: "Contract", value: "CONTRACT" },
+] 
+
+type Props = {
+    initialData?: StaffFormInputs;
+};
+
+export const EmploymentDetails = ({ initialData }: Props) => {
+
+    const formattedDate = useMemo(() => {
+        if (!initialData?.joinDate) return "";
+        return new Date(initialData.joinDate)
+            .toISOString()
+            .split("T")[0];
+    }, [initialData?.joinDate]);
 
     return (
         <div className="p-5 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <SelectField label="Department (विभाग)" name="department" options={departmentOptions} defaultValue={initialData?.department} />
-            <FormField label="Designation (पद)" name="designation" placeholder="e.g. Caregiver, Nurse, Cook" defaultValue={initialData?.designation} />
-            <SelectField label="Employment Type (रोजगारी प्रकार)" name="employmentType" defaultValue={initialData?.employmentType} options={[
-                { label: "Full Time", value: "FULL_TIME" }, { label: "Part Time", value: "PART_TIME" }, { label: "Contract", value: "CONTRACT" },
-            ]} />
-            <DatePickerField label="Date of Joining (कार्यग्रहण मिति)" name="joinDate" id="joinDate" required defaultValue={formattedDate} />
+
+            <SelectField
+                label="Department (विभाग)"
+                name="department"
+                options={departmentOptions}
+                defaultValue={initialData?.department}
+            />
+
+            <FormField
+                label="Designation (पद)"
+                name="designation"
+                placeholder="e.g. Caregiver, Nurse, Cook"
+                defaultValue={initialData?.designation}
+            />
+
+            <SelectField
+                label="Employment Type (रोजगारी प्रकार)"
+                name="employmentType"
+                options={employmentTypeOptions}
+                defaultValue={initialData?.employmentType}
+            />
+
+            <DatePickerField
+                label="Date of Joining (कार्यग्रहण मिति)"
+                name="joinDate"
+                id="joinDate"
+                required
+                defaultValue={formattedDate}
+            />
+
         </div>
     );
 };

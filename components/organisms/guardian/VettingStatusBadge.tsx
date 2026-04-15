@@ -1,15 +1,24 @@
-
 export default function VettingStatusBadge({ status }: { status: string }) {
-    const styles: any = {
-        INQUIRY: "bg-zinc-100 text-zinc-600 border-zinc-200",
-        VETTING: "bg-blue-100 text-blue-700 border-blue-200",
-        APPROVED: "bg-emerald-100 text-emerald-700 border-emerald-200",
-        REJECTED: "bg-amber-100 text-amber-700 border-amber-200",
-        BLACKLISTED: "bg-red-100 text-red-700 border-red-200",
+    const styles: Record<string, string> = {
+        INQUIRY: "bg-zinc-100 text-zinc-700 border-zinc-200",
+        VETTING: "bg-amber-50 text-amber-700 border-amber-200",
+        APPROVED: "bg-emerald-50 text-emerald-700 border-emerald-200",
+        REJECTED: "bg-rose-50 text-rose-700 border-rose-200",
+        BLACKLISTED: "bg-rose-100 text-rose-800 border-rose-300",
     };
+
+    const normalized = status?.toUpperCase?.() || "INQUIRY";
+    const style = styles[normalized] || styles.INQUIRY;
+
     return (
-        <span className={`px-4 py-1.5 rounded-full border text-xs font-black uppercase tracking-widest ${styles[status]}`}>
-            {status.replace("_", " ")}
+        <span
+            className={`
+                px-4 py-1.5 rounded-full border
+                text-xs font-black uppercase tracking-widest
+                ${style}
+            `}
+        >
+            {normalized.replace("_", " ")}
         </span>
     );
 }

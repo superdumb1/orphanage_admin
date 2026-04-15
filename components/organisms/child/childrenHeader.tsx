@@ -1,35 +1,39 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/atoms/Button";
-import { AddChildModal } from "./AddChildModal"; // ✨ Import the new modal!
+import { AddChildModal } from "./AddChildModal";
 
 export function ChildrenHeader() {
-    // 1. Manage the modal state safely
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     return (
         <>
-            <div className="flex justify-between items-center bg-white p-6 rounded-[2rem] shadow-sm border border-zinc-200">
+            {/* ✨ Replaced bg-white and border-zinc-200 with bg-card and border-border */}
+            <div className="flex justify-between items-center bg-card p-6 rounded-[2rem] shadow-sm border border-border transition-colors duration-500">
                 <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center text-2xl border border-blue-100">
+                    
+                    {/* ✨ Used your primary color variable with opacity for the icon background! */}
+                    <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center text-2xl border border-primary/20">
                         👧👦
                     </div>
+                    
                     <div>
-                        <h1 className="text-2xl font-black text-zinc-900 tracking-tight">Children in Care</h1>
-                        <p className="text-sm text-zinc-500 font-medium">Manage admissions, statuses, and profiles.</p>
+                        {/* ✨ Replaced text-zinc-900 with text-text */}
+                        <h1 className="text-2xl font-black text-text tracking-tight">Children in Care</h1>
+                        {/* ✨ Replaced text-zinc-500 with text-text-muted */}
+                        <p className="text-sm text-text-muted font-medium">Manage admissions, statuses, and profiles.</p>
                     </div>
                 </div>
                 
-                {/* 2. Trigger the modal instead of routing away */}
+                {/* ✨ Replaced static blue with bg-primary and text-text-invert so it flips perfectly */}
                 <Button 
                     onClick={() => setIsAddModalOpen(true)}
-                    className="bg-blue-600 hover:bg-blue-700 shadow-blue-200 shadow-lg text-white font-bold py-2.5 px-6 rounded-xl transition-all"
+                    className="bg-primary text-text-invert hover:opacity-90 shadow-glow font-bold py-2.5 px-6 rounded-xl transition-all"
                 >
                     + Admit Child
                 </Button>
             </div>
 
-            {/* 3. Drop the modal at the bottom */}
             <AddChildModal 
                 isOpen={isAddModalOpen} 
                 onClose={() => setIsAddModalOpen(false)} 

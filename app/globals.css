@@ -1,37 +1,111 @@
 @import "tailwindcss";
 
+/* ============================================================
+   THEME TOKENS → Tailwind mapping
+   ============================================================ */
 @theme {
-  /* Mapping your custom variables to Tailwind utilities */
   --color-bg: var(--bg-primary);
   --color-shaded: var(--bg-shaded);
   --color-text: var(--text-primary);
+  --color-text-muted: var(--text-muted);
   --color-primary: var(--primary);
   --color-card: var(--card);
   --color-border: var(--border-color);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-accent: var(--accent);
+
+  --color-bg-invert: var(--bg-invert);
+  --color-text-invert: var(--text-invert);
+
+  --shadow-glow: var(--glow-shadow);
+  --radius-dashboard: 2rem;
 }
 
+/* ============================================================
+   DARK MODE (DEFAULT)
+   ============================================================ */
 :root {
-  /* Default: Dark Mode (High Contrast) */
   --bg-primary: #000000;
-  --bg-shaded: #0a0a0a;
+  --bg-shaded: #09090b;
+  --card: #0c0c0e;
+  --bg-invert: #ffffff;
+
   --text-primary: #ffffff;
-  --primary: #3b82f6; /* A slightly brighter blue for dark bg */
-  --card: #111111;
-  --border-color: #27272a; /* zinc-800 */
+  --text-muted: #a1a1aa;
+  --text-invert: #000000;
+
+  --primary: #3b82f6;
+  --border-color: #27272a;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --accent: #a855f7;
+
+  --glow-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
 }
 
+/* ============================================================
+   LIGHT MODE
+   ============================================================ */
 .light {
-  /* Toggled: Light Mode */
   --bg-primary: #ffffff;
   --bg-shaded: #f8f8f8;
-  --text-primary: #09090b;
-  --primary: #2563eb;
   --card: #ffffff;
-  --border-color: #e4e4e7; /* zinc-200 */
+  --bg-invert: #000000;
+
+  --text-primary: #09090b;
+  --text-muted: #71717a;
+  --text-invert: #ffffff;
+
+  --primary: #2563eb;
+  --border-color: #e4e4e7;
+
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --accent: #9333ea;
+
+  --glow-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+/* ============================================================
+   BASE
+   ============================================================ */
 @layer base {
   body {
-    @apply bg-bg text-text transition-colors duration-500 ease-in-out;
+    @apply bg-bg text-text transition-colors duration-500 ease-in-out antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    @apply bg-bg;
+  }
+  ::-webkit-scrollbar-thumb {
+    @apply bg-border rounded-full hover:bg-text/20 transition-colors;
+  }
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+@layer utilities {
+  .glass {
+    @apply bg-card/60 backdrop-blur-md border border-border;
+  }
+
+  .btn-primary {
+    @apply bg-primary text-text-invert font-bold px-6 py-2.5 rounded-xl 
+           hover:opacity-90 active:scale-95 transition-all shadow-glow;
+  }
+
+  .card-hover {
+    @apply hover:border-primary/50 hover:shadow-glow transition-all duration-300;
   }
 }

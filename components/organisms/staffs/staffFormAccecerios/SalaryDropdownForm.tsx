@@ -17,64 +17,74 @@ const AllowancesFields = [
   { name: "other", label: "Other Allowances (अन्य)" },
 ] as const;
 
-// THE FIX: We extract the exact string literal types from your arrays above.
-// This guarantees TypeScript knows these are ONLY numbers, never the "allowances" object.
-type BasicFieldKey = typeof BasicFields[number]["name"];
-type AllowanceFieldKey = typeof AllowancesFields[number]["name"];
+// Derived types (no manual typing needed)
+type Salary = StaffFormInputs["salary"];
+type BasicKey = typeof BasicFields[number]["name"];
+type AllowanceKey = typeof AllowancesFields[number]["name"];
 
-const SalaryDropdownForm = ({ initialData }: { initialData?: StaffFormInputs }) => {
+type Props = {
+  initialData?: StaffFormInputs;
+};
+
+const SalaryDropdownForm = ({ initialData }: Props) => {
+  const salary = initialData?.salary;
+  const allowances = salary?.allowances;
+
   return (
     <div className="p-5 flex flex-col gap-6">
-      
+
       {/* BASIC FIELDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {BasicFields.map((field) => (
-          <FormField 
-            key={field.name} 
-            name={field.name} 
-            type="number" 
-            label={field.label} 
-            // Look how clean this is now!
-            defaultValue={initialData?.salary?.[field.name as BasicFieldKey]} 
+        {BasicFields.map(({ name, label }) => (
+          <FormField
+            key={name}
+            name={name}
+            type="number"
+            label={label}
+            defaultValue={salary?.[name]}
           />
         ))}
       </div>
 
+      {/* DIVIDER */}
       <div className="flex items-center gap-4">
         <div className="flex-1 h-px bg-zinc-200" />
-        <span className="text-xs font-bold text-zinc-400 uppercase">Allowances (भत्ता)</span>
+        <span className="text-xs font-bold text-zinc-400 uppercase">
+          Allowances (भत्ता)
+        </span>
         <div className="flex-1 h-px bg-zinc-200" />
       </div>
 
-      {/* ALLOWANCE FIELDS */}
+      {/* ALLOWANCES */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {AllowancesFields.map((field) => (
-          <FormField 
-            key={field.name} 
-            name={field.name} 
-            type="number" 
-            label={field.label} 
-            // And here!
-            defaultValue={initialData?.salary?.allowances?.[field.name as AllowanceFieldKey]} 
+        {AllowancesFields.map(({ name, label }) => (
+          <FormField
+            key={name}
+            name={name}
+            type="number"
+            label={label}
+            defaultValue={allowances?.[name]}
           />
         ))}
       </div>
 
-      {/* BONUS & INSURANCE */}
+      {/* BONUS + INSURANCE */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
-        <FormField 
-            label="Festival Bonus Months" 
-            name="festivalBonusMonths" 
-            type="number" 
-            defaultValue={initialData?.salary?.festivalBonusMonths ?? 1} 
+        <FormField
+          label="Festival Bonus Months"
+          name="festivalBonusMonths"
+          type="number"
+          defaultValue={salary?.festivalBonusMonths ?? 1}
         />
-        <FormField 
-            label="Insurance Premium (Deduction)" 
-            name="insurancePremium" 
-            type="number" 
-            defaultValue={initialData?.salary?.insurancePremium} 
+
+        <FormField
+          label="Insurance Premium (Deduction)"
+          name="insurancePremium"
+          type="number"
+          defaultValue={salary?.insurancePremium}
         />
       </div>
+
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { StaffForm } from "@/components/organisms/StaffForm";
+import { StaffForm } from "@/components/organisms/staffs/staffpage/StaffForm";
 import Link from "next/link";
 import { Button } from "@/components/atoms/Button";
 
