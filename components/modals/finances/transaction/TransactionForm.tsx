@@ -8,12 +8,12 @@ import { addTransaction } from "@/app/actions/transactions";
 import { TTransaction } from "@/types/Transaction";
 
 interface AddTransactionModalProps {
-  onClose: () => void;
+  closeModal: () => void;
   initialData?: any; // Using any here temporarily to handle the inventory JSON you shared
 }
 
 export const TransactionForm: React.FC<AddTransactionModalProps> = ({
-  onClose,
+  closeModal,
   initialData
 }) => {
   const [state, formAction, isPending] = useActionState(
@@ -50,8 +50,8 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
   }, []);
 
   useEffect(() => {
-    if (state?.success) onClose();
-  }, [state?.success, onClose]);
+    if (state?.success) closeModal();
+  }, [state?.success, closeModal]);
 
   const filteredAccounts = accounts?.filter((acc) => acc.type === transactionType) || [];
   const selectedAccount = accounts?.find((acc) => acc._id === selectedAccountId);
@@ -224,7 +224,7 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
       <Footer
         isPending={isPending}
         transactionType={transactionType}
-        onClose={onClose}
+        closeModal={closeModal}
         isSubmitDisabled={filteredAccounts.length === 0 || !selectedAccountId}
         isEditMode={!!initialData}
       />
@@ -235,15 +235,15 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
 const Footer: React.FC<{
   isPending: boolean;
   transactionType: "INCOME" | "EXPENSE";
-  onClose: () => void;
+  closeModal: () => void;
   isSubmitDisabled: boolean;
   isEditMode: boolean;
-}> = ({ isPending, transactionType, onClose, isSubmitDisabled, isEditMode }) => (
+}> = ({ isPending, transactionType, closeModal, isSubmitDisabled, isEditMode }) => (
   <div className="shrink-0 flex justify-end gap-3.5 p-6 md:px-8 border-t border-border bg-card">
     <Button
       type="button"
       variant="ghost"
-      onClick={onClose}
+      onClick={closeModal}
       className="text-text-muted hover:text-text hover:bg-shaded font-bold text-xs uppercase tracking-wider"
     >
       Abort

@@ -29,7 +29,7 @@ const initialState: FormState = {
     error: null
 };
 
-export const ChildForm = ({ initialData, onClose }: { initialData?: any, onClose?: () => void }) => {
+export const ChildForm = ({ initialData, closeModal }: { initialData?: any, closeModal?: () => void }) => {
     const actionToUse = initialData ? updateChild : createChild;
     const [state, formAction, isPending] = useActionState(actionToUse as any, initialState);
 
@@ -49,8 +49,8 @@ export const ChildForm = ({ initialData, onClose }: { initialData?: any, onClose
     ];
 
     useEffect(() => {
-        if (state?.success && onClose) onClose();
-    }, [state?.success, onClose]);
+        if (state?.success && closeModal) closeModal();
+    }, [state?.success, closeModal]);
 
     return (
         <form
@@ -179,10 +179,10 @@ export const ChildForm = ({ initialData, onClose }: { initialData?: any, onClose
 
             {/* ACTIONS FOOTER */}
             <div className="flex justify-end items-center gap-6 pt-10 border-t border-border/50 mt-4">
-                {onClose && (
+                {closeModal && (
                     <button
                         type="button"
-                        onClick={onClose}
+                        onClick={closeModal}
                         disabled={isPending}
                         className="text-[10px] font-black text-text-muted hover:text-text uppercase tracking-widest transition-all"
                     >

@@ -14,5 +14,6 @@ export const MODAL_COMPONENTS: Record<string, React.ComponentType<any>> = {
 
     TRANSACTION_FORM:dynamic(() => import("./finances/transaction/TransactionForm").then(mod => mod.TransactionForm)),
     ACCOUNT_HEAD_FORM:dynamic(() => import("./finances/accountHead/AccountHeadForm").then(mod => mod.AccountHeadForm)),
-
-};
+    MANAGE_STOCK: dynamic(() => import("./finances/inventory/ManageStockModal").then(mod => mod.ManageStockModal)),
+    INVENTORY_ITEM_FORM: dynamic(() => import("./finances/inventory/InventoryItemForm").then(mod => mod.InventoryItemForm)),
+};  

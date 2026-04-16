@@ -90,3 +90,50 @@ export async function adjustStock(prevState: any, formData: FormData) {
         return { success: false, error: error.message };
     }
 }
+
+export async function updateInventoryItem(prevState: any, formData: FormData) {
+    await dbConnect();
+
+    try {
+        const id = formData.get("id") as string;
+        
+        if (!id) {
+            throw new Error("Missing Item ID for update.");
+        }
+
+        // 1. Gather the fields that are allowed to be edited
+        const updateData = {
+            name: formData.get("name"),
+            category: formData.get("category"),
+            unit: formData.get("unit"),
+            minimumStockLevel: Number(formData.get("minimumStockLevel")) || 10,
+            // 🔒 SECURITY: Notice currentStock is intentionally omitted here. 
+            // It can only be altered through adjustStock().
+        };
+
+        // 2. Perform the update
+        const updatedItem = await InventoryItem.findByIdAndUpdate(
+            id,
+            updateData,
+            { 
+                new: true, // Returns the updated document
+                runValidators: true // Enforces your Mongoose schema rules
+            } 
+        );
+
+        if (!updatedItem) {
+            throw new Error("Inventory item not found or already deleted.");
+        }
+
+        // 3. Clear cache to reflect new data on the UI
+        revalidatePath("/inventory");
+        return { success: true };
+        
+    } catch (error: any) {
+        // Handle duplicate name collision (MongoDB Error 11000)
+        if (error.code === 11000) {
+            return { success: false, error: "Another item is already using this name." };
+        }
+        return { success: false, error: error.message };
+    }
+}

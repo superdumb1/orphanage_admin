@@ -7,12 +7,12 @@ import { addAccountHead } from "@/app/actions/accounts";
 import AddSubType from "../../../organisms/Accounting/AccountsHead/AddSubType";
 
 interface AccountHeadFormProps {
-    onClose: () => void;
+    closeModal: () => void;
     initialData?: any;
 }
 
 export const AccountHeadForm: React.FC<AccountHeadFormProps> = ({
-    onClose,
+    closeModal,
     initialData
 }) => {
 
@@ -27,9 +27,9 @@ export const AccountHeadForm: React.FC<AccountHeadFormProps> = ({
     useEffect(() => {
         if (state?.success) {
             setSubTypes([]);
-            onClose();
+            closeModal();
         }
-    }, [state?.success, onClose]);
+    }, [state?.success, closeModal]);
 
 
     return (
@@ -116,7 +116,7 @@ export const AccountHeadForm: React.FC<AccountHeadFormProps> = ({
             </div>
 
             <div className="shrink-0 flex justify-end gap-3.5 p-6 md:px-8 border-t border-border bg-card">
-                <Button type="button" variant="ghost" onClick={onClose} className="text-text-muted hover:text-text hover:bg-shaded font-bold text-xs uppercase tracking-wider">
+                <Button type="button" variant="ghost" onClick={closeModal} className="text-text-muted hover:text-text hover:bg-shaded font-bold text-xs uppercase tracking-wider">
                     Abort
                 </Button>
                 <Button type="submit" disabled={isPending || subTypes.length === 0} className="px-8 font-black text-xs uppercase tracking-widest text-text-invert bg-primary hover:bg-primary/90 shadow-glow active:scale-95 transition-all h-11">

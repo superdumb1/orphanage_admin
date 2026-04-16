@@ -47,6 +47,12 @@ export function useUIModals() {
         openAccountHeadForm: ( initialData?: any) => {
             openModal("ACCOUNT_HEAD_FORM", { initialData: initialData })
         },
+        openManageStock: (item: any) => {
+            openModal("MANAGE_STOCK", { item: item }); 
+        },
+        openInventoryItemForm: (item?:any) => {
+            openModal("INVENTORY_ITEM_FORM", {  item}); 
+        },
 
         closeModal
     };

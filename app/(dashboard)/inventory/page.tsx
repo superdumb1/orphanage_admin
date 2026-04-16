@@ -27,7 +27,7 @@ export default async function InventoryPage() {
                 <p className="text-sm text-zinc-500 font-medium">Track stock levels for food, medical supplies, and more.</p>
             </div>
 
-            <InventoryDashboard items={items} accounts={accounts} />
+            <InventoryDashboard items={items}/>
         </div>
     );
 }
