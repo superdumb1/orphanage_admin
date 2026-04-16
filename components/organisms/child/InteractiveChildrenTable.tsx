@@ -1,13 +1,11 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/atoms/Button";
-import { EditChildModal } from "./EditChildModal";
-import { ViewChildModal } from "./ViewChildModal";
+import { ViewChildModal } from "../../modals/child/ViewChildModal";
+import { useUIModals } from "@/hooks/useUIModal";
 
 export default function InteractiveChildrenTable({ children }: { children: any[] }) {
-    const [editingChild, setEditingChild] = useState<any | null>(null);
-    const [viewingChild, setViewingChild] = useState<any | null>(null);
-
+    const { openChildModal, openChildProfile } = useUIModals()
     if (children.length === 0) {
         return <EmptyChildrenState />;
     }
@@ -75,7 +73,7 @@ export default function InteractiveChildrenTable({ children }: { children: any[]
                                         {/* ✨ Themed Edit Button (Warning/Amber tint on hover) */}
                                         <Button
                                             variant="ghost"
-                                            onClick={() => setEditingChild(child)}
+                                            onClick={() => openChildModal(child)}
                                             className="text-xs font-bold text-text-muted bg-card hover:bg-warning/10 hover:text-warning rounded-xl px-3 border border-border shadow-sm hover:border-warning/30 transition-all"
                                         >
                                             ✏️ Edit
@@ -84,7 +82,7 @@ export default function InteractiveChildrenTable({ children }: { children: any[]
                                         {/* ✨ Themed View Button (Primary/Blue tint on hover) */}
                                         <Button
                                             variant="ghost"
-                                            onClick={() => setViewingChild(child)}
+                                            onClick={() => openChildProfile(child)}
                                             className="text-xs font-bold text-text-muted bg-card hover:bg-primary/10 hover:text-primary rounded-xl px-3 border border-border shadow-sm hover:border-primary/30 transition-all"
                                         >
                                             👁️ View
@@ -97,15 +95,8 @@ export default function InteractiveChildrenTable({ children }: { children: any[]
                 </table>
             </div>
 
-            <EditChildModal
-                onClose={() => setEditingChild(null)}
-                child={editingChild}
-            />
-            <ViewChildModal
-                isOpen={viewingChild !== null}
-                onClose={() => setViewingChild(null)}
-                child={viewingChild}
-            />
+
+    
         </>
     );
 }

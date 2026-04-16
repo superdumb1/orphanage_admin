@@ -1,9 +1,18 @@
-import { GuardianModal } from "./guardians/GuardianModal";
-import { GuardianDossierModal } from "./guardians/GuardianDossierModal";
-import { AssignChildModal } from "./guardians/AssignChildModal"; 
+import dynamic from "next/dynamic";
 
 export const MODAL_COMPONENTS: Record<string, React.ComponentType<any>> = {
-    GUARDIAN_FORM: GuardianModal,
-    GUARDIAN_DOSSIER: GuardianDossierModal,
-    ASSIGN_CHILD: AssignChildModal, 
+    GUARDIAN_FORM: dynamic(() => import("./guardians/GuardianModal").then(mod => mod.GuardianModal)),
+
+    GUARDIAN_DOSSIER: dynamic(() => import("./guardians/GuardianDossierModal").then(mod => mod.GuardianDossierModal)),
+
+    ASSIGN_CHILD: dynamic(() => import("./guardians/AssignChildModal").then(mod => mod.AssignChildModal)),
+
+    MODIFY_PLACEMENTS: dynamic(() => import("./guardians/ModifyPlacements").then(mod => mod.ModifyPlacementsModal)),
+
+    CHILD_FORM: dynamic(() => import("./child/ChildForm").then(mod => mod.ChildForm)),
+
+    CHILD_ACTION: dynamic(() => import("./child/ChildAction").then(mod => mod.ChildAction)),
+    
+    CHILD_PROFILE: dynamic(() => import("./child/ViewChildModal").then(mod => mod.ViewChildModal)),
+
 };

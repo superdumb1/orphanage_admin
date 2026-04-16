@@ -5,8 +5,6 @@ export function useUIModals() {
     const { openModal, closeModal } = useModal();
 
     return {
-        // --- GUARDIANS ---
-        // Logic: No data = ADD mode, Data provided = EDIT mode
         openGuardianModal: (data?: any) =>
             openModal("GUARDIAN_FORM", {
                 mode: data ? "EDIT" : "ADD",
@@ -27,7 +25,19 @@ export function useUIModals() {
                 guardianId,
             })
         },
+        openModifyPlacementsModal: (guardian: any) =>
+            openModal("MODIFY_PLACEMENTS", { guardian }),
+
+        openChildActions: (childId: string) => {
+            openModal("CHILD_ACTION", { childId })
+        },
+        openChildProfile: (child: any) => {
+            openModal("CHILD_PROFILE", { child })
+        },
+
 
         closeModal
     };
+
+
 }

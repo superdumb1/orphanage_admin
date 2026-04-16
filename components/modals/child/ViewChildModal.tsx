@@ -10,21 +10,19 @@ import {
 } from "@/components/molecules/ProfileDocumentVault";
 
 interface ViewChildModalProps {
-  isOpen: boolean;
   onClose: () => void;
   child: any;
 }
 
 export const ViewChildModal: React.FC<ViewChildModalProps> = ({
-  isOpen,
   onClose,
   child
 }) => {
   const [actionPlans, setActionPlans] = useState<any[]>([]);
   const [isLoadingPlans, setIsLoadingPlans] = useState(true);
-
+  console.log(child)
   useEffect(() => {
-    if (isOpen && child?._id) {
+    if (child?._id) {
       setIsLoadingPlans(true);
       getChildActionPlans(child._id)
         .then((plans) => {
@@ -36,9 +34,9 @@ export const ViewChildModal: React.FC<ViewChildModalProps> = ({
           setIsLoadingPlans(false);
         });
     }
-  }, [isOpen, child]);
+  }, [ child]);
 
-  if (!isOpen || !child) return null;
+  if ( !child) return null;
 
   const age =
     new Date().getFullYear() - new Date(child.dateOfBirth).getFullYear();

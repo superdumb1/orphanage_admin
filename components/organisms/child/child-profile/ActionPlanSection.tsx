@@ -2,8 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/atoms/Button";
 import { ActionPlanList } from "./ActionPlanList";
-import { AddActionItemModal } from "./AddActionModal";
-
+import { useUIModals } from "@/hooks/useUIModal";
 export const ActionPlanSection = ({
   childId,
   serializedTasks
@@ -11,9 +10,8 @@ export const ActionPlanSection = ({
   childId: string;
   serializedTasks: any[];
 }) => {
-  const [isModalOpen, setModalOpen] = useState(false);
-
-  return (
+  const {openChildActions}=useUIModals()
+  return (  
     <div className="mt-8">
 
       {/* HEADER */}
@@ -24,7 +22,7 @@ export const ActionPlanSection = ({
         </h3>
 
         <Button
-          onClick={() => setModalOpen(true)}
+          onClick={() => openChildActions(childId)}
           className="
             text-xs font-bold h-8 px-4 py-1
             bg-primary/10 text-text-muted
@@ -40,12 +38,7 @@ export const ActionPlanSection = ({
       {/* LIST */}
       <ActionPlanList tasks={serializedTasks} />
 
-      {/* MODAL */}
-      <AddActionItemModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        childId={childId}
-      />
+   
 
     </div>
   );
