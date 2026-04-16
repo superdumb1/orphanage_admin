@@ -3,13 +3,11 @@ import React, { useState } from "react";
 import ReportCenter from "../Report/ReportCenter";
 import TransactionTable from "./TransactionTable";
 import { Button } from "@/components/atoms/Button";
-import { AddTransactionModal } from "../../modals/modals/AddTransactionModal";
-import { EditTransactionModal } from "../../modals/modals/EditTransactionsModal";
+import { useUIModals } from "@/hooks/useUIModal";
+
 
 export default function FinanceLedger({ transactions, accounts, inventory }: any) {
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [editItem, setEditItem] = useState<any>(null);
-
+    const {openTransactionForm}=useUIModals()
     return (
         <div className="space-y-8 transition-colors duration-500">
 
@@ -25,7 +23,7 @@ export default function FinanceLedger({ transactions, accounts, inventory }: any
 
                 {/* Button: bg-emerald-600 -> bg-success, removed hardcoded shadow */}
                 <Button
-                    onClick={() => setIsAddModalOpen(true)}
+                    onClick={() => openTransactionForm()}
                     className="bg-success hover:bg-success/90 text-text-invert font-black px-6 h-10 shadow-glow active:scale-95 transition-all"
                 >
                     + New Transaction
@@ -35,24 +33,9 @@ export default function FinanceLedger({ transactions, accounts, inventory }: any
             {/* TABLE - Already Themed */}
             <TransactionTable
                 transactions={transactions}
-                onEdit={(txn) => setEditItem(txn)}
+                onEdit={(txn) => openTransactionForm(txn)}
             />
 
-            {/* ADD MODAL - Already Themed */}
-            <AddTransactionModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                accounts={accounts}
-            />
-
-            {/* EDIT MODAL - Already Themed */}
-            {editItem && (
-                <EditTransactionModal
-                    transaction={editItem}
-                    accounts={accounts}
-                    onClose={() => setEditItem(null)}
-                />
-            )}
         </div>
     );
 }

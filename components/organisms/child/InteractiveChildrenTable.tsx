@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/atoms/Button";
-import { ViewChildModal } from "../../modals/child/ViewChildModal";
 import { useUIModals } from "@/hooks/useUIModal";
 
 export default function InteractiveChildrenTable({ children }: { children: any[] }) {

@@ -7,7 +7,7 @@ import { StaffFormInputs } from "@/types/StaffFormInputs";
 const BasicInfoFields = ({ initialData }: { initialData?: StaffFormInputs }) => {
     return (
         // Updated: bg-zinc-50 -> bg-shaded, border-zinc-100 -> border-border
-        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 bg-shaded/30 rounded-dashboard border border-border animate-in fade-in duration-300 transition-colors duration-500">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6  rounded-dashboard  animate-in fade-in duration-300 transition-colors duration-500">
 
             {/* PROFILE IMAGE */}
             <div className="md:col-span-2">

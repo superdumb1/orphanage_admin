@@ -1,7 +1,7 @@
 import dbConnect from "@/lib/db";
 import Staff from "@/models/Staff";
 import { notFound } from "next/navigation";
-import StaffForm  from "@/components/organisms/staffs/staffpage/StaffForm";
+import StaffForm  from "@/components/modals/staff/StaffForm";
 import Link from "next/link";
 import { Button } from "@/components/atoms/Button";
 

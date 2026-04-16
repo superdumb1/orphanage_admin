@@ -29,7 +29,7 @@ const SalaryDropdownForm = ({ initialData }: Props) => {
 
   return (
     // Updated: Changed container padding and ensured it inherits bg-card from parent
-    <div className="p-6 flex flex-col gap-8 bg-card transition-colors duration-500">
+    <div className=" flex flex-col gap-8  transition-colors duration-500">
 
       {/* BASIC FIELDS */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

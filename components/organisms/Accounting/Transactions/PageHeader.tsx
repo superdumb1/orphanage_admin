@@ -1,11 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/atoms/Button";
-import { AddTransactionModal } from "../modals/modals/AddTransactionModal";
+import { useUIModals } from "@/hooks/useUIModal";
 
 const PageHeader = ({ accounts }: { accounts: any[] }) => {
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
+    const {openTransactionForm}=useUIModals()
     return (
         <>
             <div className="flex items-end justify-between flex-wrap gap-4 mb-8 transition-colors duration-500">
@@ -27,7 +26,7 @@ const PageHeader = ({ accounts }: { accounts: any[] }) => {
                 <div className="flex gap-3">
                     {/* Button: Replaced hardcoded zinc/white classes with your utility */}
                     <Button
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => openTransactionForm()}
                         className="btn-primary font-black px-6 h-10"
                     >
                         + New Transaction
@@ -35,12 +34,7 @@ const PageHeader = ({ accounts }: { accounts: any[] }) => {
                 </div>
             </div>
 
-            {/* MODAL */}
-            <AddTransactionModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                accounts={accounts}
-            />
+    
         </>
     );
 };

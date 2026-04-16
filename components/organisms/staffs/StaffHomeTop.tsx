@@ -1,18 +1,14 @@
 "use client";
 
 import { Button } from "@/components/atoms/Button";
+import { useUIModals } from "@/hooks/useUIModal";
 import React, { useState } from "react";
-import { AddStaffModal } from "../AddStaffModal";
 
 const StaffHomeTop = () => {
-    const [viewAddStaffModal, setViewAddStaffModal] = useState(false);
-
+    const {openStaffForm}=useUIModals()
     return (
         <>
-            <AddStaffModal
-                isOpen={viewAddStaffModal}
-                onClose={() => setViewAddStaffModal(false)}
-            />
+        
 
             {/* Changed bg-white to bg-card and added shadow-glow */}
             <div className="flex justify-between items-center bg-card p-6 rounded-dashboard shadow-glow border border-border transition-colors duration-500">
@@ -31,7 +27,7 @@ const StaffHomeTop = () => {
                 {/* Changed manual zinc-900 to your btn-primary utility */}
                 <Button
                     variant="primary"
-                    onClick={() => setViewAddStaffModal(true)}
+                    onClick={() => openStaffForm()}
                     className="btn-primary"
                 >
                     + Add Employee

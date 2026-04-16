@@ -1,25 +1,27 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/atoms/Button";
-import { AddAccountHeadModal } from "../modals/AddAccountHeadModal";
 import { AccountSection } from "./AccountSection";
 import { generateAccountsPDF } from "@/lib/generatePDF";
+import { useUIModals } from "@/hooks/useUIModal";
 
-export default function ChartOfAccounts({
-  initialAccounts,
-}: {
-  initialAccounts: any[];
-}) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isIncomeHead, setIsIncomeHead] = useState(true);
+export default function ChartOfAccounts({ initialAccounts }: { initialAccounts: any[] }) {
+  const { openAccountHeadForm } = useUIModals();
+  
+  // Track which accordion is open. Default to "INCOME".
+  const [openSection, setOpenSection] = useState<string>("INCOME");
 
-  const filterByType = (type: string) =>
-    initialAccounts.filter((a) => a.type === type);
+  const filterByType = (type: string) => initialAccounts.filter((a) => a.type === type);
+
+  // Helper to toggle sections
+  const handleToggle = (section: string) => {
+    setOpenSection(prev => prev === section ? "" : section);
+  };
 
   return (
-    <div className="space-y-10 transition-colors duration-500">
+    <div className="space-y-8 transition-colors duration-500 max-w-5xl mx-auto">
       
-      {/* HEADER: Updated typography and action styling */}
+      {/* HEADER */}
       <div className="flex justify-between items-end px-4">
         <div>
           <h2 className="text-2xl font-black text-text tracking-tighter">
@@ -30,7 +32,6 @@ export default function ChartOfAccounts({
           </p>
         </div>
 
-        {/* EXPORT BUTTON: bg-zinc -> border-border/hover:bg-shaded */}
         <Button
           variant="ghost"
           onClick={() => generateAccountsPDF(initialAccounts)}
@@ -40,64 +41,46 @@ export default function ChartOfAccounts({
         </Button>
       </div>
 
-      {/* GRID: 4 Semantic Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      {/* ACCORDION STACK */}
+      <div className="flex flex-col gap-4">
         
-        {/* INCOMES -> mapped to success (Green) */}
         <AccountSection
           title="Incomes"
           heads={filterByType("INCOME")}
           theme="success"
-          subTypes={["Unrestricted", "Restricted", "Grants", "Event"]}
-          onAdd={() => {
-            setIsIncomeHead(true);
-            setIsModalOpen(true);
-          }}
+          isOpen={openSection === "INCOME"}
+          onToggle={() => handleToggle("INCOME")}
+          onAdd={() => openAccountHeadForm({ isIncomeHead: true })}
         />
 
-        {/* EXPENSES -> mapped to danger (Red) */}
         <AccountSection
           title="Expenses"
           heads={filterByType("EXPENSE")}
           theme="danger"
-          subTypes={["Living", "Education", "Health", "Payroll", "Utilities"]}
-          onAdd={() => {
-            setIsIncomeHead(false);
-            setIsModalOpen(true);
-          }}
+          isOpen={openSection === "EXPENSE"}
+          onToggle={() => handleToggle("EXPENSE")}
+          onAdd={() => openAccountHeadForm({ isIncomeHead: false })}
         />
 
-        {/* ASSETS -> mapped to primary (Blue) */}
         <AccountSection
           title="Assets"
           heads={filterByType("ASSET")}
           theme="primary"
-          subTypes={["Cash", "Bank", "Fixed Asset"]}
-          onAdd={() => {
-            setIsIncomeHead(false); 
-            setIsModalOpen(true);
-          }}
+          isOpen={openSection === "ASSET"}
+          onToggle={() => handleToggle("ASSET")}
+          onAdd={() => openAccountHeadForm({ isIncomeHead: true })}
         />
 
-        {/* LIABILITIES -> mapped to warning (Amber) */}
         <AccountSection
           title="Liabilities"
           heads={filterByType("LIABILITY")}
           theme="warning"
-          subTypes={["Loan", "Payable"]}
-          onAdd={() => {
-            setIsIncomeHead(false);
-            setIsModalOpen(true);
-          }}
+          isOpen={openSection === "LIABILITY"}
+          onToggle={() => handleToggle("LIABILITY")}
+          onAdd={() => openAccountHeadForm({ isIncomeHead: false })}
         />
+        
       </div>
-
-      {/* MODAL: Already themed to use rounded-dashboard and bg-card */}
-      <AddAccountHeadModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        isIncomeHead={isIncomeHead}
-      />
     </div>
   );
 }

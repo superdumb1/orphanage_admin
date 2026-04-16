@@ -45,7 +45,7 @@ export const EmploymentDetails = ({ initialData }: Props) => {
     return (
         // Updated: Increased padding to p-8 and gap to 6 for a more spacious, premium feel
         // Added bg-card and transition classes
-        <div className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6 bg-card transition-colors duration-500">
+        <div className=" grid grid-cols-1 md:grid-cols-2 gap-6 transition-colors duration-500">
 
             <SelectField
                 label="Department (विभाग)"

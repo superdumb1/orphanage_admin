@@ -2,8 +2,8 @@
 import React, { useActionState, useEffect, useState } from "react";
 import { Button } from "@/components/atoms/Button";
 import { adjustStock } from "@/app/actions/inventory";
-import { StockFinanceFields } from "./StockFinanceFields";
-import { StockFormFields } from "./StockFormFields";
+import { StockFinanceFields } from "../../../organisms/Accounting/modals/ManageStockModal/StockFinanceFields";
+import { StockFormFields } from "../../../organisms/Accounting/modals/ManageStockModal/StockFormFields";
 
 import { TInventoryItem, TAccountHead } from "@/types/Transaction";
 

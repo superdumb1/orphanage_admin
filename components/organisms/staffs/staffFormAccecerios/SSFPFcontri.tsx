@@ -33,7 +33,7 @@ const SSFPFcontri = ({ initialData }: { initialData?: StaffFormInputs }) => {
 
   return (
     // Updated bg-white -> bg-card, border-zinc-200 -> border-border
-    <div className="p-8 flex flex-col gap-8 bg-card rounded-dashboard border border-border shadow-glow transition-colors duration-500">
+    <div className="flex flex-col gap-8 rounded-dashboard transition-colors duration-500">
 
       {/* HEADER: Added a small header section for consistency with your other cards */}
       <div className="border-b border-border pb-4">

@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { Button } from "@/components/atoms/Button";
-import { AddInventoryModal } from "../modals/AddInventoryModal";
-import { ManageStockModal } from "../modals/ManageStockModal/ManageStockModal";
+import { AddInventoryModal } from "../../../modals/finances/inventory/AddInventoryModal";
+import { ManageStockModal } from "../../../modals/finances/inventory/ManageStockModal";
 
 export default function InventoryDashboard({
     items,
