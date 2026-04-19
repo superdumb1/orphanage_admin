@@ -27,7 +27,7 @@ export function ChildrenHeader() {
 
                 {/* ✨ Replaced static blue with bg-primary and text-text-invert so it flips perfectly */}
                 <Button
-                    onClick={openChildModal}
+                    onClick={()=>openChildModal()}
                     className="bg-primary text-text-invert hover:opacity-90 shadow-glow font-bold py-2.5 px-6 rounded-xl transition-all"
                 >
                     + Admit Child

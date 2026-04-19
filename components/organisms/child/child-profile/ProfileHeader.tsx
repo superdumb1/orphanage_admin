@@ -63,7 +63,7 @@ export const ProfileHeader = ({ child, id }: { child: ChildProfile; id: string }
         </div>
 
         <Button
-          onClick={() => openChildModal(child)}
+          onClick={() => openChildModal({data:child})}
           className="h-10 px-4 border border-zinc-700 bg-zinc-800/40 text-zinc-200 hover:bg-indigo-900/20 hover:border-indigo-500/50 transition-all font-mono text-[10px] tracking-tighter"
         >
           <Edit3 className="w-3 h-3 mr-2 text-indigo-400" />

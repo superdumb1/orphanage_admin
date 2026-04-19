@@ -72,7 +72,7 @@ export default function InteractiveChildrenTable({ children }: { children: any[]
                                         {/* ✨ Themed Edit Button (Warning/Amber tint on hover) */}
                                         <Button
                                             variant="ghost"
-                                            onClick={() => openChildModal(child)}
+                                            onClick={() => openChildModal({data:child})}
                                             className="text-xs font-bold text-text-muted bg-card hover:bg-warning/10 hover:text-warning rounded-xl px-3 border border-border shadow-sm hover:border-warning/30 transition-all"
                                         >
                                             ✏️ Edit
@@ -81,7 +81,7 @@ export default function InteractiveChildrenTable({ children }: { children: any[]
                                         {/* ✨ Themed View Button (Primary/Blue tint on hover) */}
                                         <Button
                                             variant="ghost"
-                                            onClick={() => openChildProfile(child)}
+                                            onClick={() => openChildProfile({child})}
                                             className="text-xs font-bold text-text-muted bg-card hover:bg-primary/10 hover:text-primary rounded-xl px-3 border border-border shadow-sm hover:border-primary/30 transition-all"
                                         >
                                             👁️ View

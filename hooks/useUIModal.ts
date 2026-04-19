@@ -5,57 +5,102 @@ export function useUIModals() {
     const { openModal, closeModal } = useModal();
 
     return {
-        //guardian
-        openGuardianModal: (data?: any) =>
-            openModal("GUARDIAN_FORM", {
-                mode: data ? "EDIT" : "ADD",
-                initialData: data
-            }),
-        openGuardianDossier: (guardianId: string) =>
-            openModal("GUARDIAN_DOSSIER", {
-                id: guardianId
-            }),
-        openAssignChildrenModal: (guardianId: string,) => {
-            openModal("ASSIGN_CHILD", {
-                guardianId,
-            })
-        },
-        openModifyPlacementsModal: (guardian: any) =>
-            openModal("MODIFY_PLACEMENTS", { guardian }),
+        // --- GUARDIAN ---
+        openGuardianModal: ({ data }: { data?: any } = {}) =>
+            openModal(
+                "GUARDIAN_FORM",
+                !!data ? "Update Guardian" : "New Guardian Form",
+                { initialData: data }
+            ),
 
-        //child
-        openChildModal: (data?: any) =>
-            openModal("CHILD_FORM", {
-                mode: data ? "EDIT" : "ADMIT",
-                initialData: data
-            }),
-        openChildActions: (childId: string) => {
-            openModal("CHILD_ACTION", { childId })
-        },
-        openChildProfile: (child: any) => {
-            openModal("CHILD_PROFILE", { child })
-        },
-        //staff
-        openStaffForm: (staff?: any) => {
-            openModal("STAFF_FORM", { initialData: staff })
-        },
+        openGuardianDossier: ({ guardianId }: { guardianId: string }) =>
+            openModal(
+                "GUARDIAN_DOSSIER",
+                "Guardian Profile", // Fixed typo: "Guardain" -> "Guardian"
+                { id: guardianId }
+            ),
 
-        //transaction
-        openTransactionForm: (initialData?: any) => {
-            openModal("TRANSACTION_FORM", { initialData: initialData })
-        },
-        openAccountHeadForm: ( initialData?: any) => {
-            openModal("ACCOUNT_HEAD_FORM", { initialData: initialData })
-        },
-        openManageStock: (item: any) => {
-            openModal("MANAGE_STOCK", { item: item }); 
-        },
-        openInventoryItemForm: (item?:any) => {
-            openModal("INVENTORY_ITEM_FORM", {  item}); 
+        openAssignChildrenModal: ({ guardianId }: { guardianId: string }) =>
+            openModal(
+                "ASSIGN_CHILD",
+                "Assign Children",
+                { guardianId }
+            ),
+
+        openModifyPlacementsModal: ({ guardian }: { guardian: any }) =>
+            openModal(
+                "MODIFY_PLACEMENTS",
+                "Modify Placements",
+                { guardian }
+            ),
+
+        // --- CHILD ---
+        openChildModal: ({ data }: { data?: any } = {}) => {
+
+
+            openModal(
+                "CHILD_FORM",
+                !!data ? "Update Child" : "Admit Child",
+                { initialData: data }
+            )
         },
 
-        closeModal
+
+        openChildActions: ({ childId }: { childId: string }) => {
+            openModal(
+                "CHILD_ACTION",
+                "Child Action",
+                { childId }
+            )
+        },
+
+        openChildProfile: ({ child }: { child: any }) => {
+
+            openModal(
+                "CHILD_PROFILE",
+                `${child.firstName}'s Profile`,
+                { child }
+            )
+        },
+
+        // --- STAFF ---
+        openStaffForm: ({ staff }: { staff?: any } = {}) =>
+            openModal(
+                "STAFF_FORM",
+                !!staff ? "Update Staff" : "Add New Staff",
+                { initialData: staff }
+            ),
+
+        // --- TRANSACTION / FINANCE ---
+        openTransactionForm: ({ initialData }: { initialData?: any } = {}) =>
+            openModal(
+                "TRANSACTION_FORM",
+                !!initialData ? "Edit Transaction" : "New Transaction",
+                { initialData }
+            ),
+
+        openAccountHeadForm: ({ initialData, isIncomeHead }: { initialData?: any, isIncomeHead?: boolean } = {}) =>
+            openModal(
+                "ACCOUNT_HEAD_FORM",
+                !!initialData ? "Edit Account Head" : "New Account Head",
+                { initialData,isIncomeHead }
+            ),
+
+        // --- INVENTORY ---
+        openManageStock: ({ item }: { item: any }) =>
+            openModal(
+                "MANAGE_STOCK",
+                `Manage Stock: ${item?.name || 'Item'}`,
+                { item }
+            ),
+
+        openInventoryItemForm: ({ item }: { item?: any } = {}) =>
+            openModal(
+                "INVENTORY_ITEM_FORM",
+                !!item ? "Update Inventory Item" : "New Inventory Item",
+                { item }
+            ),
+
+        closeModal: () => closeModal()
     };
-
-
 }

@@ -33,7 +33,7 @@ export default function FinanceLedger({ transactions, accounts, inventory }: any
             {/* TABLE - Already Themed */}
             <TransactionTable
                 transactions={transactions}
-                onEdit={(txn) => openTransactionForm(txn)}
+                onEdit={(txn) => openTransactionForm({initialData:txn})}
             />
 
         </div>

@@ -72,7 +72,7 @@ export function RegistryTableRow({ guardian }: { guardian: any }) {
             <td className="p-5 text-right">
                 {/* <Link href={`/guardians/${guardian._id}`}> */}
                 <Button
-                    onClick={()=>openGuardianDossier(guardian._id)}
+                    onClick={()=>openGuardianDossier({guardianId:guardian._id})}
                     variant="ghost"
                     size="sm"
                     className="border border-border bg-bg group-hover:border-primary/40 group-hover:text-primary shadow-sm rounded-xl transition-all"

@@ -100,7 +100,7 @@ export const AccountSection: React.FC<AccountSectionProps> = ({
                     )}
                     
                       <button 
-                        onClick={() => openAccountHeadForm(head)} 
+                        onClick={() => openAccountHeadForm({initialData:head})} 
                         className="opacity-0 group-hover:opacity-100 p-2 text-text-muted hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
                         title="Edit Account Head"
                       >

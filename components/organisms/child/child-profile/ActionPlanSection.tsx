@@ -10,8 +10,8 @@ export const ActionPlanSection = ({
   childId: string;
   serializedTasks: any[];
 }) => {
-  const {openChildActions}=useUIModals()
-  return (  
+  const { openChildActions } = useUIModals()
+  return (
     <div className="mt-8">
 
       {/* HEADER */}
@@ -22,7 +22,7 @@ export const ActionPlanSection = ({
         </h3>
 
         <Button
-          onClick={() => openChildActions(childId)}
+          onClick={() => openChildActions({ childId })}
           className="
             text-xs font-bold h-8 px-4 py-1
             bg-primary/10 text-text-muted
@@ -38,7 +38,7 @@ export const ActionPlanSection = ({
       {/* LIST */}
       <ActionPlanList tasks={serializedTasks} />
 
-   
+
 
     </div>
   );

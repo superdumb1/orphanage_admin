@@ -62,7 +62,7 @@ export default function InventoryDashboard({
                                         
                                         {/* EDIT BUTTON (Hidden until hover) */}
                                         <button
-                                            onClick={() => openInventoryItemForm(item)}
+                                            onClick={() => openInventoryItemForm({item:item})}
                                             className="opacity-0 group-hover:opacity-100 p-1.5 text-text-muted hover:text-primary hover:bg-primary/10 rounded-lg transition-all"
                                             title="Edit Item Details"
                                         >
@@ -94,7 +94,7 @@ export default function InventoryDashboard({
                                 {/* MANAGE BUTTON */}
                                 <Button
                                     variant="ghost"
-                                    onClick={() => openManageStock(item)}
+                                    onClick={() => openManageStock({item})}
                                     className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 hover:bg-primary/20 border border-primary/20 px-4 h-9 shadow-sm rounded-xl transition-all active:scale-95"
                                 >
                                     Manage

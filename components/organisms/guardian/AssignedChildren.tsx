@@ -70,13 +70,13 @@ export const AssignedChildren = ({ guardian }: AssignedChildrenProps) => {
             {/* ACTION FOOTER */}
             <div className="p-4 bg-shaded/20 border-t border-border/50">
                 <button
-                    onClick={() => openModifyPlacementsModal(guardian)}
+                    onClick={() => openModifyPlacementsModal({guardian})}
                     className="w-full py-3 rounded-xl bg-bg border border-border text-[10px] font-black text-text-muted uppercase tracking-[0.2em] hover:text-primary hover:border-primary/40 transition-all active:scale-95 flex items-center justify-center gap-2"
                 >
                     Modify Placements →
                 </button>
                 <button
-                    onClick={() => openAssignChildrenModal(guardian._id)}
+                    onClick={() => openAssignChildrenModal({guardianId:guardian._id})}
                     className="w-full py-3 rounded-xl bg-bg border border-border text-[10px] font-black text-text-muted uppercase tracking-[0.2em] hover:text-primary hover:border-primary/40 transition-all active:scale-95">
                     Assign Children
                 </button>
