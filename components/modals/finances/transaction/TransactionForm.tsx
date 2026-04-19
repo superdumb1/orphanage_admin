@@ -76,7 +76,7 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
         )}
 
         {/* TYPE SWITCH */}
-        <div className="flex bg-shaded p-1.5 rounded-xl border border-border shrink-0">
+        <div className="flex bg-shaded p-1 rounded-xl border border-border shrink-0">
           <button
             type="button"
             onClick={() => {
@@ -246,7 +246,7 @@ const Footer: React.FC<{
       onClick={closeModal}
       className="text-text-muted hover:text-text hover:bg-shaded font-bold text-xs uppercase tracking-wider"
     >
-      Abort
+      Cancel
     </Button>
 
     <Button
@@ -255,7 +255,7 @@ const Footer: React.FC<{
       className={`px-8 font-black text-xs uppercase tracking-widest text-text-invert shadow-glow active:scale-95 transition-all h-11 ${transactionType === "INCOME" ? "bg-success hover:bg-success/90" : "bg-danger hover:bg-danger/90"
         }`}
     >
-      {isPending ? "PROCESSING..." : (isEditMode ? "UPDATE_RECORD" : "COMMIT_RECORD")}
+      {isPending ? "PROCESSING..." : (isEditMode ? "Update" : "Save")}
     </Button>
   </div>
 );

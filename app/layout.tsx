@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+// Import Inter (for clean body text) and Ubuntu (for technical headers/accents)
+import { Inter, Ubuntu } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "@/providers/AppProvider";
 import { AppShell } from "@/components/organisms/AppShell";
 
-const geistSans = Geist({ 
-  variable: "--font-geist-sans", 
+// Standard Sans-Serif for highly readable data tables and body text
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: 'swap',
 });
 
-const geistMono = Geist_Mono({ 
-  variable: "--font-geist-mono", 
+// Ubuntu for your "System Directive" headers, branding, and emphasis
+const ubuntu = Ubuntu({
+  variable: "--font-ubuntu",
+  weight: ["300", "400", "500", "700"], // Ubuntu requires weights to be specified
   subsets: ["latin"],
   display: 'swap',
 });
@@ -20,28 +24,24 @@ export const metadata: Metadata = {
   title: "OrphanAdmin | Kree Corp",
   description: "Internal management and financial audit system for Kree Corp Orphanage.",
   icons: {
-    icon: "/favicon.ico", // Ensure you have a themed favicon!
+    icon: "/favicon.ico",
   }
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html 
-      lang="en" 
-      // suppressHydrationWarning is essential for theme-switching apps
-      suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${inter.variable} ${ubuntu.variable}`}>
       <body className="
         min-h-full flex flex-col 
+        /* Set Inter as the default base font */
+        font-sans
         /* Theme Foundation */
-        bg-bg text-text 
-        /* Smooth cross-fade when switching themes */
+        bg-background text-text-main 
+        /* Smooth cross-fade */
         transition-colors duration-500 
         selection:bg-primary/30 selection:text-primary
       ">
         <AppProvider>
-          {/* AppShell handles the Sidebar, Topbar, and Main Content Area */}
           <AppShell>
             {children}
           </AppShell>

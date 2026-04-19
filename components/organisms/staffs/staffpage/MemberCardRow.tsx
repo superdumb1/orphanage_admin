@@ -50,7 +50,7 @@ const MemberCardRow = ({ person }: { person: any }) => {
             </td>
 
             <td className="p-4 text-center " >
-                <Button onClick={()=>{openStaffForm(person)}}>Edit</Button>
+                <Button onClick={()=>{openStaffForm({staff:person})}}>Edit</Button>
                 <Link href={`/staff/${person._id.toString()}`}>
                     <Button variant="ghost" className="text-[10px] font-black uppercase tracking-widest text-text-muted border border-border hover:bg-bg hover:text-text px-4 py-1.5 transition-all">
                         Manage

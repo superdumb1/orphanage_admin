@@ -153,7 +153,7 @@ export const AssignChildModal = ({
                         disabled={isPending || !selectedChildId || loading}
                         className="btn-primary px-12 h-12"
                     >
-                        {isPending ? "Finalizing..." : "Finalize Placement"}
+                        {isPending ? "Finalizing..." : "SAVE "}
                     </Button>
                 </div>
             </form>

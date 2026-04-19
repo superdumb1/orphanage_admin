@@ -105,7 +105,7 @@ export const InventoryItemForm: React.FC<InventoryItemForm> = ({
                     onClick={closeModal}
                     className="text-text-muted hover:text-text hover:bg-shaded font-bold text-xs uppercase tracking-wider"
                 >
-                    Abort
+                    CANCEL
                 </Button>
 
                 <Button
@@ -113,7 +113,7 @@ export const InventoryItemForm: React.FC<InventoryItemForm> = ({
                     disabled={isPending}
                     className="px-8 font-black text-xs uppercase tracking-widest text-text-invert bg-primary hover:bg-primary/90 shadow-glow active:scale-95 transition-all h-11"
                 >
-                    {isPending ? "PROCESSING..." : (item ? "UPDATE_ITEM" : "REGISTER_ITEM")}
+                    {isPending ? "PROCESSING..." : (item ? "UPDATE_ITEM" : "SAVE_ITEM")}
                 </Button>
             </div>
         </form>

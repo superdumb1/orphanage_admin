@@ -13,7 +13,7 @@ export default async function FinancePage() {
     }));
 
     return (
-        <div className="p-6">
+        <div className="">
             <div className="mb-8">
                 <h1 className="text-3xl font-black text-zinc-900 tracking-tighter">Finance & Ledger</h1>
                 <p className="text-sm text-zinc-500 font-medium">Manage your Chart of Accounts and organizational account heads.</p>

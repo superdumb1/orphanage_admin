@@ -128,7 +128,7 @@ export const ChildAction = ({
                         onClick={closeModal} 
                         className="text-[10px] font-black text-text-muted hover:text-text uppercase tracking-[0.2em] transition-all"
                     >
-                        Abort Sync
+                        CANCEL
                     </button>
                     
                     <Button 
@@ -136,7 +136,7 @@ export const ChildAction = ({
                         disabled={isPending} 
                         className="btn-primary min-w-[220px] h-14 shadow-glow"
                     >
-                        {isPending ? "Syncing Directive..." : "Execute Command →"}
+                        {isPending ? "Syncing Directive..." : "SAVE"}
                     </Button>
                 </div>
             </form>

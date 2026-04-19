@@ -19,10 +19,10 @@ export default function ChartOfAccounts({ initialAccounts }: { initialAccounts: 
   };
 
   return (
-    <div className="space-y-8 transition-colors duration-500 max-w-5xl mx-auto">
+    <div className="transition-colors duration-500 mx-auto">
       
       {/* HEADER */}
-      <div className="flex justify-between items-end px-4">
+      <div className="flex justify-between items-end ">
         <div>
           <h2 className="text-2xl font-black text-text tracking-tighter">
             Chart of Accounts

@@ -91,7 +91,7 @@ export default function ReportCenter({ transactions, accounts }: any) {
         <div className="bg-card border border-border rounded-dashboard shadow-glow mb-8 overflow-hidden transition-colors duration-500">
 
             {/* HEADER: border-zinc-100 -> border-border */}
-            <div className="p-6 md:p-8 border-b border-border flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-colors">
+            <div className="p-4 md:p-6 border-b border-border flex flex-col md:flex-row justify-between items-start md:items-center gap-6 transition-colors">
 
                 <div>
                     {/* Typography: text-zinc-900 -> text-text */}
@@ -117,7 +117,7 @@ export default function ReportCenter({ transactions, accounts }: any) {
             </div>
 
             {/* COMMAND BAR WRAPPER: bg-zinc-50 -> bg-shaded/50 */}
-            <div className="p-6 md:p-8 bg-shaded/50 transition-colors">
+            <div className=" bg-shaded/50 transition-colors">
                 <ReportCommandBar
                     filter={filter}
                     setFilter={setFilter}

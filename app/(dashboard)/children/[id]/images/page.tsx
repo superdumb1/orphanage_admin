@@ -43,7 +43,7 @@ export default function ChildImagesPage() {
     if (error) return <div className="p-6 text-red-600 font-medium">Error: {error}</div>;
 
     return (
-        <div className="p-6">
+        <div className="">
             <h1 className="text-2xl font-bold mb-6">Child Images</h1>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {images.length === 0 ? (

@@ -128,13 +128,13 @@ export const StaffForm = ({ initialData,closeModal }: { initialData?: StaffFormI
         disabled={isPending}
         className="h-12 px-8 !text-primary rounded-none border border-primary/50 bg-primary/10 hover:bg-primary hover:!text-white transition-all duration-500 group relative overflow-hidden shadow-[0_0_20px_rgba(59,130,246,0.2)]"
       >
-        <div className="relative z-10 flex items-center gap-3 font-mono text-[11px] font-black tracking-[0.2em]">
+        <div className="relative z-10 flex items-center gap-3 font-mono text-[21px] font-black ">
           {isPending ? (
             <span className="animate-pulse">EXECUTING...</span>
           ) : (
             <>
               <Save className="w-4 h-4" />
-              {initialData ? "COMMIT_CHANGES" : "INITIALIZE_RECORDS"}
+              {isPending?"Pending":initialData ? "Update" : "Save"}
             </>
           )}
         </div>

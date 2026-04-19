@@ -63,7 +63,7 @@ export default function ChildDocumentsPage() {
     if (error) return <div className="p-6 text-danger font-bold bg-danger/10 border border-danger/20 rounded-xl m-6">⚠️ Error: {error}</div>;
 
     return (
-        <div className="p-6 space-y-6">
+        <div className="space-y-6">
             <div>
                 <h1 className="text-2xl font-black text-text tracking-tighter">Legal & Medical Vault</h1>
                 <p className="text-sm text-text-muted mt-1 font-medium">Secure document repository</p>

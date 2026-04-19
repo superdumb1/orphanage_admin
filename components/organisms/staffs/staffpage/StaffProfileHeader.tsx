@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/atoms/Button";
+import { useUIModals } from "@/hooks/useUIModal";
 
 // Updated to use semantic theme tokens
 const getBadgeColor = (type?: string) => {
@@ -26,6 +27,7 @@ export const StaffProfileHeader = ({
   staffId: string;
 }) => {
   const nameInitial = staff?.fullName?.charAt(0)?.toUpperCase() || "?";
+  const { openStaffForm } = useUIModals()
 
   return (
     // Container: Updated bg-white -> bg-card, border-zinc-200 -> border-border
@@ -39,11 +41,9 @@ export const StaffProfileHeader = ({
       </Link>
 
       {/* EDIT BUTTON */}
-      <Link href={`/staff/${staffId}/edit`}>
-        <Button variant="secondary" className="px-5 border border-border hover:bg-shaded text-text">
-          Edit Info
-        </Button>
-      </Link>
+      <Button onClick={()=>openStaffForm({ staff: staff })} variant="secondary" className="px-5 border border-border hover:bg-shaded text-text">
+        Edit Info
+      </Button>
 
       {/* AVATAR: Updated border and fallback colors */}
       {staff?.profileImageUrl ? (

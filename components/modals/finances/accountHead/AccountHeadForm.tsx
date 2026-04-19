@@ -117,10 +117,10 @@ export const AccountHeadForm: React.FC<AccountHeadFormProps> = ({
 
             <div className="shrink-0 flex justify-end gap-3.5 p-6 md:px-8 border-t border-border bg-card">
                 <Button type="button" variant="ghost" onClick={closeModal} className="text-text-muted hover:text-text hover:bg-shaded font-bold text-xs uppercase tracking-wider">
-                    Abort
+                    CANCEL
                 </Button>
                 <Button type="submit" disabled={isPending || subTypes.length === 0} className="px-8 font-black text-xs uppercase tracking-widest text-text-invert bg-primary hover:bg-primary/90 shadow-glow active:scale-95 transition-all h-11">
-                    {isPending ? "PROCESSING..." : (initialData ? "UPDATE_HEAD" : "REGISTER_HEAD")}
+                    {isPending ? "PROCESSING..." : (initialData ? "UPDATE_HEAD" : "SAVE")}
                 </Button>
             </div>
         </form>

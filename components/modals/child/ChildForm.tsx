@@ -55,7 +55,7 @@ export const ChildForm = ({ initialData, closeModal }: { initialData?: any, clos
     return (
         <form
             action={formAction}
-            className="flex flex-col gap-10 max-w-5xl mx-auto w-full animate-in fade-in duration-500"
+            className="flex flex-col gap-10 w-full mx-auto w-full animate-in fade-in duration-500"
         >
             {initialData && <input type="hidden" name="_id" value={initialData._id} />}
 
@@ -186,12 +186,12 @@ export const ChildForm = ({ initialData, closeModal }: { initialData?: any, clos
                         disabled={isPending}
                         className="text-[10px] font-black text-text-muted hover:text-text uppercase tracking-widest transition-all"
                     >
-                        Abort Entry
+                        Cancel
                     </button>
                 )}
 
                 <Button type="submit" disabled={isPending} className="btn-primary min-w-[200px] h-14 shadow-glow">
-                    {isPending ? "Syncing Dossier..." : (initialData ? "Update Dossier" : "Finalize Admission")}
+                    {isPending ? "Syncing Dossier..." : (initialData ? "Update" : "Save")}
                 </Button>
             </div>
         </form>

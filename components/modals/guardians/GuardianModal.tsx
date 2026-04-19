@@ -154,7 +154,7 @@ export const GuardianModal = ({ mode, initialData, closeModal }: GuardianModalPr
                     onClick={closeModal} 
                     className="text-[10px] font-black text-text-muted hover:text-text uppercase tracking-[0.2em] transition-all"
                 >
-                    Discard Changes
+                    CANCEL
                 </button>
                 
                 <Button 
@@ -162,7 +162,7 @@ export const GuardianModal = ({ mode, initialData, closeModal }: GuardianModalPr
                     disabled={isPending} 
                     className="btn-primary min-w-[200px] h-12 shadow-glow"
                 >
-                    {isPending ? "Syncing Record..." : (isEdit ? "Update Dossier" : "Register Family")}
+                    {isPending ? "Syncing Record..." : (isEdit ? "Update" : "SAVE ")}
                 </Button>
             </div>
         </form>

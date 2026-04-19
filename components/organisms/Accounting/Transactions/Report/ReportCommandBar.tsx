@@ -18,7 +18,7 @@ export default function ReportCommandBar({
 
     return (
         // Container: bg-white -> bg-card, border-zinc-200 -> border-border
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 bg-card p-6 rounded-dashboard border border-border shadow-glow transition-colors duration-500">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 bg-card p-6  border border-border shadow-glow transition-colors duration-500">
 
             {/* TIMEFRAME */}
             <div className="flex flex-col gap-2">

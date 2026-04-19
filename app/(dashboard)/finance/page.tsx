@@ -44,7 +44,7 @@ export default async function FinancePage() {
 
     return (
         // Wrapper: Removed bg-zinc-50 (handled by global layout) and adjusted spacing
-        <div className="p-6 md:p-8 max-w-7xl mx-auto space-y-8 w-full transition-colors duration-500">
+        <div className=" max-w-7xl mx-auto space-y-8 w-full transition-colors duration-500">
             <PageHeader accounts={accounts} />
 
             {/* SUMMARY GRID */}

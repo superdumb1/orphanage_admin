@@ -21,13 +21,6 @@ export default function FinanceLedger({ transactions, accounts, inventory }: any
                     Live Ledger
                 </h2>
 
-                {/* Button: bg-emerald-600 -> bg-success, removed hardcoded shadow */}
-                <Button
-                    onClick={() => openTransactionForm()}
-                    className="bg-success hover:bg-success/90 text-text-invert font-black px-6 h-10 shadow-glow active:scale-95 transition-all"
-                >
-                    + New Transaction
-                </Button>
             </div>
 
             {/* TABLE - Already Themed */}
