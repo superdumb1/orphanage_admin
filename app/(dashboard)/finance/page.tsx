@@ -44,9 +44,9 @@ export default async function FinancePage() {
 
     return (
         // ✨ FIX: Added p-4 pt-20 md:p-6 md:pt-6 lg:p-8 to clear the mobile sidebar menu
-        <div className="max-w-7xl mx-auto space-y-8 pt-10 w-full md:p-6 md:pt-6 lg:p-8 transition-colors duration-500">
+        <div className="max-w-7xl mx-auto space-y-8  w-full md:p-6 md:pt-6 lg:p-8 transition-colors duration-500">
             <PageHeader />
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
+            <div className="grid grid-cols-2 md:pt-6 md:grid-cols-3 gap-3 md:gap-6">
                 <SummaryCard
                     label="Available Balance"
                     value={netBalance}

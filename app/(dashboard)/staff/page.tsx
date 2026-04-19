@@ -34,7 +34,7 @@ export default async function StaffPage() {
 
     return (
         // ✨ Added pt-20 for mobile sidebar clearance
-        <div className="flex flex-col gap-6 max-w-7xl mx-auto p-4 md:p-6 md:pt-6 lg:p-8 animate-in fade-in duration-500">
+        <div className="flex flex-col gap-6 max-w-7xl mx-auto md:p-6 md:pt-6 lg:p-8 animate-in fade-in duration-500">
             <StaffHomeTop />
             
             <StaffStatCards staffMembers={staffMembers} />

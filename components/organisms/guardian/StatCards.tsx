@@ -1,72 +1,32 @@
 "use client";
-
 import React from "react";
 
-// 1. Replaced hardcoded colors with your semantic theme variants
-type Variant = "default" | "primary" | "warning" | "success" | "danger";
-
-const StatCard: React.FC<{ label: string; value: number; variant: Variant }> = ({
-    label,
-    value,
-    variant,
-}) => {
-    // 2. Map the variants to your CSS variables
-    const textColors: Record<Variant, string> = {
-        default: "text-text-muted",
-        primary: "text-primary",
-        warning: "text-warning",
-        success: "text-success",
-        danger: "text-danger",
-    };
+export default function StatCards({ guardians }: { guardians: any[] }) {
+    const stats = [
+        { label: "Total Applicants", val: guardians.length, color: "text-text-muted", bg: "bg-shaded", icon: "👥" },
+        { label: "Under Vetting", val: guardians.filter(g => g.vettingStatus === "VETTING").length, color: "text-warning", bg: "bg-warning/10", icon: "🔍" },
+        { label: "Approved", val: guardians.filter(g => g.vettingStatus === "APPROVED").length, color: "text-success", bg: "bg-success/10", icon: "✅" },
+        { label: "Blacklisted", val: guardians.filter(g => g.vettingStatus === "BLACKLISTED").length, color: "text-danger", bg: "bg-danger/10", icon: "🚫" },
+    ];
 
     return (
-        // 3. Updated Container: bg-white -> bg-card, border-zinc-200 -> border-border
-        <div className="p-6 rounded-dashboard border border-border bg-card shadow-glow transition-colors duration-500 flex flex-col justify-center">
-            
-            {/* 4. Upgraded Typography: Micro-caps aesthetic to match your other panels */}
-            <p className={`text-[10px] font-black uppercase tracking-[0.15em] mb-1.5 ${textColors[variant]}`}>
-                {label}
-            </p>
-            
-            {/* 5. Value: text-zinc-900 -> text-text */}
-            <p className="text-3xl font-black text-text">
-                {value}
-            </p>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4">
+            {stats.map((s) => (
+                <div key={s.label} className="bg-card p-3 md:p-5 rounded-2xl md:rounded-[1.5rem] border border-border shadow-sm">
+                    <div className="flex justify-between items-center mb-2 md:mb-3">
+                        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-xl ${s.bg} ${s.color} flex items-center justify-center text-lg md:text-xl border border-border/50 shrink-0`}>
+                            {s.icon}
+                        </div>
+                        <span className={`font-ubuntu text-[9px] md:text-[10px] font-black uppercase tracking-widest ${s.color}`}>
+                            {s.label.split(' ')[1] || s.label}
+                        </span>
+                    </div>
+                    <div className="text-2xl md:text-3xl font-black text-text tracking-tighter leading-none">
+                        {s.val}
+                    </div>
+                    <div className="hidden md:block font-ubuntu text-xs text-text-muted mt-2">{s.label}</div>
+                </div>
+            ))}
         </div>
     );
-};
-
-const StatCards: React.FC<{ guardians: any[] }> = ({ guardians }) => {
-    return (
-        // Increased gap to 6 for better breathing room on premium layouts
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            
-            <StatCard 
-                label="Total Applicants" 
-                value={guardians.length} 
-                variant="default" 
-            />
-            
-            <StatCard 
-                label="Under Vetting" 
-                value={guardians.filter(g => g.vettingStatus === "VETTING").length} 
-                variant="warning" 
-            />
-            
-            <StatCard 
-                label="Approved Families" 
-                value={guardians.filter(g => g.vettingStatus === "APPROVED").length} 
-                variant="success" 
-            />
-            
-            <StatCard 
-                label="Blacklisted" 
-                value={guardians.filter(g => g.vettingStatus === "BLACKLISTED").length} 
-                variant="danger" 
-            />
-            
-        </div>
-    );
-};
-
-export default StatCards;
+}
