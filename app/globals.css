@@ -12,6 +12,10 @@
   --color-card: var(--card);
   --color-border: var(--border-color);
 
+  /* ✨ NEW: Dedicated surface colors for layering */
+  --color-surface: var(--bg-surface);
+  --color-alt: var(--bg-alt);
+
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
@@ -28,17 +32,21 @@
    DARK MODE (DEFAULT)
    ============================================================ */
 :root {
-  --bg-primary: #1f1f23;      /* was #3b3b3b → too gray, now softer dark */
-  --bg-shaded: #111113;      /* slightly lifted from pure near-black */
-  --card: #18181b;           /* lighter card for separation */
-  --bg-invert: #ffffff;
+  --bg-primary: #1f1f23;      /* Base canvas */
+  --bg-shaded: #111113;       /* Deepest shade (headers/navs) */
+  --card: #18181b;            /* Standard Card */
+  
+  /* ✨ NEW: Solid colors for layering (no opacity needed) */
+  --bg-alt: #232328;          /* Slightly lighter than card for alternating rows */
+  --bg-surface: #27272a;      /* Elevated surface for nested data wells */
 
-  --text-primary: #f4f4f5;   /* slightly softer than pure white */
+  --bg-invert: #ffffff;
+  --text-primary: #f4f4f5;   
   --text-muted: #a1a1aa;
   --text-invert: #000000;
 
   --primary: #3b82f6;
-  --border-color: #2f2f35;   /* lighter border for visibility */
+  --border-color: #2f2f35;   
 
   --success: #10b981;
   --warning: #f59e0b;
@@ -52,11 +60,15 @@
    LIGHT MODE
    ============================================================ */
 .light {
-  --bg-primary: #ffffff;
-  --bg-shaded: #f8f8f8;
-  --card: #ffffff;
-  --bg-invert: #000000;
+  --bg-primary: #f4f4f5;      /* Swapped to light gray so white cards POP */
+  --bg-shaded: #e4e4e7;       /* Deepest light shade */
+  --card: #ffffff;            /* Pure white card */
+  
+  /* ✨ NEW */
+  --bg-alt: #fafafa;          /* Off-white for alternating cards */
+  --bg-surface: #f8f8f8;      /* Slight gray for inner data wells */
 
+  --bg-invert: #000000;
   --text-primary: #09090b;
   --text-muted: #71717a;
   --text-invert: #ffffff;
@@ -72,40 +84,4 @@
   --glow-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
-/* ============================================================
-   BASE
-   ============================================================ */
-@layer base {
-  body {
-    @apply bg-bg text-text transition-colors duration-500 ease-in-out antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "ss01";
-  }
-
-  ::-webkit-scrollbar {
-    width: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    @apply bg-bg;
-  }
-  ::-webkit-scrollbar-thumb {
-    @apply bg-border rounded-full hover:bg-text/20 transition-colors;
-  }
-}
-
-/* ============================================================
-   UTILITIES
-   ============================================================ */
-@layer utilities {
-  .glass {
-    @apply bg-card/60 backdrop-blur-md border border-border;
-  }
-
-  .btn-primary {
-    @apply bg-primary text-text-invert font-bold px-6 py-2.5 rounded-xl 
-           hover:opacity-90 active:scale-95 transition-all shadow-glow;
-  }
-
-  .card-hover {
-    @apply hover:border-primary/50 hover:shadow-glow transition-all duration-300;
-  }
-}
+/* ... Keep your Base and Utilities layers exactly the same ... */
