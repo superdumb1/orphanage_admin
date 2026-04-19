@@ -43,16 +43,15 @@ export default async function FinancePage() {
     const netBalance = totalIncome - totalExpense;
 
     return (
-        // Wrapper: Removed bg-zinc-50 (handled by global layout) and adjusted spacing
-        <div className=" max-w-7xl mx-auto space-y-8 w-full transition-colors duration-500">
-            <PageHeader accounts={accounts} />
-
-            {/* SUMMARY GRID */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        // ✨ FIX: Added p-4 pt-20 md:p-6 md:pt-6 lg:p-8 to clear the mobile sidebar menu
+        <div className="max-w-7xl mx-auto space-y-8 pt-10 w-full md:p-6 md:pt-6 lg:p-8 transition-colors duration-500">
+            <PageHeader />
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
                 <SummaryCard
                     label="Available Balance"
                     value={netBalance}
                     variant={netBalance >= 0 ? "default" : "danger"}
+                    className="col-span-2 md:col-span-1" // ✨ Makes Balance span full-width on mobile!
                 />
                 <SummaryCard
                     label="Total Inflow"
@@ -67,7 +66,6 @@ export default async function FinancePage() {
                     prefix="- "
                 />
             </div>
-
             <FinanceLedger
                 transactions={transactions}
                 accounts={accounts}
@@ -88,13 +86,14 @@ function SummaryCard({
     value,
     variant = "default",
     prefix = "",
+    className = "", // ✨ Added className prop for grid spanning
 }: {
     label: string;
     value: number;
     variant?: Variant;
     prefix?: string;
+    className?: string;
 }) {
-    // 1. Map container backgrounds and borders to semantic tokens with opacity
     const containerStyles: Record<Variant, string> = {
         default: "bg-card border-border",
         success: "bg-success/10 border-success/20",
@@ -102,7 +101,6 @@ function SummaryCard({
         danger: "bg-danger/10 border-danger/20",
     };
 
-    // 2. Map the main value text colors to matching semantic tokens
     const valueStyles: Record<Variant, string> = {
         default: "text-text",
         success: "text-success",
@@ -112,17 +110,17 @@ function SummaryCard({
 
     return (
         <div
-            // 3. Upgraded structural classes: rounded-dashboard, shadow-glow
-            className={`p-6 rounded-dashboard border shadow-glow flex flex-col justify-center gap-2 transition-colors duration-500 ${containerStyles[variant]}`}
+            // ✨ Tightened padding (p-4 md:p-6), rounded corners, and gaps for mobile
+            className={`p-4 md:p-6 rounded-2xl md:rounded-[2rem] border shadow-sm flex flex-col justify-center gap-1 md:gap-2 transition-colors duration-500 ${containerStyles[variant]} ${className}`}
         >
-            {/* LABEL: Upgraded to Micro-caps aesthetic with text-text-muted */}
-            <p className="text-[10px] font-black uppercase tracking-[0.15em] text-text-muted">
+            {/* ✨ Standardized font-ubuntu and scaled down text size for mobile */}
+            <p className="font-ubuntu text-[9px] md:text-[10px] font-black uppercase tracking-widest text-text-muted">
                 {label}
             </p>
 
-            {/* VALUE: Tinted based on variant, bumped to text-3xl for impact */}
-            <p className={`text-3xl font-black tracking-tight ${valueStyles[variant]}`}>
-                <span className="opacity-80 pr-1">{prefix}</span>
+            {/* ✨ Scaled value text down to text-2xl on mobile so large numbers don't break */}
+            <p className={`text-2xl md:text-3xl font-black tracking-tight leading-none ${valueStyles[variant]}`}>
+                <span className="opacity-80 pr-1 text-lg md:text-xl">{prefix}</span>
                 NPR {Number(value).toLocaleString("en-IN")}
             </p>
         </div>

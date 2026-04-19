@@ -5,11 +5,9 @@ import { useUIModals } from "@/hooks/useUIModal";
 import React, { useState } from "react";
 
 const StaffHomeTop = () => {
-    const {openStaffForm}=useUIModals()
+    const { openStaffForm } = useUIModals()
     return (
         <>
-        
-
             {/* Changed bg-white to bg-card and added shadow-glow */}
             <div className="flex justify-between items-center bg-card p-6 rounded-dashboard shadow-glow border border-border transition-colors duration-500">
 
