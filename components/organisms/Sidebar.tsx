@@ -155,7 +155,7 @@ export const Sidebar = () => {
             </span>
             <ThemeToggle />
           </div>
-
+          
           <button
             onClick={() => signOut()}
             title={isCollapsed ? "Logout" : undefined}

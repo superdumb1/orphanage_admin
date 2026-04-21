@@ -6,6 +6,7 @@ import { SelectField } from "@/components/molecules/SelectField";
 import { Button } from "@/components/atoms/Button";
 import { createActionItem } from "@/app/actions/actionPlans";
 import { Target, ClipboardList } from "lucide-react";
+import { SubmitButton } from "@/components/atoms/SubmitButton";
 
 export const ChildAction = ({
     childId,
@@ -129,7 +130,9 @@ export const ChildAction = ({
                         className="text-[10px] font-black text-text-muted hover:text-text uppercase tracking-[0.2em] transition-all"
                     >
                         CANCEL
+                        
                     </button>
+                   
                     
                     <Button 
                         type="submit" 

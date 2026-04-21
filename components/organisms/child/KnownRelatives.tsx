@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/atoms/Button";
 import { FormField } from "@/components/molecules/FormField";
+import { X } from "lucide-react";
 
 type Relative = {
   id: string;
@@ -74,15 +75,18 @@ export const KnownRelatives = ({ initialRelatives = [] }: { initialRelatives?: a
             className="relative bg-card p-5 rounded-xl border border-border shadow-sm flex flex-col gap-4 group transition-all"
           >
             {/* REMOVE */}
+            {/* ✨ Updated Remove Button Logic */}
             <button
               type="button"
               onClick={() => removeRelative(relative.id)}
-              className="absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center
-                         bg-danger/10 text-danger border border-danger/20
-                         opacity-0 group-hover:opacity-100 transition-all"
+              className="absolute -top-3 -right-3 w-8 h-8 rounded-full
+             flex items-center justify-center
+             bg-danger text-white shadow-glow border-2 border-card
+             opacity-100 transition-all z-[100] 
+             hover:scale-110 active:scale-90"
               title="Remove Relative"
             >
-              ✕
+              <X size={14} strokeWidth={3} />
             </button>
 
             <div className="flex flex-col md:flex-row gap-5 items-start">

@@ -55,7 +55,7 @@ export const ChildForm = ({ initialData, closeModal }: { initialData?: any, clos
     return (
         <form
             action={formAction}
-            className="flex flex-col gap-10 w-full mx-auto w-full animate-in fade-in duration-500"
+            className="flex flex-col gap-10 mx-auto lg:w-[72dvw] animate-in fade-in duration-500"
         >
             {initialData && <input type="hidden" name="_id" value={initialData._id} />}
 
