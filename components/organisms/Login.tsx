@@ -4,18 +4,19 @@ import React, { useState } from "react";
 import { signIn } from "next-auth/react";
 import { FormField } from "../molecules/FormField";
 import { Button } from "../atoms/Button";
-import { Loader2, ShieldCheck } from "lucide-react"; // Nice icons for the "Admin" feel
+import { Loader2, ShieldCheck, Eye, EyeOff } from "lucide-react"; // Added Eye icons
 
 export const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // New state for visibility
   const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false); // Added loading state
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setIsLoading(true); // Start loading
+    setIsLoading(true);
 
     try {
       const res = await signIn("credentials", {
@@ -26,10 +27,8 @@ export const Login = () => {
 
       if (res?.error) {
         setError("Invalid credentials. Access Denied.");
-        setIsLoading(false); // Reset on error
+        setIsLoading(false);
       } else {
-        // Force a slight delay for that "Syncing" feel if you want, 
-        // or just let NextAuth handle the redirect.
         window.location.href = "/dashboard"; 
       }
     } catch (err) {
@@ -72,13 +71,24 @@ export const Login = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
 
-            <FormField
-              label="Access Key"
-              type="password"
-              placeholder="••••••••"
-              required
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            {/* PASSWORD FIELD WITH VIEW TOGGLE */}
+            <div className="relative group/pass">
+              <FormField
+                label="Access Key"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                required
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 bottom-1.5 p-1.5  rounded-lg text-text-muted hover:text-primary hover:bg-primary/10 transition-all active:scale-90"
+                title={showPassword ? "Hide Password" : "Show Password"}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
 
           <Button
