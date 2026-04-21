@@ -112,7 +112,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
                             </div>
 
                             {/* DATA TRAY */}
-                            <div className="p-8 md:p-10 w-full overflow-y-auto  custom-scrollbar bg-card">
+                            <div className="max-h-[80dvh] p-8 md:p-10 w-full overflow-scroll  custom-scrollbar bg-card">
                                 <ActiveComponent {...modal.props} closeModal={closeModal} />
                             </div>
                         </div>
