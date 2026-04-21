@@ -93,7 +93,7 @@ export function ModalProvider({ children }: { children: ReactNode }) {
                         <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={closeModal} />
 
                         {/* MODAL CONTAINER */}
-                        <div className={`relative bg-card border max-h-[80dvh] max-w-[95dvw] w-fit border-border rounded-dashboard shadow-glow overflow-hidden transition-all duration-300 ${
+                        <div className={`relative bg-card border  max-w-[95dvw] w-fit border-border rounded-dashboard shadow-glow overflow-hidden transition-all duration-300 ${
                             !modal.isClosing ? "scale-100 translate-y-0" : "scale-95 translate-y-8"
                         }`}>
                             <div className="flex items-center justify-between p-6 border-b border-border/50 bg-shaded/40">
