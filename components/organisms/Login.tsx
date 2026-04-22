@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import { FormField } from "../molecules/FormField";
 import { Button } from "../atoms/Button";
 import { Loader2, ShieldCheck, Eye, EyeOff } from "lucide-react"; // Added Eye icons
+import Link from "next/link";
 
 export const Login = () => {
   const [email, setEmail] = useState("");
@@ -29,7 +30,7 @@ export const Login = () => {
         setError("Invalid credentials. Access Denied.");
         setIsLoading(false);
       } else {
-        window.location.href = "/dashboard"; 
+        window.location.href = "/dashboard";
       }
     } catch (err) {
       setError("System connection failure.");
@@ -45,7 +46,7 @@ export const Login = () => {
       >
         <div className="p-8 border-b border-border text-center bg-shaded/30">
           <div className="mx-auto w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center mb-4 border border-primary/20">
-             <ShieldCheck className="text-primary" size={24} />
+            <ShieldCheck className="text-primary" size={24} />
           </div>
           <h2 className="text-xl font-black text-text uppercase tracking-widest">
             Identity Protocol
@@ -94,11 +95,10 @@ export const Login = () => {
           <Button
             type="submit"
             disabled={isLoading}
-            className={`w-full h-14 relative overflow-hidden transition-all duration-300 ${
-                isLoading 
-                ? "bg-primary/20 text-primary border-primary/30 cursor-not-allowed" 
+            className={`w-full h-14 relative overflow-hidden transition-all duration-300 ${isLoading
+                ? "bg-primary/20 text-primary border-primary/30 cursor-not-allowed"
                 : "btn-primary shadow-glow hover:scale-[1.02] active:scale-[0.98]"
-            }`}
+              }`}
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-3">
@@ -110,12 +110,23 @@ export const Login = () => {
             )}
           </Button>
         </div>
-        
-        <div className="p-4 bg-shaded/20 text-center border-t border-border/50">
-            <p className="text-[9px] text-text-muted font-bold uppercase tracking-widest opacity-40">
-                Authorized Personnel Only
+
+        <div className="p-4 bg-shaded/20 text-center border-t border-border/50 flex flex-col gap-3">
+          <p className="text-[9px] text-text-muted font-bold uppercase tracking-widest opacity-40">
+            Authorized Personnel Only
+          </p>
+
+          {/* ✨ ADD THIS NEW LINK BLOCK */}
+          <div className="pt-3 border-t border-border/30">
+            <p className="text-[10px] text-text-muted font-bold">
+              No access credentials?
             </p>
+            <Link href="/register" className="text-xs font-black text-primary uppercase tracking-widest hover:underline mt-1 inline-block">
+              Submit Clearance Requisition
+            </Link>
+          </div>
         </div>
+
       </form>
     </div>
   );
