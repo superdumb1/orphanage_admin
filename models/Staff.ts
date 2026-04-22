@@ -1,7 +1,14 @@
 import mongoose, { Schema } from "mongoose";
 
 const StaffSchema = new Schema(
+
   {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      unique: true,
+      sparse: true
+    },
     // BASIC INFO
     fullName: { type: String, required: true, trim: true },
     nepaliName: { type: String },
@@ -12,10 +19,10 @@ const StaffSchema = new Schema(
     address: String,
     gender: { type: String, enum: ["MALE", "FEMALE", "OTHER"] },
     maritalStatus: { type: String, enum: ["SINGLE", "MARRIED"] },
-    status: { 
-        type: String, 
-        enum: ["ACTIVE", "ON_LEAVE", "RESIGNED", "TERMINATED"], 
-        default: "ACTIVE" 
+    status: {
+      type: String,
+      enum: ["ACTIVE", "ON_LEAVE", "RESIGNED", "TERMINATED"],
+      default: "ACTIVE"
     },
 
     citizenshipNo: String,
@@ -50,7 +57,10 @@ const StaffSchema = new Schema(
       festivalBonusMonths: Number,
       insurancePremium: Number,
     },
-
+    financialControls: {
+      allowAdvances: { type: Boolean, default: true },
+      maxAdvanceLimit: { type: Number, default: 10000 }, // Sets a ceiling on how much Orphanage cash they can hold
+    },
     // SSF
     ssf: {
       enrolled: Boolean,

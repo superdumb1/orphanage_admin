@@ -53,6 +53,7 @@ export default function ChartOfAccounts({ initialAccounts }: { initialAccounts: 
           { title: "Assets", type: "ASSET", theme: "primary" as const, addIncome: true },
           { title: "Liabilities", type: "LIABILITY", theme: "warning" as const, addIncome: false }
         ].map((sec) => (
+          // Inside ChartOfAccounts.tsx map function:
           <AccountSection
             key={sec.type}
             title={sec.title}
@@ -60,7 +61,7 @@ export default function ChartOfAccounts({ initialAccounts }: { initialAccounts: 
             theme={sec.theme}
             isOpen={openSection === sec.type}
             onToggle={() => handleToggle(sec.type)}
-            onAdd={() => openAccountHeadForm({ isIncomeHead: sec.addIncome })}
+            onAdd={() => openAccountHeadForm({ defaultType: sec.type })}
           />
         ))}
       </div>

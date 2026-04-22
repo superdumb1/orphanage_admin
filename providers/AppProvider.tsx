@@ -9,11 +9,11 @@ const AppContext = createContext<any>(null)
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     return (
         <AppContext.Provider value={{}}>
-            <ModalProvider>
-                <SessionProvider>
+            <SessionProvider>
+                <ModalProvider>
                     {children}
-                </SessionProvider>
-            </ModalProvider>
+                </ModalProvider>
+            </SessionProvider>
         </AppContext.Provider>
     )
 }

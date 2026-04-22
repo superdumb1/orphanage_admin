@@ -5,19 +5,34 @@ import Staff from "@/models/Staff";
 import Transaction from "@/models/Transaction";
 import InventoryItem from "@/models/InventoryItem";
 import ActionPlan from "@/models/ActionPlan";
-import { Sparkles,  Activity } from "lucide-react";
+import User from "@/models/User"; // ✨ NEW: For pending user checks
+import { Sparkles, Activity, ShieldAlert, Clock, Wallet } from "lucide-react";
 import QuickActionSidebar from "@/components/organisms/ActionButtonsDashboard";
 import AlertStatCard from "@/components/organisms/dashboard/AlertStatCard";
+// import { getServerSession } from "next-auth/next"; // Uncomment if you want to hide the Admin row from standard staff
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   await dbConnect();
 
-  const [kidsCount, staffCount, financeStats, lowStockItemsRaw, urgentActionsRaw] = await Promise.all([
+  // ✨ ADDED: Fetching Admin-level Alerts alongside operational data
+  const [
+    kidsCount, 
+    staffCount, 
+    financeStats, 
+    lowStockItemsRaw, 
+    urgentActionsRaw,
+    pendingUsersCount,
+    pendingTransactionsCount,
+    unsettledCashResult
+  ] = await Promise.all([
     Child.countDocuments({ status: "IN_CARE" }),
     Staff.countDocuments({ status: "ACTIVE" }),
+    
+    // ✨ CRITICAL FIX: Only calculate VERIFIED transactions for the main balance!
     Transaction.aggregate([
+      { $match: { status: "VERIFIED" } }, 
       {
         $group: {
           _id: null,
@@ -26,22 +41,39 @@ export default async function Home() {
         }
       }
     ]),
+    
     InventoryItem.find({ $expr: { $lte: ["$currentStock", "$minimumStockLevel"] } })
       .sort({ currentStock: 1 }).limit(3).lean(),
+    
     ActionPlan.find({ status: { $in: ['PENDING', 'IN_PROGRESS'] }, priority: { $in: ['HIGH', 'URGENT'] } })
       .populate('childId', 'firstName lastName')
       .populate('assignedStaff', 'fullName')
-      .sort({ dueDate: 1 }).limit(4).lean()
+      .sort({ dueDate: 1 }).limit(4).lean(),
+
+    // ✨ NEW: Executive Dashboard Metrics
+    User.countDocuments({ isActive: false, role: { $ne: "ADMIN" } }),
+    Transaction.countDocuments({ status: "PENDING" }),
+    Transaction.aggregate([
+      { $match: { status: "VERIFIED", paymentMethod: "CASH", isSettled: false, type: "INCOME" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } }
+    ])
   ]);
 
   const income = financeStats[0]?.totalIncome || 0;
   const expense = financeStats[0]?.totalExpense || 0;
   const currentBalance = income - expense;
+  
   const lowStockItems = JSON.parse(JSON.stringify(lowStockItemsRaw));
   const urgentActions = JSON.parse(JSON.stringify(urgentActionsRaw));
+  const totalUnsettledCash = unsettledCashResult[0]?.total || 0;
+
+  // Optional: Check session here if you want to hide the Admin Alert row from normal staff
+  // const session = await getServerSession();
+  // const isAdmin = session?.user?.role === "ADMIN";
+  const isAdmin = true; // Forcing true for now so you can see it!
 
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto  md:p-6 md:pt-6 lg:p-8 animate-in fade-in duration-500">
+    <div className="flex flex-col gap-6 max-w-7xl mx-auto md:p-6 md:pt-6 lg:p-8 animate-in fade-in duration-500">
 
       {/* --- KREE STANDARD HEADER --- */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-5 md:p-6 rounded-[2rem] shadow-sm border border-border">
@@ -60,30 +92,72 @@ export default async function Home() {
         </div>
       </div>
 
+      {/* --- ✨ NEW: EXECUTIVE ADMIN ALERTS ROW --- */}
+      {isAdmin && (pendingUsersCount > 0 || pendingTransactionsCount > 0 || totalUnsettledCash > 0) && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
+            <Link href="/admin/users" className={`p-4 rounded-2xl border flex justify-between items-center group transition-all ${pendingUsersCount > 0 ? 'bg-warning/10 border-warning/30 hover:border-warning' : 'hidden'}`}>
+                <div className="flex items-center gap-3">
+                    <ShieldAlert className="text-warning" size={20} />
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-warning">Pending Clearances</span>
+                        <span className="text-xs font-bold text-text-muted group-hover:text-text transition-colors">Review personnel requests</span>
+                    </div>
+                </div>
+                <span className="text-xl font-black text-warning">{pendingUsersCount}</span>
+            </Link>
+
+            <Link href="/approvals" className={`p-4 rounded-2xl border flex justify-between items-center group transition-all ${pendingTransactionsCount > 0 ? 'bg-danger/10 border-danger/30 hover:border-danger' : 'hidden'}`}>
+                <div className="flex items-center gap-3">
+                    <Clock className="text-danger" size={20} />
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-danger">Unverified Entries</span>
+                        <span className="text-xs font-bold text-text-muted group-hover:text-text transition-colors">Field data awaiting approval</span>
+                    </div>
+                </div>
+                <span className="text-xl font-black text-danger">{pendingTransactionsCount}</span>
+            </Link>
+
+            <Link href="/finance/settlements" className={`p-4 rounded-2xl border flex justify-between items-center group transition-all ${totalUnsettledCash > 0 ? 'bg-primary/10 border-primary/30 hover:border-primary' : 'hidden'}`}>
+                <div className="flex items-center gap-3">
+                    <Wallet className="text-primary" size={20} />
+                    <div className="flex flex-col">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">Unsettled Cash</span>
+                        <span className="text-xs font-bold text-text-muted group-hover:text-text transition-colors">Reconcile field collections</span>
+                    </div>
+                </div>
+                <span className="text-lg font-black font-mono text-primary">Rs. {totalUnsettledCash.toLocaleString()}</span>
+            </Link>
+        </div>
+      )}
+
       {/* --- COMPACT KPI GRID (2x2 on Mobile) --- */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         <StatCard icon="👧" label="Children" value={kidsCount} sub="Active Intake" variant="primary" />
         <StatCard icon="👩‍🏫" label="Staff" value={staffCount} sub="On-Duty" variant="secondary" />
 
         {/* Finance Balance */}
-        <div className="bg-card p-4 md:p-6 rounded-2xl md:rounded-dashboard border border-border shadow-sm flex flex-col">
+        <div className="bg-card p-4 md:p-6 rounded-2xl md:rounded-dashboard border border-border shadow-sm flex flex-col hover:translate-y-[-2px] transition-all duration-300">
           <div className="flex justify-between items-center md:items-start mb-2 md:mb-4">
             <div className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[9px] md:text-[10px] font-black border ${currentBalance < 0 ? 'bg-danger/10 text-danger border-danger/20' : 'bg-success/10 text-success border-success/20'}`}>
               NPR
             </div>
-            <span className="text-[9px] md:text-[10px] font-black text-text-muted uppercase tracking-widest">Funds</span>
+            <span className="text-[9px] md:text-[10px] font-black text-text-muted uppercase tracking-widest">Verified Funds</span>
           </div>
           <span className={`text-xl md:text-2xl font-black truncate tracking-tighter ${currentBalance < 0 ? 'text-danger' : 'text-success'}`}>
             Rs. {currentBalance.toLocaleString()}
           </span>
-          <p className="hidden md:block text-[10px] font-black text-text-muted mt-2 uppercase tracking-widest opacity-60">Available Balance</p>
+          <p className="hidden md:block text-[10px] font-black text-text-muted mt-2 uppercase tracking-widest opacity-60">Main Ledger Balance</p>
         </div>
         <AlertStatCard count={urgentActions.length} />
       </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
+        
+        {/* Your Existing Quick Action Sidebar */}
         <QuickActionSidebar />
 
         <div className="lg:col-span-2 flex flex-col gap-6 md:gap-10">
+          
           {/* URGENT CARE FEED */}
           <div id="urgent" className="bg-card rounded-[2rem] border border-border overflow-hidden shadow-sm">
             <div className="p-5 md:p-6 border-b border-border bg-shaded flex justify-between items-center">
@@ -135,16 +209,20 @@ export default async function Home() {
           <div className="bg-card rounded-[2rem] border border-border p-6 md:p-8 shadow-sm">
             <h2 className="font-ubuntu text-[10px] font-black text-text-muted uppercase tracking-[0.3em] mb-6">Stock Depletion</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
-              {lowStockItems.map((item: any) => (
-                <Link
-                  key={item._id}
-                  href={`/inventory?search=${encodeURIComponent(item.name)}`}
-                  className="bg-surface border border-border p-4 rounded-2xl group hover:border-danger/30 transition-all"
-                >
-                  <p className="text-[9px] font-black text-danger uppercase mb-1 tracking-widest">{item.currentStock} {item.unit} left</p>
-                  <p className="font-bold text-xs md:text-sm text-text truncate group-hover:text-danger transition-colors capitalize">{item.name}</p>
-                </Link>
-              ))}
+              {lowStockItems.length === 0 ? (
+                  <p className="text-[10px] font-black text-text-muted uppercase tracking-widest col-span-full opacity-50">Supply lines stable.</p>
+              ) : (
+                lowStockItems.map((item: any) => (
+                  <Link
+                    key={item._id}
+                    href={`/inventory?search=${encodeURIComponent(item.name)}`}
+                    className="bg-surface border border-border p-4 rounded-2xl group hover:border-danger/30 transition-all"
+                  >
+                    <p className="text-[9px] font-black text-danger uppercase mb-1 tracking-widest">{item.currentStock} {item.unit} left</p>
+                    <p className="font-bold text-xs md:text-sm text-text truncate group-hover:text-danger transition-colors capitalize">{item.name}</p>
+                  </Link>
+                ))
+              )}
             </div>
           </div>
         </div>

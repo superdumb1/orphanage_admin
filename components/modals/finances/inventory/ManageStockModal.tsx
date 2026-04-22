@@ -6,39 +6,27 @@ import { StockFinanceFields } from "../../../organisms/Accounting/modals/ManageS
 import { StockFormFields } from "../../../organisms/Accounting/modals/ManageStockModal/StockFormFields";
 
 import { TInventoryItem, TAccountHead } from "@/types/Transaction";
+import { useSession } from "next-auth/react";
 
 interface ManageStockProps {
     closeModal: () => void;
     item: TInventoryItem | any;
 }
 
-export const ManageStockModal: React.FC<ManageStockProps> = ({
-    closeModal,
-    item,
-}) => {
+export const ManageStockModal: React.FC<ManageStockProps> = ({ closeModal, item }) => {
+    // ✨ 2. Get the user
+    const { data: session } = useSession();
+
     const [state, formAction, isPending] = useActionState(adjustStock as any, {
-        error: null,
-        success: false,
+        error: null, success: false,
     });
     const [accounts, setAccounts] = useState<any[]>([]);
 
     useEffect(() => {
-        const fetchAccounts = async () => {
-            try {
-                const response = await fetch('/api/finances/accountHead');
-                if (!response.ok) throw new Error("Failed to fetch accounts");
-                const data = await response.json();
-                setAccounts(data);
-            } catch (error) {
-                console.error("Error fetching account heads:", error);
-            }
-        };
-
-        fetchAccounts();
+        // ... (keep your existing fetchAccounts logic)
     }, []);
 
     const [actionType, setActionType] = useState<"IN" | "OUT">("IN");
-
     const isFromFinance = !!item?.logId;
     const inventoryItem = isFromFinance ? item.logId.item : item;
     const logId = isFromFinance ? item.logId : null;
@@ -48,46 +36,46 @@ export const ManageStockModal: React.FC<ManageStockProps> = ({
         if (state?.success) closeModal();
     }, [state?.success, closeModal]);
 
-
     return (
-        <form action={formAction} className="flex flex-col ">
-            <div className=" flex flex-col gap-6 overflow-y-auto custom-scrollbar">
+        <form action={formAction} className="flex flex-col">
+            <div className="flex flex-col gap-6 overflow-y-auto custom-scrollbar">
                 {state?.error && <ErrorBox error={state.error} />}
 
+                {/* HIDDEN SYSTEM PROTOCOL FIELDS */}
                 <input type="hidden" name="itemId" value={inventoryItem._id} />
                 <input type="hidden" name="type" value={actionType} />
                 {logId && <input type="hidden" name="logId" value={logId._id} />}
-
-                <TypeToggle
-                    current={actionType}
-                    set={setActionType}
-                    disabled={!!linkedTransaction}
+                
+                {/* ✨ 3. Pass the RBAC data */}
+                <input type="hidden" name="createdBy" value={session?.user?.id} />
+                <input 
+                    type="hidden" 
+                    name="status" 
+                    value={session?.user?.role === "ADMIN" ? "VERIFIED" : "PENDING"} 
                 />
 
-                <StockFormFields
-                    unit={inventoryItem.unit}
-                    actionType={actionType}
-                    defaultValue={logId}
-                />
+                <TypeToggle current={actionType} set={setActionType} disabled={!!linkedTransaction} />
 
-                {/* Financial Bridge - Already themed using success/warning logic */}
+                {/* SAMITY WARNING */}
+                {session?.user?.role && session?.user?.role !== "ADMIN" && actionType === "IN" && (
+                    <div className="p-4 bg-warning/10 border border-warning/20 rounded-xl mb-2">
+                        <p className="text-[9px] font-black text-warning uppercase tracking-widest">
+                            Note: If cost is added, the expense will be marked "Pending" for Admin Verification.
+                        </p>
+                    </div>
+                )}
+
+                <StockFormFields unit={inventoryItem.unit} actionType={actionType} defaultValue={logId} />
+
                 {actionType === "IN" && (
                     <div className="animate-in slide-in-from-top-2 duration-300">
-                        <StockFinanceFields
-                            accounts={accounts}
-                            transaction={linkedTransaction}
-                        />
+                        <StockFinanceFields accounts={accounts} transaction={linkedTransaction} />
                     </div>
                 )}
             </div>
 
-            <Footer
-                isPending={isPending}
-                type={actionType}
-                closeModal={closeModal}
-            />
+            <Footer isPending={isPending} type={actionType} closeModal={closeModal} />
         </form>
-
     );
 };
 

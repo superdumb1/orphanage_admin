@@ -37,11 +37,15 @@ export async function adjustStock(prevState: any, formData: FormData) {
         const type = formData.get("type") as 'IN' | 'OUT';
         const reason = formData.get("reason") as string;
 
-        // Capture financial details
+        // ✨ Capture RBAC / Session Data
+        const createdBy = formData.get("createdBy") as string;
+        const status = formData.get("status") as string;
+
+        if (!createdBy) throw new Error("Security Violation: User session not found.");
+
         const cost = Number(formData.get("cost") || 0);
         const accountHead = formData.get("accountHead") as string;
 
-        // 🚨 THE FIX: Block the form if they add a cost but forget the account!
         if (type === 'IN' && cost > 0 && !accountHead) {
             throw new Error("You entered a cost, but forgot to select an Expense Account!");
         }
@@ -56,19 +60,22 @@ export async function adjustStock(prevState: any, formData: FormData) {
         if (!updatedItem) throw new Error("Item not found");
 
         if (updatedItem.currentStock < 0) {
+            // Revert if they try to pull more than exists
             await InventoryItem.findByIdAndUpdate(itemId, { $inc: { currentStock: -stockChange } });
-            throw new Error(`Cannot remove ${quantity}. Only ${updatedItem.currentStock + quantity} left in stock.`);
+            throw new Error(`Cannot consume ${quantity}. Only ${updatedItem.currentStock + quantity} left in stock.`);
         }
 
+        // ✨ 1. Log who moved the stock
         const log = await InventoryLog.create({
             item: itemId,
             quantity,
             type,
             reason,
-            date: new Date()
+            date: new Date(),
+            createdBy 
         });
 
-        // THE BRIDGE BETWEEN INVENTORY AND FINANCE!
+        // ✨ 2. The Bridge - Now safely handles the Transaction schema constraints!
         if (type === 'IN' && cost > 0 && accountHead) {
             await Transaction.create({
                 amount: cost,
@@ -79,12 +86,14 @@ export async function adjustStock(prevState: any, formData: FormData) {
                 paymentMethod: formData.get("paymentMethod") || 'CASH',
                 donorOrVendorName: formData.get("donorOrVendorName"),
                 referenceNumber: formData.get("referenceNumber"),
-                description: `Inventory Purchase: ${quantity} ${updatedItem.unit} of ${updatedItem.name}. Reason: ${reason}`
+                description: `Inventory Purchase: ${quantity} ${updatedItem.unit} of ${updatedItem.name}. Reason: ${reason}`,
+                createdBy, 
+                status     
             });
         }
 
         revalidatePath("/inventory");
-        revalidatePath("/finance"); // Update the ledger too!
+        revalidatePath("/finance"); 
         return { success: true };
     } catch (error: any) {
         return { success: false, error: error.message };

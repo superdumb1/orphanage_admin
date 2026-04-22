@@ -117,8 +117,15 @@ export default function InteractiveStaffTable({ staffMembers }: { staffMembers: 
                                             <span className="px-2 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">
                                                 {person.employmentType?.replace("_", " ") || 'ACTIVE'}
                                             </span>
-                                            {person.ssf?.type === "SSF" && (
+                                            
+                                            {/* ✨ FIX: Updated to check enrolled status */}
+                                            {person.ssf?.enrolled && (
                                                 <span className="px-2 py-0.5 rounded-md bg-accent/10 text-accent text-[10px] font-black border border-accent/20 uppercase tracking-tighter">SSF Enrolled</span>
+                                            )}
+
+                                            {/* ✨ NEW: System Access Badge */}
+                                            {person.userId && (
+                                                <span className="px-2 py-0.5 rounded-md bg-warning/10 text-warning text-[10px] font-black border border-warning/20 uppercase tracking-tighter">System Access</span>
                                             )}
                                         </td>
                                         <td className="p-4 text-right font-black text-success tabular-nums">
@@ -180,8 +187,15 @@ export default function InteractiveStaffTable({ staffMembers }: { staffMembers: 
                                     <span className="px-2.5 py-1 rounded-md bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">
                                         {person.employmentType?.replace("_", " ") || 'ACTIVE'}
                                     </span>
-                                    {person.ssf?.type === "SSF" && (
+                                    
+                                    {/* ✨ FIX: Updated to check enrolled status */}
+                                    {person.ssf?.enrolled && (
                                         <span className="px-2.5 py-1 rounded-md bg-accent/10 text-accent text-[10px] font-black border border-accent/20 uppercase tracking-widest">SSF</span>
+                                    )}
+
+                                    {/* ✨ NEW: System Access Badge */}
+                                    {person.userId && (
+                                        <span className="px-2.5 py-1 rounded-md bg-warning/10 text-warning text-[10px] font-black border border-warning/20 uppercase tracking-widest">Access</span>
                                     )}
                                 </div>
 

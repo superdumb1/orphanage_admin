@@ -79,11 +79,12 @@ export function useUIModals() {
                 { initialData }
             ),
 
-        openAccountHeadForm: ({ initialData, isIncomeHead }: { initialData?: any, isIncomeHead?: boolean } = {}) =>
+        // ✨ THE FIX IS HERE: Added 'defaultType' to the parameters and the payload
+        openAccountHeadForm: ({ initialData, isIncomeHead, defaultType }: { initialData?: any, isIncomeHead?: boolean, defaultType?: string } = {}) =>
             openModal(
                 "ACCOUNT_HEAD_FORM",
                 !!initialData ? "Edit Account Head" : "New Account Head",
-                { initialData,isIncomeHead }
+                { initialData, isIncomeHead, defaultType }
             ),
 
         // --- INVENTORY ---
