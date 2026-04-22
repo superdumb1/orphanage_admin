@@ -14,7 +14,9 @@ export const InventoryItemForm: React.FC<InventoryItemForm> = ({
     item,
     closeModal,
 }) => {
-    const action=item?addInventoryItem:updateInventoryItem
+    // ✨ THE FIX: The logic was backwards! If 'item' exists, it should Update.
+    const action = item ? updateInventoryItem : addInventoryItem;
+    
     const [state, formAction, isPending] = useActionState(
         action as any,
         { error: null, success: false }
@@ -30,10 +32,8 @@ export const InventoryItemForm: React.FC<InventoryItemForm> = ({
             {/* HIDDEN ID FOR UPDATES */}
             {item?._id && <input type="hidden" name="id" value={item._id} />}
 
-            {/* SCROLLABLE BODY */}
             <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar flex flex-col gap-6 ">
 
-                {/* SYSTEM ERROR ALERT */}
                 {state?.error && (
                     <div className="flex items-center gap-3 text-sm text-danger bg-danger/10 p-4 rounded-xl border border-danger/20 font-bold animate-in slide-in-from-top-2 shrink-0">
                         <span className="text-lg">⚠️</span>
@@ -78,8 +78,17 @@ export const InventoryItemForm: React.FC<InventoryItemForm> = ({
                         defaultValue={item?.unit || ""}
                     />
                 </div>
+                
+                {/* ✨ NEW: Description Field */}
+                <FormField
+                    id="description"
+                    label="Item Description / Brand"
+                    name="description"
+                    placeholder="e.g. 50kg bags of premium quality"
+                    className="text-text shrink-0"
+                    defaultValue={item?.description || ""}
+                />
 
-                {/* INFO BOX */}
                 <div className="bg-shaded p-6 rounded-2xl border border-border transition-colors shrink-0">
                     <FormField
                         id="minimumStockLevel"
@@ -97,7 +106,6 @@ export const InventoryItemForm: React.FC<InventoryItemForm> = ({
                 </div>
             </div>
 
-            {/* FOOTER */}
             <div className="shrink-0 flex justify-end gap-3.5 p-6 md:px-8 border-t border-border bg-card">
                 <Button
                     type="button"

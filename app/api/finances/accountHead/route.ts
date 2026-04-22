@@ -8,6 +8,5 @@ export async function GET() {
     const AccountHeads = await AccountHead.find()
         .sort({ firstName: 1 })
         .lean();
-
     return NextResponse.json(AccountHeads);
 }

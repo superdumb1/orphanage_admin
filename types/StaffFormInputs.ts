@@ -1,7 +1,8 @@
-// types/StaffFormInputs.ts
-
 export interface StaffFormInputs {
-  _id?: string;
+  _id?: string;        // Added this for update operations
+  userId?: string;     // The bridge to the User model
+  
+  // BASIC INFO
   fullName: string;
   nepaliName?: string;
   phone: string;
@@ -14,11 +15,13 @@ export interface StaffFormInputs {
   applyTDS?: boolean;
   profileImageUrl?: string;
 
+  // EMPLOYMENT
   department?: string;
   designation?: string;
   employmentType?: string;
   joinDate?: string | Date;
 
+  // FINANCIALS
   salary?: {
     basicSalary?: number;
     grade?: number;
@@ -35,6 +38,7 @@ export interface StaffFormInputs {
     insurancePremium?: number;
   };
 
+  // CONTRIBUTIONS
   ssf?: {
     type?: string;
     idNumber?: string;
@@ -42,6 +46,7 @@ export interface StaffFormInputs {
     employerContribution?: number;
   };
 
+  // BANKING
   bank?: {
     bankName?: string;
     branch?: string;

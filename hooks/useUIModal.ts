@@ -64,11 +64,11 @@ export function useUIModals() {
         },
 
         // --- STAFF ---
-        openStaffForm: ({ staff }: { staff?: any } = {}) =>
+        openStaffForm: ({ staff, pendingUsers }: { staff?: any, pendingUsers?: any[] } = {}) =>
             openModal(
                 "STAFF_FORM",
                 !!staff ? "Update Staff" : "Add New Staff",
-                { initialData: staff }
+                { initialData: staff, pendingUsers } // This goes to the StaffForm component
             ),
 
         // --- TRANSACTION / FINANCE ---
@@ -77,6 +77,12 @@ export function useUIModals() {
                 "TRANSACTION_FORM",
                 !!initialData ? "Edit Transaction" : "New Transaction",
                 { initialData }
+            ),
+        openInternalTransfer: () =>
+            openModal(
+                "INTERNAL_TRANSFER",
+                "Execute Contra Transfer",
+                {} // No initial data needed for fresh transfers
             ),
 
         // ✨ THE FIX IS HERE: Added 'defaultType' to the parameters and the payload

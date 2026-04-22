@@ -2,29 +2,42 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IAccountHead extends Document {
   name: string;
-  type: 'INCOME' | 'EXPENSE' | 'ASSET' | 'LIABILITY' | 'EQUITY';
-  subType: string; // e.g., 'Restricted', 'Living', 'Fixed Asset'
+  code: string;
+  type: 'INCOME' | 'EXPENSE' | 'ASSET' | 'LIABILITY';
+  fundCategory: 'RESTRICTED' | 'UNRESTRICTED';
+  subType: string[];
   description?: string;
-  isSystem: boolean; // Protects core accounts from deletion
-  code: string; // e.g., 1000 for Income, 2000 for Expenses
+  
+  // ✨ NEW: Bank Account Flags & Details
+  isBankAccount: boolean;
+  bankDetails?: {
+    accountNumber?: string;
+    bankName?: string;
+    branch?: string;
+  };
+
+  isSystem: boolean;
+  isActive: boolean;
 }
 
-const AccountHeadSchema = new Schema({
-  name: { type: String, required: true, unique: true },
-  type: { 
-    type: String, 
-    enum: ['INCOME', 'EXPENSE', 'ASSET', 'LIABILITY'], 
-    required: true 
+const AccountHeadSchema = new Schema<IAccountHead>({
+  name: { type: String, required: true, unique: true, trim: true },
+  code: { type: String, required: true, unique: true, trim: true, uppercase: true },
+  type: { type: String, enum: ['INCOME', 'EXPENSE', 'ASSET', 'LIABILITY'], required: true },
+  fundCategory: { type: String, enum: ['RESTRICTED', 'UNRESTRICTED'], default: 'UNRESTRICTED', required: true },
+  subType: [{ type: String, trim: true }], 
+  description: { type: String, trim: true },
+  
+  // ✨ NEW: The Bank Data Structure
+  isBankAccount: { type: Boolean, default: false },
+  bankDetails: {
+    accountNumber: { type: String, trim: true },
+    bankName: { type: String, trim: true },
+    branch: { type: String, trim: true }
   },
-  fundCategory: { 
-    type: String, 
-    enum: ['RESTRICTED', 'UNRESTRICTED'], 
-    default: 'UNRESTRICTED',
-    required: true 
-  },
-  subType: [{ type: String }], // Keeping this for categories like "Living", "Education"
-  code: { type: String, unique: true },
-  description: { type: String }
+  
+  isSystem: { type: Boolean, default: false },
+  isActive: { type: Boolean, default: true }
 }, { timestamps: true });
 
 export default mongoose.models.AccountHead || mongoose.model<IAccountHead>('AccountHead', AccountHeadSchema);

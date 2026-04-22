@@ -11,49 +11,57 @@ export async function addTransaction(prevState: any, formData: FormData) {
   try {
     await dbConnect();
 
-    const id = formData.get("id"); // Hidden field determines if it's an Edit
+    // 1. Extract values
+    const id = formData.get("id") as string; // ✨ Catches the hidden ID for updates
+    const rawAccountHead = formData.get("accountHead") as string;
+    const rawBankAccountId = formData.get("bankAccountId") as string; // ✨ Catches the new Bank ID
     
-    // Core Data
-    const amount = Number(formData.get("amount"));
-    const type = formData.get("type");
-    const accountHead = formData.get("accountHead");
-    const subTypeSelected = formData.get("subType") || formData.get("subTypeSelected") || "";
-    const paymentMethod = formData.get("paymentMethod");
-    const date = formData.get("date") || new Date();
-    const referenceNumber = formData.get("referenceNumber") || "";
-    const description = formData.get("description");
-    const donorOrVendorName = formData.get("donorOrVendorName") || "";
-    
-    // RBAC & Verification Protocol Data
+    const amount = formData.get("amount");
     const createdBy = formData.get("createdBy");
-    const status = formData.get("status");
 
-    if (!amount || amount <= 0) return { error: "Amount must be greater than zero." };
-    if (!accountHead || !description) return { error: "Missing required fields." };
+    // 2. Format Object IDs (Convert empty strings to null to prevent BSON errors)
+    const accountHead = rawAccountHead === "" ? null : rawAccountHead;
+    const bankAccountId = rawBankAccountId === "" ? null : rawBankAccountId;
 
+    // 3. Build the Universal Payload
+    const payload = {
+      amount: Number(amount),
+      type: formData.get("type"),
+      accountHead: accountHead,
+      subType: formData.get("subType"),
+      paymentMethod: formData.get("paymentMethod"),
+      bankAccountId: bankAccountId, // ✨ SAVING THE BANK ID
+      date: formData.get("date") ? new Date(formData.get("date") as string) : new Date(),
+      description: formData.get("description"),
+      donorOrVendorName: formData.get("donorOrVendorName"),
+      referenceNumber: formData.get("referenceNumber"),
+      status: formData.get("status") || "PENDING",
+      createdBy: createdBy,
+    };
+
+    // 4. Upsert Logic (Update if ID exists, otherwise Create)
     if (id) {
-      // UPDATE EXISTING
-      await Transaction.findByIdAndUpdate(id, {
-        amount, type, accountHead, subTypeSelected, paymentMethod,
-        date, referenceNumber, description, donorOrVendorName
-      });
+      await Transaction.findByIdAndUpdate(id, payload, { runValidators: true });
     } else {
-      // CREATE NEW
-      if (!createdBy) return { error: "System Error: Missing user session for creation." };
-      
-      await Transaction.create({
-        amount, type, accountHead, subTypeSelected, paymentMethod,
-        date, referenceNumber, description, donorOrVendorName,
-        status, createdBy
-      });
+      await Transaction.create(payload);
     }
 
-    revalidatePath("/finance"); 
+    // Revalidate your dashboards
+    revalidatePath("/my-finances");
+    revalidatePath("/finances"); 
+    revalidatePath("/settlements"); // ✨ Good idea to refresh settlements too!
+
     return { success: true, error: null };
 
   } catch (error: any) {
     console.error("Transaction Action Error:", error);
-    return { error: error.message || "Failed to process transaction." };
+
+    return {
+      success: false,
+      error: error.name === "ValidationError"
+        ? "Please check your input fields."
+        : "Database Error: " + error.message
+    };
   }
 }
 
@@ -61,41 +69,42 @@ export async function addTransaction(prevState: any, formData: FormData) {
 // 2. DELETE PROTOCOL
 // ============================================================================
 export async function deleteTransaction(id: string) {
-    await dbConnect();
-    try {
-        await Transaction.findByIdAndDelete(id);
-        
-        revalidatePath("/finance");
-        return { success: true };
-    } catch (e: any) {
-        console.error("Delete Error:", e);
-        return { success: false, error: e.message };
-    }
+  await dbConnect();
+  try {
+    await Transaction.findByIdAndDelete(id);
+
+    revalidatePath("/finances");
+    revalidatePath("/my-finances");
+    return { success: true };
+  } catch (e: any) {
+    console.error("Delete Error:", e);
+    return { success: false, error: e.message };
+  }
 }
 
 // ============================================================================
-// 3. LEGACY UPDATE PROTOCOL (Kept intact for your other components)
+// 3. LEGACY UPDATE PROTOCOL 
 // ============================================================================
 export async function updateTransaction(id: string, formData: FormData) {
-    await dbConnect();
-    try {
-        const updateData = {
-            amount: Number(formData.get("amount")),
-            type: formData.get("type"),
-            accountHead: formData.get("accountHead"),
-            subTypeSelected: formData.get("subTypeSelected"),
-            description: formData.get("description"),
-            paymentMethod: formData.get("paymentMethod"),
-            referenceNumber: formData.get("referenceNumber"),
-            donorOrVendorName: formData.get("donorOrVendorName"),
-        };
-        
-        await Transaction.findByIdAndUpdate(id, updateData);
-        
-        revalidatePath("/finance");
-        return { success: true };
-    } catch (e: any) {
-        console.error("Update Error:", e);
-        return { success: false, error: e.message };
-    }
+  await dbConnect();
+  try {
+    const updateData = {
+      amount: Number(formData.get("amount")),
+      type: formData.get("type"),
+      accountHead: formData.get("accountHead"),
+      subTypeSelected: formData.get("subTypeSelected"),
+      description: formData.get("description"),
+      paymentMethod: formData.get("paymentMethod"),
+      referenceNumber: formData.get("referenceNumber"),
+      donorOrVendorName: formData.get("donorOrVendorName"),
+    };
+
+    await Transaction.findByIdAndUpdate(id, updateData);
+
+    revalidatePath("/finances");
+    return { success: true };
+  } catch (e: any) {
+    console.error("Update Error:", e);
+    return { success: false, error: e.message };
+  }
 }

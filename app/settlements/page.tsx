@@ -8,9 +8,14 @@ export default async function SettlementsPage() {
     await dbConnect();
 
     // 1. Get all Bank Accounts for the dropdown
-    const bankAccounts = await AccountHead.find({ type: "ASSET", subType: "Bank" }).lean();
-
-    // 2. Aggregate the unsettled cash held by each staff member
+// 1. Get all ASSET accounts for the dropdown (Removed the strict subType filter)
+// 1. Get ONLY Asset accounts where the Sub-Group contains "Bank" or "Cash"
+    const bankAccounts = await AccountHead.find({ 
+        type: "ASSET", 
+        isActive: true,
+        // ✨ This looks inside your subType array for any match of "bank" or "cash", ignoring uppercase/lowercase
+        subType: { $regex: /bank|cash/i } 
+    }).lean();    // 2. Aggregate the unsettled cash held by each staff member
     const aggregatedBalances = await Transaction.aggregate([
         {
             $match: {

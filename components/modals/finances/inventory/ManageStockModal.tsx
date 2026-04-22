@@ -14,7 +14,6 @@ interface ManageStockProps {
 }
 
 export const ManageStockModal: React.FC<ManageStockProps> = ({ closeModal, item }) => {
-    // ✨ 2. Get the user
     const { data: session } = useSession();
 
     const [state, formAction, isPending] = useActionState(adjustStock as any, {
@@ -23,7 +22,7 @@ export const ManageStockModal: React.FC<ManageStockProps> = ({ closeModal, item 
     const [accounts, setAccounts] = useState<any[]>([]);
 
     useEffect(() => {
-        // ... (keep your existing fetchAccounts logic)
+        // Fetch logic...
     }, []);
 
     const [actionType, setActionType] = useState<"IN" | "OUT">("IN");
@@ -41,22 +40,22 @@ export const ManageStockModal: React.FC<ManageStockProps> = ({ closeModal, item 
             <div className="flex flex-col gap-6 overflow-y-auto custom-scrollbar">
                 {state?.error && <ErrorBox error={state.error} />}
 
-                {/* HIDDEN SYSTEM PROTOCOL FIELDS */}
+                {/* ✨ RESTORED: These are critical for the server action! */}
                 <input type="hidden" name="itemId" value={inventoryItem._id} />
                 <input type="hidden" name="type" value={actionType} />
                 {logId && <input type="hidden" name="logId" value={logId._id} />}
-                
-                {/* ✨ 3. Pass the RBAC data */}
+
+                {/* ✨ CLEANED UP: Only one set of RBAC data now */}
                 <input type="hidden" name="createdBy" value={session?.user?.id} />
-                <input 
-                    type="hidden" 
-                    name="status" 
-                    value={session?.user?.role === "ADMIN" ? "VERIFIED" : "PENDING"} 
+                <input
+                    type="hidden"
+                    name="status"
+                    value={session?.user?.role === "ADMIN" ? "VERIFIED" : "PENDING"}
                 />
 
                 <TypeToggle current={actionType} set={setActionType} disabled={!!linkedTransaction} />
 
-                {/* SAMITY WARNING */}
+                {/* SANITY WARNING */}
                 {session?.user?.role && session?.user?.role !== "ADMIN" && actionType === "IN" && (
                     <div className="p-4 bg-warning/10 border border-warning/20 rounded-xl mb-2">
                         <p className="text-[9px] font-black text-warning uppercase tracking-widest">
@@ -78,9 +77,6 @@ export const ManageStockModal: React.FC<ManageStockProps> = ({ closeModal, item 
         </form>
     );
 };
-
-
-
 
 const TypeToggle = ({ current, set, disabled }: any) => (
     <div
@@ -120,7 +116,6 @@ const Footer = ({ isPending, type, closeModal }: any) => (
         <Button
             type="submit"
             disabled={isPending}
-            // Colors: IN -> success, OUT -> warning
             className={`font-black px-10 h-11 shadow-glow active:scale-95 transition-all text-text-invert ${type === "IN"
                 ? "bg-success hover:bg-success/90"
                 : "bg-warning hover:bg-warning/90"

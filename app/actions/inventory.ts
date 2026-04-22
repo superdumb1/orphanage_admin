@@ -4,6 +4,8 @@ import InventoryItem from "@/models/InventoryItem";
 import InventoryLog from "@/models/InventoryLog";
 import { revalidatePath } from "next/cache";
 import Transaction from "@/models/Transaction";
+import AccountHead from "@/models/AccountHead"; // ✨ MUST IMPORT THIS
+
 
 export async function addInventoryItem(prevState: any, formData: FormData) {
     await dbConnect();
@@ -13,14 +15,14 @@ export async function addInventoryItem(prevState: any, formData: FormData) {
             name: formData.get("name"),
             category: formData.get("category"),
             unit: formData.get("unit"),
-            currentStock: 0, // Stock only changes when they "Receive" or "Consume" items
+            description: formData.get("description"), // ✨ ADDED
+            currentStock: 0, 
             minimumStockLevel: Number(formData.get("minimumStockLevel")) || 10,
         });
 
         revalidatePath("/inventory");
         return { success: true };
     } catch (error: any) {
-        // Prevent crashing if they try to add "Rice" twice
         if (error.code === 11000) {
             return { success: false, error: "An item with this exact name already exists." };
         }
@@ -28,26 +30,47 @@ export async function addInventoryItem(prevState: any, formData: FormData) {
     }
 }
 
+
 export async function adjustStock(prevState: any, formData: FormData) {
     await dbConnect();
-
+    
     try {
         const itemId = formData.get("itemId") as string;
         const quantity = Number(formData.get("quantity"));
         const type = formData.get("type") as 'IN' | 'OUT';
         const reason = formData.get("reason") as string;
 
-        // ✨ Capture RBAC / Session Data
         const createdBy = formData.get("createdBy") as string;
         const status = formData.get("status") as string;
 
         if (!createdBy) throw new Error("Security Violation: User session not found.");
 
         const cost = Number(formData.get("cost") || 0);
-        const accountHead = formData.get("accountHead") as string;
+        let accountHead = formData.get("accountHead") as string; // Changed from const to let
+        
+        const rawBankAccountId = formData.get("bankAccountId") as string;
+        const bankAccountId = rawBankAccountId === "" ? null : rawBankAccountId;
 
+        // ✨ THE MAGIC FALLBACK LOGIC
         if (type === 'IN' && cost > 0 && !accountHead) {
-            throw new Error("You entered a cost, but forgot to select an Expense Account!");
+            // Find the default account
+            let defaultAccount = await AccountHead.findOne({ name: "Staff/Samity Personal Cash Spend" });
+            
+            // If it doesn't exist, auto-create it instantly to prevent crashes
+            if (!defaultAccount) {
+                defaultAccount = await AccountHead.create({
+                    name: "Staff/Samity Personal Cash Spend",
+                    type: "EXPENSE",
+                    fundCategory: "UNRESTRICTED",
+                    code: "EXP-STAFF",
+                    description: "Auto-generated default account for staff out-of-pocket or unclassified cash purchases.",
+                    isSystem: true, // Protects it from being deleted in the UI
+                    isActive: true
+                });
+            }
+            
+            // Route the transaction to this new/found account
+            accountHead = defaultAccount._id.toString();
         }
 
         const stockChange = type === 'IN' ? quantity : -quantity;
@@ -60,12 +83,10 @@ export async function adjustStock(prevState: any, formData: FormData) {
         if (!updatedItem) throw new Error("Item not found");
 
         if (updatedItem.currentStock < 0) {
-            // Revert if they try to pull more than exists
             await InventoryItem.findByIdAndUpdate(itemId, { $inc: { currentStock: -stockChange } });
             throw new Error(`Cannot consume ${quantity}. Only ${updatedItem.currentStock + quantity} left in stock.`);
         }
 
-        // ✨ 1. Log who moved the stock
         const log = await InventoryLog.create({
             item: itemId,
             quantity,
@@ -75,15 +96,15 @@ export async function adjustStock(prevState: any, formData: FormData) {
             createdBy 
         });
 
-        // ✨ 2. The Bridge - Now safely handles the Transaction schema constraints!
         if (type === 'IN' && cost > 0 && accountHead) {
             await Transaction.create({
-                amount: cost,
+                amount: cost, // Saved as a positive number!
                 date: new Date(formData.get("date") as string || Date.now()),
-                type: 'EXPENSE',
+                type: 'EXPENSE', // This is what tells the system it's a deduction
                 logId: log._id,
-                accountHead: accountHead,
+                accountHead: accountHead, // Now safely populated
                 paymentMethod: formData.get("paymentMethod") || 'CASH',
+                bankAccountId: bankAccountId, 
                 donorOrVendorName: formData.get("donorOrVendorName"),
                 referenceNumber: formData.get("referenceNumber"),
                 description: `Inventory Purchase: ${quantity} ${updatedItem.unit} of ${updatedItem.name}. Reason: ${reason}`,
@@ -93,12 +114,13 @@ export async function adjustStock(prevState: any, formData: FormData) {
         }
 
         revalidatePath("/inventory");
-        revalidatePath("/finance"); 
+        revalidatePath("/finances"); 
         return { success: true };
     } catch (error: any) {
         return { success: false, error: error.message };
     }
 }
+
 
 export async function updateInventoryItem(prevState: any, formData: FormData) {
     await dbConnect();
@@ -110,23 +132,20 @@ export async function updateInventoryItem(prevState: any, formData: FormData) {
             throw new Error("Missing Item ID for update.");
         }
 
-        // 1. Gather the fields that are allowed to be edited
         const updateData = {
             name: formData.get("name"),
             category: formData.get("category"),
             unit: formData.get("unit"),
+            description: formData.get("description"), // ✨ ADDED
             minimumStockLevel: Number(formData.get("minimumStockLevel")) || 10,
-            // 🔒 SECURITY: Notice currentStock is intentionally omitted here. 
-            // It can only be altered through adjustStock().
         };
 
-        // 2. Perform the update
         const updatedItem = await InventoryItem.findByIdAndUpdate(
             id,
             updateData,
             { 
-                new: true, // Returns the updated document
-                runValidators: true // Enforces your Mongoose schema rules
+                new: true,
+                runValidators: true 
             } 
         );
 
@@ -134,12 +153,10 @@ export async function updateInventoryItem(prevState: any, formData: FormData) {
             throw new Error("Inventory item not found or already deleted.");
         }
 
-        // 3. Clear cache to reflect new data on the UI
         revalidatePath("/inventory");
         return { success: true };
         
     } catch (error: any) {
-        // Handle duplicate name collision (MongoDB Error 11000)
         if (error.code === 11000) {
             return { success: false, error: "Another item is already using this name." };
         }

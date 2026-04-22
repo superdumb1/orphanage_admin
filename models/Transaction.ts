@@ -4,16 +4,22 @@ export interface ITransaction extends Document {
   amount: number;
   date: Date;
   type: 'INCOME' | 'EXPENSE';
-  accountHead: mongoose.Types.ObjectId;
-  subTypeSelected: string;
-  paymentMethod: 'CASH'|'BANK'| 'CHEQUE'| 'IN_KIND'| 'OUT_OF_POCKET';
+  accountHead?: mongoose.Types.ObjectId | null;
+  subType?: string; // ✨ ALIGNED: Changed from subTypeSelected to match your UI/Action
+  
+  paymentMethod: 'CASH' | 'BANK' | 'CHEQUE' | 'IN_KIND' | 'OUT_OF_POCKET';
+  
+  // ✨ NEW: The crucial link to the specific Bank Account
+  bankAccountId?: mongoose.Types.ObjectId | null; 
+  
   status: 'PENDING' | 'VERIFIED' | 'REJECTED';
+  isSettled: boolean; // ✨ Added to interface for TypeScript safety
   createdBy: mongoose.Types.ObjectId;
   verifiedBy?: mongoose.Types.ObjectId;
   referenceNumber?: string;
   description: string;
   donorOrVendorName?: string;
-  logId?: string;
+  logId?: mongoose.Types.ObjectId | string;
 }
 
 const TransactionSchema = new Schema({
@@ -21,15 +27,33 @@ const TransactionSchema = new Schema({
   date: { type: Date, required: true, default: Date.now },
   type: { type: String, enum: ['INCOME', 'EXPENSE'], required: true },
 
-  accountHead: { type: Schema.Types.ObjectId, ref: 'AccountHead', required: true },
-  subTypeSelected: { type: String },
+  accountHead: {
+    type: Schema.Types.ObjectId,
+    ref: 'AccountHead',
+    required: false,
+    default: null
+  }, 
+  
+  subType: { type: String }, // ✨ ALIGNED to match the form input
+  
   paymentMethod: {
     type: String,
-    enum: ['CASH', 'BANK', 'CHEQUE', 'IN_KIND', 'OUT_OF_POCKET'], 
+    enum: ['CASH', 'BANK', 'CHEQUE', 'IN_KIND', 'OUT_OF_POCKET'],
     default: 'CASH'
-  }, referenceNumber: { type: String },
+  }, 
+  
+  // ✨ NEW: Tells Mongoose to accept and store the Bank Account ID safely
+  bankAccountId: {
+    type: Schema.Types.ObjectId,
+    ref: 'AccountHead',
+    required: false,
+    default: null 
+  },
+  
+  referenceNumber: { type: String },
   description: { type: String, required: true },
   donorOrVendorName: { type: String },
+  
   logId: {
     type: Schema.Types.ObjectId,
     ref: 'InventoryLog',
@@ -51,7 +75,7 @@ const TransactionSchema = new Schema({
   },
   isSettled: {
     type: Boolean,
-    default: false // Only applies to CASH transactions
+    default: false 
   },
 }, { timestamps: true });
 

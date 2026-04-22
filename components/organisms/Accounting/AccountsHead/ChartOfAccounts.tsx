@@ -4,10 +4,11 @@ import { Button } from "@/components/atoms/Button";
 import { AccountSection } from "./AccountSection";
 import { generateAccountsPDF } from "@/lib/generatePDF";
 import { useUIModals } from "@/hooks/useUIModal";
-import { DownloadCloud } from "lucide-react";
+import { DownloadCloud, ArrowRightLeft } from "lucide-react"; // ✨ Imported Arrow icon
 
 export default function ChartOfAccounts({ initialAccounts }: { initialAccounts: any[] }) {
-  const { openAccountHeadForm } = useUIModals();
+  // ✨ Added openInternalTransfer to your destructured hook
+  const { openAccountHeadForm, openInternalTransfer } = useUIModals();
   const [openSection, setOpenSection] = useState<string>("INCOME");
 
   const filterByType = (type: string) => initialAccounts.filter((a) => a.type === type);
@@ -35,14 +36,26 @@ export default function ChartOfAccounts({ initialAccounts }: { initialAccounts: 
           </div>
         </div>
 
-        {/* EXPORT ACTION */}
-        <Button
-          onClick={() => generateAccountsPDF(initialAccounts)}
-          className="w-full sm:w-auto border border-border text-text hover:text-text hover:bg-shaded font-bold py-3 sm:py-2.5 px-6 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2"
-        >
-          <DownloadCloud size={16} />
-          <span>Export Audit PDF</span>
-        </Button>
+        {/* ✨ ACTIONS GROUP */}
+        <div className="flex w-full sm:w-auto flex-col sm:flex-row gap-3">
+          {/* 1. NEW CONTRA TRANSFER BUTTON */}
+          <Button
+            onClick={() => openInternalTransfer()}
+            className="w-full sm:w-auto bg-primary hover:bg-primary/90 text-text-invert font-black py-3 sm:py-2.5 px-6 rounded-xl transition-all shadow-glow flex items-center justify-center gap-2 text-[10px] uppercase tracking-widest"
+          >
+            <ArrowRightLeft size={16} />
+            <span>Contra Transfer</span>
+          </Button>
+
+          {/* 2. EXPORT ACTION */}
+          <Button
+            onClick={() => generateAccountsPDF(initialAccounts)}
+            className="w-full sm:w-auto border border-border text-text hover:text-text hover:bg-shaded font-bold py-3 sm:py-2.5 px-6 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 text-[10px] uppercase tracking-widest"
+          >
+            <DownloadCloud size={16} />
+            <span>Export Audit PDF</span>
+          </Button>
+        </div>
       </div>
 
       {/* ACCORDION STACK */}
@@ -53,7 +66,6 @@ export default function ChartOfAccounts({ initialAccounts }: { initialAccounts: 
           { title: "Assets", type: "ASSET", theme: "primary" as const, addIncome: true },
           { title: "Liabilities", type: "LIABILITY", theme: "warning" as const, addIncome: false }
         ].map((sec) => (
-          // Inside ChartOfAccounts.tsx map function:
           <AccountSection
             key={sec.type}
             title={sec.title}

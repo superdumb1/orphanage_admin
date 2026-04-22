@@ -1,4 +1,5 @@
 "use server";
+
 import dbConnect from "@/lib/db";
 import AccountHead from "@/models/AccountHead";
 import { revalidatePath } from "next/cache";
@@ -8,37 +9,60 @@ export async function addAccountHead(prevState: any, formData: FormData) {
 
     try {
         const id = formData.get("id") as string;
-        
-        // ✨ THE FIX: Extract ALL hidden inputs sharing the exact name "subType"
-        const subTypesArray = formData.getAll("subType").filter(Boolean);
+        const subTypesArray = formData.getAll("subType").filter(Boolean) as string[];
 
-        const accountData = {
+        // ✨ Extract the Bank Checkbox (FormData checkboxes return 'on' if checked, null if not)
+        const isBankAccount = formData.get("isBankAccount") === "on";
+
+        // ✨ Build the payload, injecting bank details only if the checkbox was ticked
+        const accountData: any = {
             name: formData.get("name"),
             type: formData.get("type"),
-            fundCategory: formData.get("fundCategory"), 
-            subType: subTypesArray, // Array is safely passed directly to Mongoose
+            fundCategory: formData.get("fundCategory") || "UNRESTRICTED",
+            subType: subTypesArray,
             code: formData.get("code"),
-            description: formData.get("description")
+            description: formData.get("description"),
+            isBankAccount: isBankAccount,
         };
 
-        if (id) {
-            // UPDATE EXISTING RECORD
-            await AccountHead.findByIdAndUpdate(id, accountData, { runValidators: true });
+        if (isBankAccount) {
+            accountData.bankDetails = {
+                accountNumber: formData.get("accountNumber"),
+                bankName: formData.get("bankName"),
+                branch: formData.get("branch")
+            };
         } else {
-            // CREATE NEW RECORD
+            // Clear them out if the user unchecked the box on an edit
+            accountData.bankDetails = { accountNumber: "", bankName: "", branch: "" };
+        }
+
+        if (id) {
+            const existing = await AccountHead.findById(id);
+            if (!existing) return { success: false, error: "Account head not found." };
+
+            if (existing.isSystem) {
+                // Protect System Accounts, but allow updating bank details if it is a system bank account
+                await AccountHead.findByIdAndUpdate(id, { 
+                    description: accountData.description, 
+                    subType: subTypesArray,
+                    isBankAccount: accountData.isBankAccount,
+                    bankDetails: accountData.bankDetails
+                }, { runValidators: true });
+            } else {
+                await AccountHead.findByIdAndUpdate(id, accountData, { runValidators: true });
+            }
+        } else {
             await AccountHead.create(accountData);
         }
 
-        // Revalidate wherever your charts are displayed
         revalidatePath("/finance");
         revalidatePath("/accounts_headers"); 
         
-        return { success: true };
+        return { success: true, error: null };
     } catch (error: any) {
-        // Handle duplicate GL Code errors gracefully
         if (error.code === 11000) {
             return { success: false, error: "An account with this Name or GL Code already exists." };
         }
-        return { success: false, error: error.message };
+        return { success: false, error: error.message || "Failed to save Account Head" };
     }
 }

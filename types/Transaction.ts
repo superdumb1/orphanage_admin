@@ -19,6 +19,7 @@ export interface TAccountHead {
   code: string;
   description?: string;
   isSystem?: boolean;
+  isBankAccount?:boolean
   createdAt?: string | Date;
   updatedAt?: string | Date;
 }
