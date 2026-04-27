@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
 import { FormField } from "@/components/molecules/FormField";
-import SelectPaymentCategory from "@/components/molecules/SelectPaymentCategory";
-import SelectAccountHead from "@/components/molecules/SelectAccontHead" // Fixed import typo
+import SelectPaymentCategory from "@/components/molecules/selects/SelectPaymentCategory";
+import SelectAccountHead from "@/components/molecules/selects/SelectAccontHead" // Fixed import typo
 
 interface FinanceBridgeProps {
     transaction?: any;

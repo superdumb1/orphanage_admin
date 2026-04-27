@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { FormField } from "@/components/molecules/FormField";
-import { SelectField } from "@/components/molecules/SelectField";
+import { SelectField } from "@/components/molecules/selects/SelectField";
 import { StaffFormInputs } from "@/types/StaffFormInputs";
 
 const SSFPFcontri = ({ initialData }: { initialData?: StaffFormInputs }) => {

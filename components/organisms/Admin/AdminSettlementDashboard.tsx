@@ -4,7 +4,7 @@ import React, { useActionState } from "react";
 import { Wallet, ArrowRightLeft, UserCheck } from "lucide-react";
 import { Button } from "@/components/atoms/Button";
 import { settleStaffCash } from "@/app/actions/settlements";
-import SelectPaymentCategory from "@/components/molecules/SelectPaymentCategory";
+import SelectPaymentCategory from "@/components/molecules/selects/SelectPaymentCategory";
 
 // ✨ 1. Updated Interface to match our new Aggregation
 interface StaffBalance {

@@ -3,11 +3,11 @@
 import React, { useActionState, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { FormField } from "@/components/molecules/FormField";
-import { SelectField } from "@/components/molecules/SelectField";
+import { SelectField } from "@/components/molecules/selects/SelectField";
 import { Button } from "@/components/atoms/Button";
 import { addTransaction } from "@/app/actions/transactions";
-import SelectPaymentCategory from "@/components/molecules/SelectPaymentCategory";
-import SelectAccountHead from "@/components/molecules/SelectAccontHead";
+import SelectPaymentCategory from "@/components/molecules/selects/SelectPaymentCategory";
+import SelectAccountHead from "@/components/molecules/selects/SelectAccontHead";
 
 interface AddTransactionModalProps {
   closeModal: () => void;

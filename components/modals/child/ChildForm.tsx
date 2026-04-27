@@ -2,7 +2,7 @@
 
 import React, { useActionState, useEffect, useState, useRef } from "react";
 import { FormField } from "@/components/molecules/FormField";
-import { SelectField } from "@/components/molecules/SelectField";
+import { SelectField } from "@/components/molecules/selects/SelectField";
 import { Button } from "@/components/atoms/Button";
 import { createChild, updateChild } from "@/app/actions/child";
 import { ImageUploadField } from "@/components/molecules/ImageUploadField";
@@ -17,7 +17,7 @@ import {
     FolderLock,
     AlertCircle
 } from "lucide-react";
-import SelectChildStatus from "@/components/molecules/SelectChildCurrentStatus";
+import SelectChildStatus from "@/components/molecules/selects/SelectChildCurrentStatus";
 
 export const ChildForm = ({ initialData, closeModal }: { initialData?: any, closeModal?: () => void }) => {
     const actionToUse = initialData ? updateChild : createChild;

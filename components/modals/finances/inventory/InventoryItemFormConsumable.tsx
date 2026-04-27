@@ -4,7 +4,7 @@ import { FormField } from "@/components/molecules/FormField";
 import { Button } from "@/components/atoms/Button";
 import { addInventoryItem, updateInventoryItem } from "@/app/actions/inventory";
 import { Box, Zap, AlertTriangle } from "lucide-react";
-import { SelectConsumableCategory } from "@/components/molecules/SelectInventoryConsumableCategory";
+import { SelectConsumableCategory } from "@/components/molecules/selects/SelectInventoryConsumableCategory";
 
 export const ConsumableItemForm = ({ item, closeModal }: { item?: any; closeModal: () => void; }) => {
     const action = item ? updateInventoryItem : addInventoryItem;

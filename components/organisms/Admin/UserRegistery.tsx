@@ -1,6 +1,6 @@
 import { Button } from "@/components/atoms/Button";
 import { FormField } from "@/components/molecules/FormField";
-import { SelectField } from "@/components/molecules/SelectField";
+import { SelectField } from "@/components/molecules/selects/SelectField";
 
 // components/organisms/admin/UserRegistry.tsx
 export const UserRegistry = () => {

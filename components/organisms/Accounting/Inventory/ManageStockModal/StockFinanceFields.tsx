@@ -2,7 +2,7 @@
 import React from "react";
 import { FormField } from "@/components/molecules/FormField";
 import { TAccountHead } from "@/types/Transaction";
-import SelectPaymentCategory from "@/components/molecules/SelectPaymentCategory"; // ✨ NEW
+import SelectPaymentCategory from "@/components/molecules/selects/SelectPaymentCategory"; // ✨ NEW
 
 interface FinanceBridgeProps {
   accounts: TAccountHead[];

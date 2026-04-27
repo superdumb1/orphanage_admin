@@ -1,11 +1,11 @@
 "use client";
 import React, { useActionState, useEffect } from "react";
 import { FormField } from "@/components/molecules/FormField";
-import { SelectField } from "@/components/molecules/SelectField";
+import { SelectField } from "@/components/molecules/selects/SelectField";
 import { Button } from "@/components/atoms/Button";
 import { addInventoryItem, updateInventoryItem } from "@/app/actions/inventory";
 import { Archive, MapPin, ShieldCheck, ClipboardCheck } from "lucide-react";
-import { SelectAssetCategory } from "@/components/molecules/SelectInventoryAssetsCategory";
+import { SelectAssetCategory } from "@/components/molecules/selects/SelectInventoryAssetsCategory";
 
 export const FixedAssetItemForm = ({ item, closeModal }: { item?: any; closeModal: () => void; }) => {
     const action = item ? updateInventoryItem : addInventoryItem;

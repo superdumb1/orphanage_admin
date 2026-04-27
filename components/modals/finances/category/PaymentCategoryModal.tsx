@@ -2,7 +2,7 @@
 
 import React, { useActionState, useEffect, useState } from "react";
 import { FormField } from "@/components/molecules/FormField";
-import { SelectField } from "@/components/molecules/SelectField";
+import { SelectField } from "@/components/molecules/selects/SelectField";
 import { Button } from "@/components/atoms/Button";
 import { CreditCard, Building2, Smartphone } from "lucide-react";
 import { savePaymentCategory } from "@/app/actions/addCategory";

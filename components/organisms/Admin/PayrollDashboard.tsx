@@ -4,8 +4,8 @@ import React, { useActionState, useState } from "react";
 import {  CalendarDays, CheckCircle, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/atoms/Button";
 import { processMonthlyPayroll } from "@/app/actions/payroll";
-import SelectPaymentCategory from "@/components/molecules/SelectPaymentCategory";
-import SelectAccountHead from "@/components/molecules/SelectAccontHead";
+import SelectPaymentCategory from "@/components/molecules/selects/SelectPaymentCategory";
+import SelectAccountHead from "@/components/molecules/selects/SelectAccontHead";
 
 export const PayrollDashboard = ({ 
   staffList, 

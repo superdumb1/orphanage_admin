@@ -2,7 +2,7 @@
 
 import React, { useActionState, useState } from "react";
 import { FormField } from "../molecules/FormField";
-import { SelectField } from "../molecules/SelectField";
+import { SelectField } from "../molecules/selects/SelectField";
 import { Button } from "../atoms/Button";
 import { ShieldAlert, UserPlus, CheckCircle, Eye, EyeOff, User, Lock } from "lucide-react";
 import { registerUser } from "@/app/actions/auth";

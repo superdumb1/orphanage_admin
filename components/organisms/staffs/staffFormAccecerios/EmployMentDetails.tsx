@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react";
 import { FormField } from "../../../molecules/FormField";
-import { SelectField } from "../../../molecules/SelectField";
+import { SelectField } from "../../../molecules/selects/SelectField";
 import { DatePickerField } from "@/components/molecules/DatePickerField";
 import { StaffFormInputs } from "@/types/StaffFormInputs";
 
