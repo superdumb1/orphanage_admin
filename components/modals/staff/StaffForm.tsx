@@ -24,7 +24,6 @@ export const StaffForm = ({
   const [activeSection, setActiveSection] = useState("basic");
   const [selectedUserId, setSelectedUserId] = useState("");
 
-  // ✨ Password Validation State
   const [passwords, setPasswords] = useState({ password: "", confirm: "" });
   const isPasswordMismatch = passwords.password !== passwords.confirm && passwords.confirm !== "";
   const isPasswordEmpty = !initialData && !selectedUserId && !passwords.password;
@@ -37,10 +36,19 @@ export const StaffForm = ({
 
   const [showPassword, setShowPassword] = useState(false);
 
-
   useEffect(() => {
     if (state?.success) closeModal();
   }, [state?.success, closeModal]);
+
+  // Utility to handle the "Focusable but Hidden" logic
+  const getSectionClass = (id: string) => {
+    const isActive = activeSection === id;
+    return `px-6 transition-all duration-300 ease-in-out overflow-hidden ${
+      isActive 
+        ? "py-8 opacity-100 h-auto visible" 
+        : "py-0 opacity-0 h-0 invisible pointer-events-none"
+    }`;
+  };
 
   const SectionHeader = ({ title, id, label, icon: Icon }: any) => (
     <button
@@ -78,7 +86,7 @@ export const StaffForm = ({
 
         {/* SECTION: BASIC INFO */}
         <SectionHeader title="Identity Core" id="basic" label="PERSONNEL_ID_RECORDS" icon={Info} />
-        <div className={activeSection === "basic" ? "px-6 py-8 block animate-in fade-in slide-in-from-top-1" : "hidden"}>
+        <div className={getSectionClass("basic")}>
           <BasicInfoFields initialData={initialData} />
         </div>
 
@@ -86,22 +94,19 @@ export const StaffForm = ({
         {!initialData && !selectedUserId && (
           <>
             <SectionHeader title="Access Credentials" id="access" label="SYSTEM_AUTH_PROVISIONING" icon={KeyRound} />
-            <div className={activeSection === "access" ? "px-6 py-8 block animate-in fade-in" : "hidden"}>
+            <div className={getSectionClass("access")}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-shaded p-6 rounded-2xl border border-border">
-
-                {/* USERNAME */}
                 <div className="flex flex-col gap-2 md:col-span-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-primary">Login Username</label>
                   <input
                     name="username"
                     autoComplete="off"
                     placeholder="e.g. biswa_admin"
-                    required={!selectedUserId}
+                    required={activeSection === "access" && !selectedUserId}
                     className="bg-bg border border-border p-3 rounded-xl text-sm font-bold focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
 
-                {/* PASSWORD */}
                 <div className="flex flex-col gap-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-primary">System Password</label>
                   <div className="relative group">
@@ -109,51 +114,27 @@ export const StaffForm = ({
                       name="password"
                       type={showPassword ? "text" : "password"}
                       autoComplete="new-password"
-                      placeholder="••••••••"
                       value={passwords.password}
                       onChange={(e) => setPasswords({ ...passwords, password: e.target.value })}
-                      required={!selectedUserId}
+                      required={activeSection === "access" && !selectedUserId}
                       className={`w-full bg-bg border p-3 pr-10 rounded-xl text-sm focus:ring-1 outline-none font-mono ${isPasswordMismatch ? 'border-danger/50 focus:ring-danger' : 'border-border focus:ring-primary'}`}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary transition-colors"
-                    >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
                   </div>
                 </div>
 
-                {/* CONFIRM PASSWORD */}
                 <div className="flex flex-col gap-2">
                   <label className="text-[10px] font-black uppercase tracking-widest text-primary">Confirm Password</label>
                   <div className="relative group">
                     <input
                       type={showPassword ? "text" : "password"}
                       autoComplete="new-password"
-                      placeholder="••••••••"
                       value={passwords.confirm}
                       onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
-                      required={!selectedUserId}
+                      required={activeSection === "access" && !selectedUserId}
                       className={`w-full bg-bg border p-3 pr-10 rounded-xl text-sm focus:ring-1 outline-none font-mono ${isPasswordMismatch ? 'border-danger/50 focus:ring-danger' : 'border-border focus:ring-primary'}`}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-primary transition-colors"
-                    >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                    </button>
                   </div>
                 </div>
-              </div>
-
-              <div className="mt-4 flex items-center gap-2 px-4 py-2 bg-primary/5 rounded-lg border border-primary/10">
-                <ShieldCheck size={12} className={isPasswordMismatch ? "text-danger" : "text-primary"} />
-                <p className={`text-[9px] uppercase font-black tracking-tighter ${isPasswordMismatch ? "text-danger" : "text-text-muted"}`}>
-                  {isPasswordMismatch ? "Validation Failed: Password mismatch detected." : "Security: Admin-defined credentials override guest registrations."}
-                </p>
               </div>
             </div>
           </>
@@ -161,31 +142,29 @@ export const StaffForm = ({
 
         {/* OTHER SECTIONS */}
         <SectionHeader title="Deployment Specs" id="job" label="ASSIGNMENT_PARAMETERS" icon={Briefcase} />
-        <div className={activeSection === "job" ? "px-6 py-8 block" : "hidden"}>
+        <div className={getSectionClass("job")}>
           <EmploymentDetails initialData={initialData} />
         </div>
 
         <SectionHeader title="Credit Structure" id="salary" label="COMPENSATION_ALGORITHM" icon={Wallet} />
-        <div className={activeSection === "salary" ? "px-6 py-8 block" : "hidden"}>
+        <div className={getSectionClass("salary")}>
           <SalaryDropdownForm initialData={initialData} />
         </div>
 
         <SectionHeader title="Social Protocol" id="ssf_pf" label="BENEFIT_CONTRIBUTIONS" icon={ShieldCheck} />
-        <div className={activeSection === "ssf_pf" ? "px-6 py-8 block" : "hidden"}>
+        <div className={getSectionClass("ssf_pf")}>
           <SSFPFcontri initialData={initialData} />
         </div>
 
         <SectionHeader title="Financial Node" id="bank_details" label="DISBURSEMENT_ENDPOINT" icon={Landmark} />
-        <div className={activeSection === "bank_details" ? "px-6 py-8 block" : "hidden"}>
+        <div className={getSectionClass("bank_details")}>
           <BankDetails initialData={initialData} />
         </div>
       </div>
 
-      {/* HIDDEN LOGIC INPUTS */}
       <input type="hidden" name="_id" value={initialData?._id || ""} />
       <input type="hidden" name="userId" value={selectedUserId} />
 
-      {/* STICKY FOOTER */}
       <div className="mt-auto border-t border-border p-6 bg-card flex justify-end items-center backdrop-blur-md">
         <Button
           type="submit"

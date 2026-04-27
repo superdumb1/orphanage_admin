@@ -55,7 +55,7 @@ export const Sidebar = () => {
     { label: "Cash Settlements", path: "/settlements", icon: ArrowRightLeft },
     { label: "Staff Registry", path: "/staff", icon: UserCog },
     { label: "Account Setup", path: "/accounts_headers", icon: BookOpen },
-    { label: "System Users", path: "/usersmanagement", icon: Users2 },
+    // { label: "System Users", path: "/usersmanagement", icon: Users2 },
     { label: "Run Payroll", path: "/payroll", icon: Banknote },
     { label: "Payment Categories", path: "/payment-categories", icon: CreditCard },];
 
