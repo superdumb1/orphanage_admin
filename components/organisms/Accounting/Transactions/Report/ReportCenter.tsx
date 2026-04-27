@@ -5,13 +5,12 @@ import { generateExcelReport } from "@/lib/generateExcel";
 import ReportCenterModal from "./ReportCenterModal";
 import ReportCommandBar from "./ReportCommandBar";
 import { Button } from "@/components/atoms/Button";
-import { ChevronDown } from "lucide-react"; // ✨ Imported Chevron for accordion
+import { ChevronDown, XCircle } from "lucide-react";
 
 export default function ReportCenter({ transactions, accounts }: any) {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    
-    // ✨ 1. State to track mobile accordion (Defaults to closed)
     const [isExpanded, setIsExpanded] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const [filter, setFilter] = useState({
         timeframe: "MONTH",
@@ -23,140 +22,129 @@ export default function ReportCenter({ transactions, accounts }: any) {
     });
 
     const handleGenerate = () => {
+        setError(null);
         const now = new Date();
 
         const filtered = transactions.filter((t: any) => {
             const d = new Date(t.date);
-            let inTime = true;
+            // Fix: Normalizing to start-of-day for accurate comparisons
+            const dDateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            const nowDateOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
+            let inTime = true;
             if (filter.timeframe === "DAY") {
-                inTime = d.toDateString() === now.toDateString();
+                inTime = dDateOnly.getTime() === nowDateOnly.getTime();
             } else if (filter.timeframe === "WEEK") {
-                inTime = d >= new Date(new Date().setDate(now.getDate() - 7));
+                const sevenDaysAgo = new Date(nowDateOnly);
+                sevenDaysAgo.setDate(nowDateOnly.getDate() - 7);
+                inTime = dDateOnly >= sevenDaysAgo;
             } else if (filter.timeframe === "MONTH") {
-                inTime =
-                    d.getMonth() === now.getMonth() &&
-                    d.getFullYear() === now.getFullYear();
+                inTime = d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
             } else if (filter.timeframe === "YEAR") {
                 inTime = d.getFullYear() === now.getFullYear();
             } else if (filter.timeframe === "CUSTOM") {
                 if (!filter.startDate || !filter.endDate) return false;
-                inTime =
-                    d >= new Date(filter.startDate) &&
-                    d <= new Date(filter.endDate);
+                const start = new Date(filter.startDate);
+                start.setHours(0, 0, 0, 0);
+                const end = new Date(filter.endDate);
+                end.setHours(23, 59, 59, 999);
+                inTime = d >= start && d <= end;
             }
 
-            const matchesType =
-                filter.type === "ALL" || t.type === filter.type;
-
-            const matchesAccount =
-                filter.accountId === "ALL" ||
-                t.accountHead?._id === filter.accountId;
+            const matchesType = filter.type === "ALL" || t.type === filter.type;
+            const matchesAccount = filter.accountId === "ALL" || 
+                                 t.paymentCategory?._id === filter.accountId || 
+                                 t.accountHead?._id === filter.accountId;
 
             return inTime && matchesType && matchesAccount;
         });
 
         if (!filtered.length) {
-            alert("No transactions found.");
+            setError("No transactions found for the selected criteria.");
             return;
         }
 
         if (filter.format === "PDF") {
             generateStandardPDF({
-                title: `${filter.timeframe} Report`,
+                title: `${filter.timeframe} Financial Audit`,
                 filename: `Report_${Date.now()}`,
-                headers: [["Date", "Account", "Description", "Amount"]],
+                headers: [["Date", "Payment Source", "Account Head", "Description", "Amount"]],
                 data: filtered.map((t: any) => [
-                    new Date(t.date).toLocaleDateString(),
-                    t.accountHead?.name,
+                    new Date(t.date).toLocaleDateString('en-GB'),
+                    t.paymentCategory?.name || "N/A",
+                    t.accountHead?.name || "Uncategorized",
                     t.description,
-                    t.type === "INCOME"
-                        ? `+${t.amount}`
-                        : `-${t.amount}`
+                    { 
+                        content: t.type === "INCOME" ? `+${t.amount}` : `-${t.amount}`,
+                        styles: { textColor: t.type === "INCOME" ? [34, 197, 94] : [239, 68, 68] } 
+                    }
                 ]),
-                colorCodeAmount: true
             });
         } else {
             generateExcelReport(
                 filtered.map((t: any) => ({
-                    Date: new Date(t.date).toLocaleDateString(),
-                    Account: t.accountHead?.name,
+                    Date: new Date(t.date).toLocaleDateString('en-GB'),
+                    Source: t.paymentCategory?.name,
+                    AccountHead: t.accountHead?.name,
+                    Description: t.description,
                     Amount: t.amount,
                     Type: t.type
                 })),
-                ["Date", "Account", "Amount", "Type"],
-                "Finance_Export"
+                ["Date", "Source", "AccountHead", "Description", "Amount", "Type"],
+                "Finance_Audit_Export"
             );
         }
     };
 
     return (
-        <div className="bg-card border border-border rounded-dashboard shadow-glow mb-8 overflow-hidden transition-colors duration-500">
-
+        <div className="bg-card border border-border rounded-2xl shadow-glow mb-8 overflow-hidden transition-all duration-500">
             {/* HEADER */}
-            <div className="p-4 md:p-6 border-b border-border flex flex-col md:flex-row justify-between items-start md:items-center gap-4 md:gap-6 transition-colors">
-
-                {/* Title & Mobile Toggle */}
+            <div className="p-5 md:p-8 border-b border-border/50 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div className="flex justify-between items-start w-full md:w-auto">
                     <div>
-                        <h2 className="text-xl md:text-2xl font-black text-text tracking-tighter">
+                        <h2 className="text-xl md:text-2xl font-black text-text tracking-tighter uppercase font-mono">
                             Report Command Center
                         </h2>
-                        <p className="text-sm text-text-muted font-medium mt-1">
+                        <p className="text-[10px] text-text-muted font-black tracking-widest uppercase mt-1">
                             {filter.timeframe === "CUSTOM" && filter.startDate
-                                ? `Selected Range: ${filter.startDate} → ${filter.endDate}`
-                                : "Generate structured financial audit reports"}
+                                ? `Protocol: ${filter.startDate} → ${filter.endDate}`
+                                : "Financial Year 2082/83 | Audit Provisioning"}
                         </p>
                     </div>
-
-                    {/* ✨ 2. The Accordion Toggle Button (Hidden on Desktop) */}
                     <button 
                         onClick={() => setIsExpanded(!isExpanded)} 
-                        className="md:hidden mt-1 p-2 bg-background rounded-xl border border-border text-text-muted hover:text-text transition-colors shadow-sm"
-                        aria-label="Toggle Filters"
+                        className="md:hidden p-2 bg-bg border border-border rounded-xl text-primary shadow-sm"
                     >
-                        <ChevronDown 
-                            className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} 
-                            size={20} 
-                        />
+                        <ChevronDown className={`transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} size={20} />
                     </button>
                 </div>
 
-                {/* The Generate Button stays visible on mobile so default reports are always 1-click away */}
-                <Button
-                    onClick={handleGenerate}
-                    className="btn-primary w-full md:w-auto px-10 h-11 shadow-sm shrink-0"
-                >
-                    Generate Report
+                <Button onClick={handleGenerate} className="w-full md:w-auto px-12 h-12 font-black font-mono tracking-widest">
+                    GENERATE_REPORT
                 </Button>
             </div>
 
-            {/* ✨ 3. THE ACCORDION WRAPPER */}
-            {/* Uses CSS Grid animation: slides open smoothly on mobile, always open on md: screens */}
-            <div 
-                className={`grid transition-all duration-300 ease-in-out md:grid-rows-[1fr] md:opacity-100 ${
-                    isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                }`}
-            >
+            {/* ERROR ALERT */}
+            {error && (
+                <div className="mx-6 mt-4 p-3 bg-danger/10 border border-danger/20 rounded-xl flex items-center gap-3 text-danger text-[10px] font-black uppercase tracking-widest">
+                    <XCircle size={14} /> {error}
+                </div>
+            )}
+
+            {/* ACCORDION WRAPPER */}
+            <div className={`grid transition-all duration-500 ease-in-out md:grid-rows-[1fr] md:opacity-100 ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0 pointer-events-none"}`}>
                 <div className="overflow-hidden">
-                    <div className="bg-shaded/50 transition-colors">
-                        <ReportCommandBar
-                            filter={filter}
-                            setFilter={setFilter}
-                            accounts={accounts}
-                            setIsModalOpen={setIsModalOpen}
-                        />
-                    </div>
+                    <ReportCommandBar
+                        filter={filter}
+                        setFilter={setFilter}
+                        accounts={accounts}
+                        setIsModalOpen={setIsModalOpen}
+                    />
                 </div>
             </div>
 
-            {/* MODAL */}
             {isModalOpen && (
-                <ReportCenterModal
-                    filter={filter}
-                    setFilter={setFilter}
-                    setIsModalOpen={setIsModalOpen}
-                />
+                <ReportCenterModal filter={filter} setFilter={setFilter} setIsModalOpen={setIsModalOpen} />
             )}
         </div>
     );

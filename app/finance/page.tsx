@@ -22,6 +22,8 @@ export default async function FinancePage() {
 
     const rawTransactions = await Transaction.find({})
         .populate("accountHead", "name code")
+        .populate("paymentCategory") 
+
         .populate({
             path: "logId",
             populate: { path: "item" },
