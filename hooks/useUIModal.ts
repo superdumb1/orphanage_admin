@@ -62,11 +62,11 @@ export function useUIModals() {
                 { child }
             )
         },
-        openChildStatusCategoriesForm:({onSaved}:{onSaved:()=>void})=>{
+        openChildStatusCategoriesForm: ({ onSaved }: { onSaved: () => void }) => {
             openModal(
                 "CHILD_STATUS",
                 `child status catagories`,
-                {onSaved}
+                { onSaved }
             )
         },
 
@@ -91,6 +91,13 @@ export function useUIModals() {
                 "Add Category",
                 { onSaved, initialData } // ✨ Pass the callback into the modal props
             );
+        },
+        // Inside useUIModals.ts
+        openAddConsumableCategory: ({onSaved}: any) => {
+            openModal("CONSUMABLE_CAT_FORM", "Protocol: Consumable Registry", { onSaved });
+        },
+        openAddAssetCategory: ({onSaved}: any) => {
+            openModal("ASSET_CAT_FORM", "Protocol: Asset Registry", { onSaved });
         },
         openInternalTransfer: () =>
             openModal(
