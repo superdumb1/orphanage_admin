@@ -1,8 +1,8 @@
 "use client";
 import React from "react";
 import { FormField } from "@/components/molecules/FormField";
-import { SelectField } from "@/components/molecules/SelectField";
 import { TAccountHead } from "@/types/Transaction";
+import SelectPaymentCategory from "@/components/molecules/SelectPaymentCategory"; // ✨ NEW
 
 interface FinanceBridgeProps {
   accounts: TAccountHead[];
@@ -16,10 +16,9 @@ export const StockFinanceFields: React.FC<FinanceBridgeProps> = ({
   const expenseAccounts = accounts.filter((acc) => acc.type === "EXPENSE");
 
   return (
-    // WRAPPER: Swapped emerald for bg-success/5 and border-success/20 for a premium themed tint
     <div className="bg-success/5 p-6 rounded-2xl border border-success/20 flex flex-col gap-6 animate-in fade-in zoom-in-95 transition-colors duration-500">
 
-      {/* HEADER: Uses success color variable for semantic meaning */}
+      {/* HEADER */}
       <div className="border-b border-success/20 pb-3">
         <p className="text-[10px] uppercase font-black text-success tracking-[0.2em]">
           Financial Link {transaction ? "— (Audit Active)" : "— (Optional Record)"}
@@ -40,28 +39,16 @@ export const StockFinanceFields: React.FC<FinanceBridgeProps> = ({
           className="text-text"
         />
 
-        {/* ACCOUNT SELECT: Synced with OrphanAdmin input tokens */}
         <div className="flex flex-col gap-2">
           <label className="text-[10px] uppercase font-black text-text-muted tracking-widest">
             Expense Account
           </label>
-
           <select
             name="accountHead"
-            defaultValue={transaction?.accountHead?._id?.toString()}
-            className="
-              w-full p-3 text-sm font-bold
-              border border-border rounded-xl
-              bg-bg text-text
-              outline-none
-              focus:ring-2 focus:ring-primary
-              transition-all cursor-pointer
-            "
+            defaultValue={transaction?.accountHead?._id?.toString() || transaction?.accountHead?.toString()}
+            className="w-full p-3 text-sm font-bold border border-border rounded-xl bg-bg text-text outline-none focus:ring-2 focus:ring-primary transition-all cursor-pointer"
           >
-            <option value="" className="opacity-50">
-              Select Account Head...
-            </option>
-
+            <option value="">Select Account Head...</option>
             {expenseAccounts.map((acc: any) => (
               <option key={acc._id.toString()} value={acc._id.toString()}>
                 {acc.name} ({acc.code})
@@ -71,18 +58,12 @@ export const StockFinanceFields: React.FC<FinanceBridgeProps> = ({
         </div>
       </div>
 
-      {/* PAYMENT + DATE */}
+      {/* ✨ UPDATED: CATEGORY + DATE */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <SelectField
-          label="Payment Method"
-          name="paymentMethod"
-          className="text-text"
-          defaultValue={transaction?.paymentMethod || "CASH"}
-          options={[
-            { label: "Cash", value: "CASH" },
-            { label: "Bank Transfer", value: "BANK" },
-            { label: "Cheque", value: "CHEQUE" },
-          ]}
+        {/* Swapped hardcoded SelectField for the dynamic PaymentCategory selector */}
+        <SelectPaymentCategory 
+          name="paymentCategoryId"
+          defaultValue={transaction?.paymentCategory?._id || transaction?.paymentCategory || ""}
         />
 
         <FormField

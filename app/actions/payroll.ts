@@ -8,12 +8,14 @@ export async function processMonthlyPayroll(prevState: any, formData: FormData) 
   try {
     await dbConnect();
 
-    const bankAccountId = formData.get("bankAccountId") as string;
+    // ✨ UPDATED: paymentCategoryId replaces bankAccountId string
+    const paymentCategoryId = formData.get("paymentCategoryId") as string;
     const salaryAccountHeadId = formData.get("salaryAccountHeadId") as string;
     const monthYear = formData.get("monthYear") as string; // Format: "YYYY-MM"
+    const adminId = formData.get("adminId") as string; // The ID of the admin running the process
 
-    if (!bankAccountId || !salaryAccountHeadId || !monthYear) {
-      return { error: "Missing required financial routing parameters." };
+    if (!paymentCategoryId || !salaryAccountHeadId || !monthYear || !adminId) {
+      return { error: "Missing required financial routing parameters or Admin ID." };
     }
 
     // 1. Fetch all ACTIVE personnel
@@ -21,7 +23,6 @@ export async function processMonthlyPayroll(prevState: any, formData: FormData) 
     if (!activeStaff.length) return { error: "No active personnel found on roster." };
 
     // 2. Prevent Double-Processing
-    // Check if payroll transactions already exist for this specific month
     const existingPayroll = await Transaction.findOne({
         type: "EXPENSE",
         description: { $regex: `\\[PAYROLL\\] - ${monthYear}` }
@@ -41,21 +42,20 @@ export async function processMonthlyPayroll(prevState: any, formData: FormData) 
         (a.houseRent || 0) + (a.medical || 0) + (a.transport || 0) +
         (a.food || 0) + (a.communication || 0) + (a.other || 0);
 
-      // (Optional) If SSF is enrolled, subtract employee contribution to get Net Pay
-      // const netPay = staff.ssf?.enrolled ? grossSalary - (staff.ssf.employeeContribution || 0) : grossSalary;
-
       return {
-        amount: grossSalary, // Or use netPay if you want to log exact cash leaving bank
+        amount: grossSalary, 
         type: "EXPENSE",
-        paymentMethod: "BANK",
+        // ✨ UPDATED: Using the new paymentCategory field
+        paymentCategory: paymentCategoryId, 
         accountHead: salaryAccountHeadId,
-        status: "VERIFIED", // Admin is running this, so it's auto-verified
+        status: "VERIFIED", 
+        isSettled: true, // Payroll is usually settled immediately upon bank transfer
         description: `[PAYROLL] - ${monthYear} // Salary disbursement for ${staff.fullName}`,
         date: new Date(),
-        // Link the transaction to the staff's user account if they have one, for audit trails
-        createdBy: staff.userId || null 
+        // ✨ UPDATED: createdBy is the Admin, not the staff member receiving the money
+        createdBy: adminId 
       };
-    }).filter(tx => tx.amount > 0); // Don't process people with Rs. 0 salary
+    }).filter(tx => tx.amount > 0); 
 
     if (transactionsToInsert.length === 0) {
         return { error: "No personnel have a configured salary > 0." };
@@ -65,9 +65,11 @@ export async function processMonthlyPayroll(prevState: any, formData: FormData) 
     await Transaction.insertMany(transactionsToInsert);
 
     revalidatePath("/finance");
+    revalidatePath("/staff"); // To update any payroll history tabs on staff profiles
     return { success: true, count: transactionsToInsert.length };
 
   } catch (error: any) {
+    console.error("Payroll Error:", error);
     return { error: error.message || "Payroll Execution Protocol Failed." };
   }
 }

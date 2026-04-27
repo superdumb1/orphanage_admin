@@ -79,7 +79,7 @@ export const GuardianDossierModal = ({ id, closeModal }: GuardianDossierModalPro
             {/* AUDIT FOOTER */}
             <div className="pt-6 border-t border-border/30 opacity-40">
                 <p className="text-[9px] font-black text-text-muted uppercase tracking-[0.4em] text-center">
-                    End of Record // Kree Corp Internal Placement Protocol
+                    End of Record // Tara Namaste Baalgram Internal Placement Protocol
                 </p>
             </div>
         </div>

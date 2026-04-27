@@ -78,6 +78,13 @@ export function useUIModals() {
                 !!initialData ? "Edit Transaction" : "New Transaction",
                 { initialData }
             ),
+        openAddCateGoryForm: ({ onSaved }: { onSaved?: () => void } = {}) => {
+            openModal(
+                "PAYMENT_CATEGORY_FORM",
+                "Add Category",
+                { onSaved } // ✨ Pass the callback into the modal props
+            );
+        },
         openInternalTransfer: () =>
             openModal(
                 "INTERNAL_TRANSFER",
@@ -86,13 +93,17 @@ export function useUIModals() {
             ),
 
         // ✨ THE FIX IS HERE: Added 'defaultType' to the parameters and the payload
-        openAccountHeadForm: ({ initialData, isIncomeHead, defaultType }: { initialData?: any, isIncomeHead?: boolean, defaultType?: string } = {}) =>
+        // useUIModals.ts refinement
+        openAccountHeadForm: ({ initialData, defaultType, onSaved }: {
+            initialData?: any,
+            defaultType?: string,
+            onSaved?: () => void
+        } = {}) =>
             openModal(
                 "ACCOUNT_HEAD_FORM",
                 !!initialData ? "Edit Account Head" : "New Account Head",
-                { initialData, isIncomeHead, defaultType }
+                { initialData, defaultType, onSaved } // ✨ Pass onSaved to the form
             ),
-
         // --- INVENTORY ---
         openManageStock: ({ item }: { item: any }) =>
             openModal(

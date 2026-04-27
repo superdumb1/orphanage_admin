@@ -21,8 +21,8 @@ const ubuntu = Ubuntu({
 });
 
 export const metadata: Metadata = {
-  title: "OrphanAdmin | Kree Corp",
-  description: "Internal management and financial audit system for Kree Corp Orphanage.",
+  title: "OrphanAdmin | Tara Nameste Baal Gram",
+  description: "Internal management and financial audit system for Tara Namaste Orphanage.",
   icons: {
     icon: "/favicon.ico",
   }

@@ -2,7 +2,7 @@
 
 import dbConnect from "@/lib/db";
 import Transaction from "@/models/Transaction";
-import AccountHead from "@/models/AccountHead";
+import PaymentCategory from "@/models/paymentCategory"; // ✨ NEW: Using the Category model
 import { revalidatePath } from "next/cache";
 
 export async function executeTransfer(prevState: any, formData: FormData) {
@@ -10,53 +10,54 @@ export async function executeTransfer(prevState: any, formData: FormData) {
 
     try {
         const amount = Number(formData.get("amount"));
-        const fromAccountId = formData.get("fromAccount") as string;
-        const toAccountId = formData.get("toAccount") as string;
+        const fromCategoryId = formData.get("fromAccount") as string; // From UI dropdown
+        const toCategoryId = formData.get("toAccount") as string;     // From UI dropdown
         const date = formData.get("date") ? new Date(formData.get("date") as string) : new Date();
         const description = formData.get("description") as string;
-        
         const createdBy = formData.get("createdBy") as string;
-        const status = formData.get("status") as string || "PENDING";
 
+        // 1. Validation
         if (!createdBy) throw new Error("Security Violation: User session not found.");
         if (amount <= 0) throw new Error("Transfer amount must be greater than zero.");
-        if (fromAccountId === toAccountId) throw new Error("Cannot transfer to the same account.");
+        if (fromCategoryId === toCategoryId) throw new Error("Cannot transfer to the same account.");
 
-        // 1. Get account details so we can write clean descriptions
-        const fromAccount = await AccountHead.findById(fromAccountId);
-        const toAccount = await AccountHead.findById(toAccountId);
+        // 2. Fetch Category details for the audit trail
+        const fromCat = await PaymentCategory.findById(fromCategoryId);
+        const toCat = await PaymentCategory.findById(toCategoryId);
 
-        if (!fromAccount || !toAccount) throw new Error("One or both accounts could not be found.");
+        if (!fromCat || !toCat) throw new Error("One or both payment categories could not be found.");
 
-        // 2. Generate a unique shared Reference ID so these two transactions are forever linked
+        // 3. Generate a unique Reference ID to link the pair
         const transferRef = `CONTRA-${Date.now().toString().slice(-6)}`;
 
-        // 3. Create the WITHDRAWAL (Expense)
+        // 4. Create the WITHDRAWAL (Expense side)
+        // This reduces the balance of the 'From' account
         await Transaction.create({
             amount: amount,
             date: date,
             type: 'EXPENSE',
-            accountHead: null, // No expense category, it's a transfer
-            paymentMethod: fromAccount.name.toLowerCase().includes('cash') ? 'CASH' : 'BANK',
-            bankAccountId: fromAccount._id,
+            accountHead: null, // Transfers don't hit Income/Expense heads
+            paymentCategory: fromCat._id,
             referenceNumber: transferRef,
-            description: `Internal Transfer TO [${toAccount.name}] - ${description}`,
+            description: `Internal Transfer TO [${toCat.name}] - ${description}`,
             createdBy,
-            status: "VERIFIED" // Contra transfers are usually auto-verified to prevent mismatched books
+            status: "VERIFIED",
+            isSettled: true // Contra entries are pre-settled
         });
 
-        // 4. Create the DEPOSIT (Income)
+        // 5. Create the DEPOSIT (Income side)
+        // This increases the balance of the 'To' account
         await Transaction.create({
             amount: amount,
             date: date,
             type: 'INCOME',
-            accountHead: null, // No income category, it's a transfer
-            paymentMethod: toAccount.name.toLowerCase().includes('cash') ? 'CASH' : 'BANK',
-            bankAccountId: toAccount._id,
+            accountHead: null,
+            paymentCategory: toCat._id,
             referenceNumber: transferRef,
-            description: `Internal Transfer FROM [${fromAccount.name}] - ${description}`,
+            description: `Internal Transfer FROM [${fromCat.name}] - ${description}`,
             createdBy,
-            status: "VERIFIED" 
+            status: "VERIFIED",
+            isSettled: true
         });
 
         revalidatePath("/finances");
@@ -65,6 +66,7 @@ export async function executeTransfer(prevState: any, formData: FormData) {
         return { success: true, error: null };
 
     } catch (error: any) {
+        console.error("Transfer Error:", error);
         return { success: false, error: error.message };
     }
 }

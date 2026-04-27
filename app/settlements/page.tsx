@@ -1,50 +1,72 @@
 // app/finance/settlements/page.tsx
 import dbConnect from "@/lib/db";
 import Transaction from "@/models/Transaction";
-import AccountHead from "@/models/AccountHead";
+import PaymentCategory from "@/models/paymentCategory"; // ✨ NEW: Import the category model
 import { SettlementDashboard } from "@/components/organisms/Admin/AdminSettlementDashboard";
 
 export default async function SettlementsPage() {
     await dbConnect();
 
-    // 1. Get all Bank Accounts for the dropdown
-// 1. Get all ASSET accounts for the dropdown (Removed the strict subType filter)
-// 1. Get ONLY Asset accounts where the Sub-Group contains "Bank" or "Cash"
-    const bankAccounts = await AccountHead.find({ 
-        type: "ASSET", 
-        isActive: true,
-        // ✨ This looks inside your subType array for any match of "bank" or "cash", ignoring uppercase/lowercase
-        subType: { $regex: /bank|cash/i } 
-    }).lean();    // 2. Aggregate the unsettled cash held by each staff member
+    // 1. Get Destination Accounts
+    // These are the accounts an admin can "deposit" money into (Bank or Main Vault)
+    const destinationAccounts = await PaymentCategory.find({ 
+        type: { $in: ["BANK", "CASH"] }, 
+        isActive: true 
+    }).lean();
+
+    // 2. Aggregate Unsettled Balances using the new Category logic
     const aggregatedBalances = await Transaction.aggregate([
+        // Stage 1: Filter for unverified/unsettled entries
         {
             $match: {
                 status: "VERIFIED",
-                isSettled: false,
+                isSettled: false
+            }
+        },
+        // Stage 2: Join with PaymentCategory to get the "Type" (CASH vs PERSONAL)
+        {
+            $lookup: {
+                from: "paymentcategories", 
+                localField: "paymentCategory",
+                foreignField: "_id",
+                as: "catInfo"
+            }
+        },
+        { $unwind: "$catInfo" },
+        // Stage 3: Filter for only Cash collections or Staff Out-of-Pocket
+        {
+            $match: {
                 $or: [
-                    // Scenario A: They collected physical cash (They owe the orphanage)
-                    { paymentMethod: "CASH", type: "INCOME" },
-                    // Scenario B: They paid with their own money (Orphanage owes them)
-                    { paymentMethod: "OUT_OF_POCKET", type: "EXPENSE" }
+                    { "catInfo.type": "CASH", type: "INCOME" },
+                    { "catInfo.type": "PERSONAL", type: "EXPENSE" }
                 ]
             }
         },
+        // Stage 4: Group by Staff member
         {
             $group: {
                 _id: "$createdBy",
-                // Add Cash Incomes, Subtract Out-of-Pocket Expenses
                 netBalance: {
                     $sum: {
-                        $cond: [{ $eq: ["$paymentMethod", "CASH"] }, "$amount", { $multiply: ["$amount", -1] }]
+                        $cond: [
+                            { $eq: ["$catInfo.type", "CASH"] }, 
+                            "$amount", 
+                            { $multiply: ["$amount", -1] }
+                        ]
                     }
                 },
                 totalOutOfPocket: {
                     $sum: {
-                        $cond: [{ $eq: ["$paymentMethod", "OUT_OF_POCKET"] }, "$amount", 0]
+                        $cond: [
+                            { $eq: ["$catInfo.type", "PERSONAL"] }, 
+                            "$amount", 
+                            0
+                        ]
                     }
                 }
             }
         },
+        // Stage 5: Get User Names
         {
             $lookup: { from: "users", localField: "_id", foreignField: "_id", as: "staffDetails" }
         },
@@ -60,14 +82,14 @@ export default async function SettlementsPage() {
         }
     ]);
 
-    // Sanitize Bank Accounts for Client
-    const sanitizedBanks = bankAccounts.map(b => ({ ...b, _id: b._id.toString() }));
+    // Sanitize for Client
+    const sanitizedBanks = JSON.parse(JSON.stringify(destinationAccounts));
 
     return (
         <div className="max-w-7xl mx-auto p-4 md:p-8">
             <SettlementDashboard
                 staffBalances={aggregatedBalances}
-                bankAccounts={sanitizedBanks}
+                bankAccounts={sanitizedBanks} // UI uses this for the "Deposit To" dropdown
             />
         </div>
     );

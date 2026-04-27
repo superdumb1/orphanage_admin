@@ -122,7 +122,6 @@ export const ChildAction = ({
                     />
                 </div>
 
-                {/* ACTIONS: Synced with Kree Corp UX flow */}
                 <div className="flex justify-end items-center gap-8 pt-10 border-t border-border/50 mt-4">
                     <button 
                         type="button"

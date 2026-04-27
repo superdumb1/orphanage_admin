@@ -1,117 +1,81 @@
 "use client";
 import React, { useState } from "react";
 import { FormField } from "@/components/molecules/FormField";
-import { SelectField } from "@/components/molecules/SelectField";
-import { TAccountHead } from "@/types/Transaction";
+import SelectPaymentCategory from "@/components/molecules/SelectPaymentCategory";
+import SelectAccountHead from "@/components/molecules/SelectAccontHead" // Fixed import typo
 
 interface FinanceBridgeProps {
-    accounts: TAccountHead[];
-    transaction: any;
+    transaction?: any;
+    transactionType: "INCOME" | "EXPENSE"; 
 }
 
 export const StockFinanceFields: React.FC<FinanceBridgeProps> = ({
-    accounts,
     transaction,
+    transactionType
 }) => {
-    const [paymentMethod, setPaymentMethod] = useState(transaction?.paymentMethod || "CASH");
-    const [costEntered, setCostEntered] = useState<number | string>(transaction?.amount || ""); 
+    const [costEntered, setCostEntered] = useState<number | string>(transaction?.amount || "");
+    const [selectedAccountId, setSelectedAccountId] = useState<string>(
+        transaction?.accountHead?._id || transaction?.accountHead || ""
+    );
 
-    const expenseAccounts = accounts?.filter((acc) => acc.type === "EXPENSE") || [];
-    const availableBanks = accounts?.filter((acc) => acc.isBankAccount) || [];
+    // Dynamic label logic for clarity
+    const isPurchase = transactionType === "EXPENSE";
 
     return (
-        <div className="bg-success/5 p-6 rounded-2xl border border-success/20 flex flex-col gap-6 transition-colors duration-500">
-
-            <div className="border-b border-success/20 pb-3">
-                <p className="text-[10px] uppercase font-black text-success tracking-[0.2em]">
-                    Financial Link {transaction ? "— (Audit Active)" : "— (Optional Record)"}
-                </p>
-                <p className="text-[9px] text-text-muted uppercase font-bold mt-1 opacity-70">
-                    Automatically syncs this entry to the ledger
-                </p>
+        <div className="bg-success/5 p-6 rounded-2xl border border-success/20 flex flex-col gap-6 animate-in fade-in duration-500">
+            
+            {/* AUDIT HEADER */}
+            <div className="border-b border-success/20 pb-3 flex justify-between items-end">
+                <div>
+                    <p className="text-[10px] uppercase font-black text-success tracking-[0.2em]">
+                        Financial Ledger Link
+                    </p>
+                    <p className="text-[9px] text-text-muted uppercase font-bold mt-1 opacity-70">
+                        {isPurchase ? "Inventory Purchase Audit" : "Stock Valuation Audit"}
+                    </p>
+                </div>
+                {Number(costEntered) > 0 && (
+                    <span className="text-[9px] font-black bg-success/20 text-success px-2 py-0.5 rounded border border-success/30 uppercase tracking-tighter">
+                        Entry Required
+                    </span>
+                )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* 1. THE COST */}
                 <FormField
-                    label="Total Cost (NPR)"
+                    id="cost"
+                    label={isPurchase ? "Total Purchase Cost (NPR)" : "Estimated Value (NPR)"}
                     name="cost"
                     type="number"
                     value={costEntered}
                     onChange={(e) => setCostEntered(e.target.value)} 
-                    placeholder="Leave blank if donated"
+                    placeholder="Enter 0 if donated/no cost"
                     className="text-text font-mono"
                 />
 
-                <div className="flex flex-col gap-2">
-                    <label className="text-[10px] uppercase font-black text-text-muted tracking-widest">
-                        Expense Account Head
-                    </label>
-                    <select
-                        name="accountHead"
-                        defaultValue={transaction?.accountHead?._id?.toString() || transaction?.accountHead?.toString()}
-                        className="w-full p-3.5 text-sm border border-border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary outline-none transition-all cursor-pointer"
-                    >
-                        <option value="">Auto-Assign to Staff Spend...</option>
-                        {expenseAccounts.map((acc: any) => (
-                            <option key={acc._id} value={acc._id.toString()}>
-                                {acc.name} ({acc.code})
-                            </option>
-                        ))}
-                    </select>
-                    {/* ✨ Helpful UI Note */}
-                    {Number(costEntered) > 0 && (
-                        <span className="text-[9px] font-bold text-primary tracking-wider uppercase">
-                            Leave blank to use default Staff Spend account.
-                        </span>
-                    )}
-                </div>
+                {/* 2. THE ACCOUNT HEAD (Expense/Income) */}
+                <SelectAccountHead 
+                    transactionType={transactionType}
+                    selectedAccountId={selectedAccountId}
+                    setSelectedAccountId={setSelectedAccountId}
+                    required={Number(costEntered) > 0}
+                />
             </div>
 
-            {/* THE CRITICAL SETTLEMENT UPDATE */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2 border-t border-border/50">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-border/50">
+                {/* 3. THE PAYMENT SOURCE (Bank/Cash/Personal - New Model) */}
                 <div className="flex flex-col w-full">
-                    <SelectField
-                        id="paymentMethod"
-                        label="Payment Method"
-                        name="paymentMethod"
-                        value={paymentMethod}
-                        onChange={(e) => setPaymentMethod(e.target.value)}
-                        options={[
-                            { label: "Cash (Orphanage Funds)", value: "CASH" },
-                            { label: "Out of Pocket (My Personal Money)", value: "OUT_OF_POCKET" },
-                            { label: "Bank Transfer", value: "BANK" },
-                            { label: "Cheque", value: "CHEQUE" },
-                            { label: "In-Kind (Donated)", value: "IN_KIND" }
-                        ]}
+                     <SelectPaymentCategory 
+                        name="paymentCategoryId" 
+                        defaultValue={transaction?.paymentCategory?._id || transaction?.paymentCategory || ""}
+                        label={isPurchase ? "Paid From" : "Received Into"}
                     />
                 </div>
 
-                <div className="flex flex-col w-full min-h-[70px]">
-                    {(paymentMethod === "BANK" || paymentMethod === "CHEQUE") && (
-                        <div className="animate-in fade-in slide-in-from-top-2">
-                            <label className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em] mb-2 block">
-                                Source Bank Account *
-                            </label>
-                            <select
-                                name="bankAccountId"
-                                required
-                                defaultValue={transaction?.bankAccountId?.toString() || ""}
-                                className="w-full p-3.5 text-sm border border-border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary outline-none transition-all font-medium"
-                            >
-                                <option value="">Select Bank...</option>
-                                {availableBanks.map((bank: any) => (
-                                    <option key={bank._id} value={bank._id.toString()}>
-                                        {bank.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                 <FormField
+                {/* 4. DATE */}
+                <FormField
+                    id="transactionDate"
                     label="Transaction Date"
                     name="date"
                     type="date"
@@ -122,22 +86,24 @@ export const StockFinanceFields: React.FC<FinanceBridgeProps> = ({
                             : new Date().toISOString().split("T")[0]
                     }
                 />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <FormField
-                    label="Vendor / Donor Name"
+                    id="donorOrVendorName"
+                    label={isPurchase ? "Vendor Name" : "Donor Name"}
                     name="donorOrVendorName"
                     defaultValue={transaction?.donorOrVendorName}
-                    placeholder="e.g. Local Market"
-                    className="text-text"
+                    placeholder={isPurchase ? "e.g. BhatBhateni" : "e.g. Anonymous"}
+                />
+                <FormField
+                    id="referenceNumber"
+                    label="Ref / Bill / Receipt No."
+                    name="referenceNumber"
+                    defaultValue={transaction?.referenceNumber}
+                    placeholder="Optional tracking number"
                 />
             </div>
-            
-            <FormField
-                label="Reference / Cheque No."
-                name="referenceNumber"
-                defaultValue={transaction?.referenceNumber}
-                placeholder="Optional"
-                className="text-text"
-            />
         </div>
     );
 };

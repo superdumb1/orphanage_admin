@@ -5,15 +5,13 @@ export interface ITransaction extends Document {
   date: Date;
   type: 'INCOME' | 'EXPENSE';
   accountHead?: mongoose.Types.ObjectId | null;
-  subType?: string; // ✨ ALIGNED: Changed from subTypeSelected to match your UI/Action
-  
-  paymentMethod: 'CASH' | 'BANK' | 'CHEQUE' | 'IN_KIND' | 'OUT_OF_POCKET';
-  
-  // ✨ NEW: The crucial link to the specific Bank Account
-  bankAccountId?: mongoose.Types.ObjectId | null; 
-  
+  subType?: string; 
+
+  // ✨ THE FIX: Updated the TS Interface to match the schema!
+  paymentCategory?: mongoose.Types.ObjectId | null;
+
   status: 'PENDING' | 'VERIFIED' | 'REJECTED';
-  isSettled: boolean; // ✨ Added to interface for TypeScript safety
+  isSettled: boolean; 
   createdBy: mongoose.Types.ObjectId;
   verifiedBy?: mongoose.Types.ObjectId;
   referenceNumber?: string;
@@ -32,28 +30,21 @@ const TransactionSchema = new Schema({
     ref: 'AccountHead',
     required: false,
     default: null
-  }, 
-  
-  subType: { type: String }, // ✨ ALIGNED to match the form input
-  
-  paymentMethod: {
-    type: String,
-    enum: ['CASH', 'BANK', 'CHEQUE', 'IN_KIND', 'OUT_OF_POCKET'],
-    default: 'CASH'
-  }, 
-  
-  // ✨ NEW: Tells Mongoose to accept and store the Bank Account ID safely
-  bankAccountId: {
-    type: Schema.Types.ObjectId,
-    ref: 'AccountHead',
-    required: false,
-    default: null 
   },
+
+  subType: { type: String }, 
   
+  // ✨ The unified payment tracker
+  paymentCategory: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'PaymentCategory',
+    required: false
+  },
+
   referenceNumber: { type: String },
   description: { type: String, required: true },
   donorOrVendorName: { type: String },
-  
+
   logId: {
     type: Schema.Types.ObjectId,
     ref: 'InventoryLog',
@@ -75,7 +66,7 @@ const TransactionSchema = new Schema({
   },
   isSettled: {
     type: Boolean,
-    default: false 
+    default: false
   },
 }, { timestamps: true });
 

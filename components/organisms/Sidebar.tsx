@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "../molecules/ThemeToggle";
 import {
+  CreditCard,
   LayoutDashboard,
   Baby,
   UserCog,
@@ -36,7 +37,7 @@ export const Sidebar = () => {
     setIsMobileOpen(false);
   }, [pathname]);
 
- 
+
 
   // BASE ITEMS: Available to Everyone (Samity, Staff, Admin)
   const navItems = [
@@ -56,20 +57,18 @@ export const Sidebar = () => {
     { label: "Account Setup", path: "/accounts_headers", icon: BookOpen },
     { label: "System Users", path: "/usersmanagement", icon: Users2 },
     { label: "Run Payroll", path: "/payroll", icon: Banknote },
-  ];
+    { label: "Payment Categories", path: "/payment-categories", icon: CreditCard },];
 
   const renderLink = (item: any) => {
     const isActive = pathname === item.path;
     const Icon = item.icon;
     return (
       <Link key={item.path} href={item.path} title={isCollapsed ? item.label : undefined}>
-        <div className={`flex items-center rounded-xl transition-all duration-200 group ${
-          isCollapsed ? "md:justify-center px-4 py-3 md:p-3 gap-3" : "px-4 py-3 gap-3"
-        } ${
-          isActive 
-            ? "bg-primary text-white shadow-glow" 
+        <div className={`flex items-center rounded-xl transition-all duration-200 group ${isCollapsed ? "md:justify-center px-4 py-3 md:p-3 gap-3" : "px-4 py-3 gap-3"
+          } ${isActive
+            ? "bg-primary text-white shadow-glow"
             : "text-text-muted hover:bg-shaded hover:text-text"
-        }`}>
+          }`}>
           <Icon className={`flex-shrink-0 transition-transform group-hover:scale-110 ${isCollapsed ? "md:w-6 md:h-6 w-5 h-5" : "w-5 h-5"}`} />
           <span className={`font-ubuntu text-sm font-bold whitespace-nowrap ${isCollapsed ? "md:hidden" : ""}`}>
             {item.label}
@@ -85,7 +84,7 @@ export const Sidebar = () => {
       {isMobileOpen && <div className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50" onClick={() => setIsMobileOpen(false)} />}
 
       <aside className={`fixed inset-y-0 left-0 z-[60] h-full flex flex-col bg-bg border-r border-border transition-all duration-300 md:relative md:translate-x-0 md:z-40 ${isCollapsed ? "md:w-20" : "md:w-64"} ${isMobileOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"} w-64`}>
-        
+
         <button onClick={() => setIsCollapsed(!isCollapsed)} className="hidden md:block absolute -right-3 top-8 bg-card border border-border text-text-muted rounded-full p-1 z-50 shadow-sm">
           {isCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
@@ -93,8 +92,8 @@ export const Sidebar = () => {
         <div className={`p-6 border-b border-border flex items-center min-h-[80px] ${isCollapsed ? "md:justify-center" : ""}`}>
           <div className="flex flex-col overflow-hidden">
             <h1 className={`font-ubuntu font-black tracking-tight ${isCollapsed ? "md:text-xl text-lg md:text-primary" : "text-lg text-text"}`}>
-              <span className="hidden md:inline">{isCollapsed ? "OA" : "OrphanAdmin"}</span>
-              <span className="md:hidden">OrphanAdmin</span>
+              <span className="hidden md:inline">{isCollapsed ? "TNBG" : "Tara Namaste Baal Gram"}</span>
+              <span className="md:hidden">Tara Namaste Baal Gram</span>
             </h1>
             <p className={`font-ubuntu text-[9px] text-primary font-black mt-1 ${isCollapsed ? "md:hidden" : ""}`}>
               {userRole} PROTOCOL
@@ -124,7 +123,7 @@ export const Sidebar = () => {
             </span>
             <ThemeToggle />
           </div>
-          
+
           <button onClick={() => signOut()} className={`w-full flex items-center text-danger hover:bg-danger/10 rounded-xl transition-all group ${isCollapsed ? "md:justify-center px-4 py-3 md:p-3" : "px-4 py-3 gap-3"}`}>
             <LogOut className="flex-shrink-0 group-hover:scale-110 w-5 h-5" />
             <span className={`font-ubuntu text-sm font-bold ${isCollapsed ? "md:hidden" : ""}`}>Logout</span>

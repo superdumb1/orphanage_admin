@@ -1,7 +1,8 @@
 import React from "react";
 import dbConnect from "@/lib/db";
 import Staff from "@/models/Staff";
-import Transaction from "@/models/Transaction"; // ✨ Added to calculate their cash balances
+import Transaction from "@/models/Transaction"; 
+import PaymentCategory from "@/models/paymentCategory"; // ✨ NEW: Required for lookup
 import { notFound } from "next/navigation";
 import { StaffProfileHeader } from "@/components/organisms/staffs/staffpage/StaffProfileHeader";
 import { BasicInfoCard, ComplianceCard, BankCard } from "@/components/organisms/staffs/staffpage/StaffProfileCards";
@@ -13,12 +14,11 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ i
 
   const cleanId = id.trim();
   
-  // ✨ Added .populate to fetch the linked User account details (name, email, role)
+  // 1. Fetch Staff and Populate User
   const rawStaff = await Staff.findById(cleanId).populate("userId", "email role isActive").lean();
-
   if (!rawStaff) return notFound();
 
-  // ✨ CALCULATE FINANCIAL BALANCES IF THEY HAVE A LINKED ACCOUNT
+  // 2. ✨ REFACTORED FINANCIAL AGGREGATION
   let netBalance = 0;
   if (rawStaff.userId) {
       const balanceResult = await Transaction.aggregate([
@@ -26,19 +26,29 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ i
               $match: { 
                   createdBy: rawStaff.userId._id, 
                   status: "VERIFIED", 
-                  isSettled: false,
-                  $or: [
-                      { paymentMethod: "CASH", type: "INCOME" },
-                      { paymentMethod: "OUT_OF_POCKET", type: "EXPENSE" } 
-                  ]
+                  isSettled: false
               } 
           },
-          { 
+          // Join with PaymentCategory to find the Type (CASH vs PERSONAL)
+          {
+              $lookup: {
+                  from: "paymentcategories",
+                  localField: "paymentCategory",
+                  foreignField: "_id",
+                  as: "cat"
+              }
+          },
+          { $unwind: "$cat" },
+          {
               $group: { 
                   _id: null, 
                   netBalance: { 
                       $sum: { 
-                          $cond: [{ $eq: ["$paymentMethod", "CASH"] }, "$amount", { $multiply: ["$amount", -1] }] 
+                          $cond: [
+                              { $eq: ["$cat.type", "CASH"] }, 
+                              "$amount", 
+                              { $multiply: ["$amount", -1] }
+                          ] 
                       } 
                   }
               } 
@@ -47,9 +57,10 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ i
       netBalance = balanceResult[0]?.netBalance || 0;
   }
 
+  // 3. Serialize and Calculate Gross
   const staff = JSON.parse(JSON.stringify({
       ...rawStaff,
-      currentBalance: netBalance // Pass the calculated balance down to the Client Components
+      currentBalance: netBalance 
   }));
 
   const s = staff.salary || {};
@@ -64,14 +75,20 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ i
       
       <StaffProfileHeader staff={staff} staffId={cleanId} />
 
-      {/* ✨ OPTIONAL: Display the Live Balance if they have one */}
+      {/* Financial Status Alert */}
       {staff.userId && staff.currentBalance !== 0 && (
-         <div className={`p-4 rounded-xl border ${staff.currentBalance < 0 ? 'bg-warning/10 border-warning/30 text-warning' : 'bg-primary/10 border-primary/30 text-primary'}`}>
-             <p className="text-[10px] font-black uppercase tracking-widest mb-1">
-                 {staff.currentBalance < 0 ? "Amount Owed to Staff (Out of Pocket)" : "Orphanage Cash Held by Staff"}
+         <div className={`p-5 rounded-[2rem] border-2 shadow-sm transition-all animate-in zoom-in-95 duration-500 ${staff.currentBalance < 0 ? 'bg-warning/5 border-warning/20 text-warning' : 'bg-primary/5 border-primary/20 text-primary'}`}>
+             <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-2 opacity-70">
+                 {staff.currentBalance < 0 ? "Outstanding Reimbursement" : "Cash Inventory on Person"}
              </p>
-             <p className="text-2xl font-mono font-black">
-                 NPR {Math.abs(staff.currentBalance).toLocaleString()}
+             <div className="flex items-baseline gap-2">
+                <span className="text-xs font-bold opacity-60">NPR</span>
+                <p className="text-3xl font-black tracking-tighter">
+                    {Math.abs(staff.currentBalance).toLocaleString()}
+                </p>
+             </div>
+             <p className="text-[9px] mt-2 font-bold uppercase opacity-40">
+                Calculated from un-settled verified entries
              </p>
          </div>
       )}
@@ -85,14 +102,14 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ i
         <BankCard staff={staff} />
       </div>
 
-      <div className="px-2 flex flex-col gap-1">
+      {/* Audit Footer */}
+      <div className="px-6 flex flex-col gap-1 border-t border-border pt-8 mt-4">
           <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em] opacity-50">
-            System Record ID: {cleanId} • Subject to Kree Corp Audit Protocols
+            System Record ID: {cleanId} • Tara Namaste Baalgram Internal Roster
           </p>
-          {/* Output Linked Account info for Admin Verification */}
           {staff.userId && (
               <p className="text-[10px] font-black text-primary uppercase tracking-[0.2em] opacity-50">
-                Linked Identity: {staff.userId.email} ({staff.userId.role})
+                Authorized Identity: {staff.userId.email} • Role: {staff.userId.role}
               </p>
           )}
       </div>

@@ -1,7 +1,6 @@
 // ==========================================
 // SHARED UTILITY TYPES
 // ==========================================
-// We use string | Date because data from the server might be serialized as a string
 type Populated<T> = string | T; 
 
 // ==========================================
@@ -19,13 +18,56 @@ export interface TAccountHead {
   code: string;
   description?: string;
   isSystem?: boolean;
-  isBankAccount?:boolean
+}
+
+// ==========================================
+// ✨ NEW: PAYMENT CATEGORY TYPES
+// ==========================================
+// This defines whether an account is Cash, Bank, or Staff Personal/Debt
+export type PaymentCategoryType = 'CASH' | 'BANK' | 'PERSONAL' | 'DEBT' | 'WALLET';
+
+export interface TPaymentCategory {
+  _id: string;
+  name: string;      // e.g., "Nabil Bank", "Petty Cash", "Staff Reimbursement"
+  type: PaymentCategoryType;
+  isActive: boolean;
+  accountNumber?: string; // Optional for bank accounts
+}
+
+// ==========================================
+// TRANSACTION (FINANCE) TYPES
+// ==========================================
+export type TransactionType = 'INCOME' | 'EXPENSE';
+export type TransactionStatus = 'PENDING' | 'VERIFIED' | 'REJECTED';
+
+export interface TTransaction {
+  _id: string;
+  amount: number;
+  date: string | Date;
+  type: TransactionType;
+  status: TransactionStatus;
+  isSettled: boolean;
+  
+  // Relationships
+  accountHead: Populated<TAccountHead>; 
+  paymentCategory: Populated<TPaymentCategory>; // ✨ REPLACED 
+  
+  description: string;
+  subType?: string; 
+  referenceNumber?: string;
+  donorOrVendorName?: string;
+  createdBy: any; // Ideally a TUser type
+  verifiedBy?: any;
+  
+  // Inventory Link
+  logId?: Populated<TInventoryLog> | null; 
+  
   createdAt?: string | Date;
   updatedAt?: string | Date;
 }
 
 // ==========================================
-// INVENTORY TYPES
+// INVENTORY TYPES (Keep these as they were)
 // ==========================================
 export type InventoryCategory = 'FOOD' | 'CLOTHING' | 'EDUCATION' | 'MEDICAL' | 'MAINTENANCE';
 export type InventoryLogType = 'IN' | 'OUT';
@@ -37,39 +79,13 @@ export interface TInventoryItem {
   unit: string;
   currentStock: number;
   minimumStockLevel: number;
-  createdAt?: string | Date;
-  updatedAt?: string | Date;
 }
 
 export interface TInventoryLog {
   _id: string;
-  item: Populated<TInventoryItem>; // Can be just the ID string, or the full populated item
+  item: Populated<TInventoryItem>;
   quantity: number;
   type: InventoryLogType;
   reason: string;
   date: string | Date;
-  createdAt?: string | Date;
-  updatedAt?: string | Date;
-}
-
-// ==========================================
-// TRANSACTION (FINANCE) TYPES
-// ==========================================
-export type TransactionType = 'INCOME' | 'EXPENSE';
-export type PaymentMethod = 'CASH' | 'BANK' | 'CHEQUE' | 'IN_KIND';
-
-export interface TTransaction {
-  _id: string;
-  amount: number;
-  date: string | Date;
-  type: TransactionType;
-  accountHead: Populated<TAccountHead>; // Can be just the ID string, or the full populated account
-  paymentMethod: PaymentMethod;
-  description: string;
-  subTypeSelected?: string;
-  referenceNumber?: string;
-  donorOrVendorName?: string;
-  logId?: Populated<TInventoryLog> | null; // Can be just the ID, populated log, or null
-  createdAt?: string | Date;
-  updatedAt?: string | Date;
 }

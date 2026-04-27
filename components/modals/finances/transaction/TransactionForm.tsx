@@ -6,6 +6,7 @@ import { FormField } from "@/components/molecules/FormField";
 import { SelectField } from "@/components/molecules/SelectField";
 import { Button } from "@/components/atoms/Button";
 import { addTransaction } from "@/app/actions/transactions";
+import SelectPaymentCategory from "@/components/molecules/SelectPaymentCategory";
 
 interface AddTransactionModalProps {
   closeModal: () => void;
@@ -25,18 +26,14 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
 
   const [accounts, setAccounts] = useState<any[]>([]);
 
-  // 1. DYNAMIC VALIDATION STATE
-  const [paymentMethod, setPaymentMethod] = useState(initialData?.paymentMethod || "CASH");
-  const isAccountHeadRequired = paymentMethod !== "OUT_OF_POCKET";
-
-  // 2. INITIALIZE TRANSACTION TYPE
+  // 1. INITIALIZE TRANSACTION TYPE
   const [transactionType, setTransactionType] = useState<"INCOME" | "EXPENSE">(
     initialData?.type === "INCOME" || initialData?.type === "IN" ? "INCOME" : "EXPENSE"
   );
 
-  // 3. ACCOUNT SELECTION STATE
+  // 2. ACCOUNT SELECTION STATE
   const [selectedAccountId, setSelectedAccountId] = useState<string>(
-    initialData?.accountHead?._id || initialData?.accountHead || initialData?.item?._id || ""
+    initialData?.accountHead?._id || initialData?.accountHead || ""
   );
 
   // FETCH ACCOUNT HEADS
@@ -64,9 +61,6 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
   const selectedAccount = accounts?.find((acc) => acc._id === selectedAccountId);
   const availableSubTypes = selectedAccount?.subType || [];
 
-  // ✨ NEW: Get only the accounts that are flagged as Bank Accounts
-  const availableBanks = accounts?.filter((acc) => acc.isBankAccount) || [];
-
   const defaultDate = initialData?.date
     ? new Date(initialData.date).toISOString().split('T')[0]
     : new Date().toISOString().split('T')[0];
@@ -86,18 +80,9 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
 
       {/* ERROR BANNER */}
       {state?.error && (
-        <div className="flex items-center gap-3 text-[10px] uppercase tracking-widest text-danger bg-danger/10 p-4 rounded-xl border border-danger/20 font-black shrink-0">
+        <div className="flex items-center gap-3 text-[10px] uppercase tracking-widest text-danger bg-danger/10 p-4 rounded-xl border border-danger/20 font-black">
           <span className="text-lg">⚠️</span>
           <span>System Alert: {state.error}</span>
-        </div>
-      )}
-
-      {/* ROLE INFO BOX */}
-      {session?.user?.role && session?.user?.role !== "ADMIN" && (
-        <div className="p-4 bg-warning/10 border border-warning/20 rounded-xl">
-          <p className="text-[10px] font-black text-warning uppercase tracking-widest">
-            Protocol Note: This entry will be marked as "Pending" until verified by Administration.
-          </p>
         </div>
       )}
 
@@ -122,7 +107,7 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
       </div>
 
       {/* FINANCIAL DETAILS */}
-      <div className="grid bg-shaded rounded-2xl p-6 grid-cols-1 md:grid-cols-2 gap-6 border border-border shrink-0">
+      <div className="grid bg-shaded rounded-2xl p-6 grid-cols-1 md:grid-cols-2 gap-6 border border-border">
         <FormField
           id="amount"
           label="Amount (NPR) *"
@@ -135,16 +120,15 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
         />
 
         <div className="flex flex-col gap-2">
-          <label htmlFor="accountHead" className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em]">
-            Account Head {isAccountHeadRequired ? "*" : "(Optional)"}
+          <label className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em]">
+            Account Head *
           </label>
           <select
             name="accountHead"
             value={selectedAccountId}
             onChange={(e) => setSelectedAccountId(e.target.value)}
-            required={isAccountHeadRequired}
-            className={`w-full p-3.5 text-sm border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary outline-none transition-all font-medium ${!isAccountHeadRequired ? "border-dashed opacity-80" : "border-solid border-border"
-              }`}
+            required
+            className="w-full p-3.5 text-sm border border-border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary outline-none transition-all font-medium"
           >
             <option value="">Select Account...</option>
             {filteredAccounts.map((acc: any) => (
@@ -152,58 +136,25 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
             ))}
           </select>
         </div>
+
         {availableSubTypes.length > 0 && (
           <SelectField
             id="subType"
             name="subType"
             label="Head Sub-Type"
-            // ✨ ADDED BACKWARD COMPATIBILITY: Looks for the new name first, then the old name
-            defaultValue={initialData?.subType || initialData?.subTypeSelected || ""}
+            defaultValue={initialData?.subType || ""}
             options={availableSubTypes.map((t: string) => ({ label: t, value: t }))}
           />
         )}
       </div>
 
-      {/* TRANSACTION CONTEXT */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-shaded p-6 rounded-2xl border border-border shrink-0">
-
-        <div className="flex flex-col gap-4 w-full">
-          <SelectField
-            id="paymentMethod"
-            name="paymentMethod"
-            label="Payment Method"
-            value={paymentMethod}
-            onChange={(e) => setPaymentMethod(e.target.value)}
-            options={[
-              { label: "Cash (Orphanage Funds)", value: "CASH" },
-              { label: "Bank Transfer", value: "BANK" },
-              { label: "Cheque", value: "CHEQUE" },
-              { label: "Out of Pocket (My Personal Money)", value: "OUT_OF_POCKET" }
-            ]}
-          />
-
-          {/* ✨ NEW: Conditionally show Bank Selector */}
-          {(paymentMethod === "BANK" || paymentMethod === "CHEQUE") && (
-            <div className="animate-in fade-in slide-in-from-top-2">
-              <label className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em] mb-2 block">
-                Select Source/Destination Bank *
-              </label>
-              <select
-                name="bankAccountId" // The server action needs to grab this
-                required
-                defaultValue={initialData?.bankAccountId || ""}
-                className="w-full p-3.5 text-sm border border-border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary outline-none transition-all font-medium"
-              >
-                <option value="">Select Bank Account...</option>
-                {availableBanks.map((bank: any) => (
-                  <option key={bank._id} value={bank._id}>
-                    {bank.name} ({bank.bankDetails?.accountNumber || bank.code})
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
+      {/* PAYMENT CONTEXT */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-shaded p-6 rounded-2xl border border-border">
+        {/* ✨ UPDATED: Unified Category Selector */}
+        <SelectPaymentCategory 
+          name="paymentCategoryId" // Ensure your component uses this name prop
+          defaultValue={initialData?.paymentCategory?._id || initialData?.paymentCategory || ""}
+        />
 
         <FormField
           id="date"
@@ -212,12 +163,12 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
           type="date"
           required
           defaultValue={defaultDate}
-          className="text-text color-scheme-adaptive font-mono"
+          className="text-text font-mono"
         />
       </div>
 
       {/* ENTITY & REFERENCE */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 shrink-0">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           id="donorOrVendorName"
           label={transactionType === "INCOME" ? "Donor / Source" : "Vendor Name"}
@@ -245,20 +196,16 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
 
       {/* ACTIONS */}
       <div className="shrink-0 flex justify-end gap-3.5 pt-6 border-t border-border mt-2">
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={closeModal}
-          className="text-text-muted hover:text-text font-bold text-xs uppercase tracking-wider"
-        >
+        <Button variant="ghost" onClick={closeModal} className="text-text-muted hover:text-text font-bold text-xs uppercase">
           Cancel
         </Button>
 
         <Button
           type="submit"
-          disabled={isPending || (isAccountHeadRequired && !selectedAccountId)}
-          className={`px-8 font-black text-xs uppercase tracking-widest text-text-invert shadow-glow h-11 ${transactionType === "INCOME" ? "bg-success hover:bg-success/90" : "bg-danger hover:bg-danger/90"
-            }`}
+          disabled={isPending || !selectedAccountId}
+          className={`px-8 font-black text-xs uppercase tracking-widest text-text-invert h-11 ${
+            transactionType === "INCOME" ? "bg-success" : "bg-danger"
+          }`}
         >
           {isPending ? "PROCESSING..." : (initialData ? "Update Record" : "Save Transaction")}
         </Button>

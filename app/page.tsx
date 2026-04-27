@@ -5,24 +5,22 @@ import Staff from "@/models/Staff";
 import Transaction from "@/models/Transaction";
 import InventoryItem from "@/models/InventoryItem";
 import ActionPlan from "@/models/ActionPlan";
-import User from "@/models/User"; // ✨ NEW: For pending user checks
+import User from "@/models/User";
 import { Sparkles, Activity, ShieldAlert, Clock, Wallet } from "lucide-react";
 import QuickActionSidebar from "@/components/organisms/ActionButtonsDashboard";
 import AlertStatCard from "@/components/organisms/dashboard/AlertStatCard";
-// import { getServerSession } from "next-auth/next"; // Uncomment if you want to hide the Admin row from standard staff
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   await dbConnect();
 
-  // ✨ ADDED: Fetching Admin-level Alerts alongside operational data
   const [
     kidsCount, 
     staffCount, 
     financeStats, 
-    lowStockItemsRaw, 
-    urgentActionsRaw,
+    lowStockItems, 
+    urgentActions,
     pendingUsersCount,
     pendingTransactionsCount,
     unsettledCashResult
@@ -30,7 +28,7 @@ export default async function Home() {
     Child.countDocuments({ status: "IN_CARE" }),
     Staff.countDocuments({ status: "ACTIVE" }),
     
-    // ✨ CRITICAL FIX: Only calculate VERIFIED transactions for the main balance!
+    // Main Balance: Sum of all VERIFIED transactions
     Transaction.aggregate([
       { $match: { status: "VERIFIED" } }, 
       {
@@ -50,11 +48,29 @@ export default async function Home() {
       .populate('assignedStaff', 'fullName')
       .sort({ dueDate: 1 }).limit(4).lean(),
 
-    // ✨ NEW: Executive Dashboard Metrics
     User.countDocuments({ isActive: false, role: { $ne: "ADMIN" } }),
     Transaction.countDocuments({ status: "PENDING" }),
+
+    // ✨ UPDATED: Unsettled Cash Logic
+    // We join with PaymentCategory to find 'CASH' type accounts that aren't settled
     Transaction.aggregate([
-      { $match: { status: "VERIFIED", paymentMethod: "CASH", isSettled: false, type: "INCOME" } },
+      {
+        $lookup: {
+          from: "paymentcategories", // Name of your collection in MongoDB
+          localField: "paymentCategory",
+          foreignField: "_id",
+          as: "categoryDetails"
+        }
+      },
+      { $unwind: "$categoryDetails" },
+      { 
+        $match: { 
+          status: "VERIFIED", 
+          "categoryDetails.type": "CASH", 
+          isSettled: false, 
+          type: "INCOME" 
+        } 
+      },
       { $group: { _id: null, total: { $sum: "$amount" } } }
     ])
   ]);
@@ -62,82 +78,78 @@ export default async function Home() {
   const income = financeStats[0]?.totalIncome || 0;
   const expense = financeStats[0]?.totalExpense || 0;
   const currentBalance = income - expense;
-  
-  const lowStockItems = JSON.parse(JSON.stringify(lowStockItemsRaw));
-  const urgentActions = JSON.parse(JSON.stringify(urgentActionsRaw));
   const totalUnsettledCash = unsettledCashResult[0]?.total || 0;
 
-  // Optional: Check session here if you want to hide the Admin Alert row from normal staff
-  // const session = await getServerSession();
-  // const isAdmin = session?.user?.role === "ADMIN";
-  const isAdmin = true; // Forcing true for now so you can see it!
+  // Logic for Admin View (Update with actual session check later)
+  const isAdmin = true; 
 
   return (
-    <div className="flex flex-col gap-6 max-w-7xl mx-auto md:p-6 md:pt-6 lg:p-8 animate-in fade-in duration-500">
+    <div className="flex flex-col gap-6 max-w-7xl mx-auto md:p-6 lg:p-8 animate-in fade-in duration-500">
 
-      {/* --- KREE STANDARD HEADER --- */}
+      {/* --- HEADER --- */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-5 md:p-6 rounded-[2rem] shadow-sm border border-border">
         <div className="flex items-center gap-4 w-full">
           <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center text-2xl border border-primary/20 shrink-0">
             <Sparkles className="animate-pulse" size={24} />
           </div>
           <div className="flex flex-col flex-1 min-w-0">
-            <h1 className="font-ubuntu text-xl md:text-2xl font-black text-text tracking-tight truncate">
-              System Overview
-            </h1>
-            <p className="font-ubuntu text-[10px] text-text-muted uppercase tracking-[0.3em] font-black opacity-60">
-              Kree Corp // Management Portal
-            </p>
+            <h1 className="font-ubuntu text-xl md:text-2xl font-black text-text tracking-tight truncate">System Overview</h1>
+            <p className="font-ubuntu text-[10px] text-text-muted uppercase tracking-[0.3em] font-black opacity-60">Tara Namaste Baalgram // Management Portal</p>
           </div>
         </div>
       </div>
 
-      {/* --- ✨ NEW: EXECUTIVE ADMIN ALERTS ROW --- */}
+      {/* --- EXECUTIVE ADMIN ALERTS ROW --- */}
       {isAdmin && (pendingUsersCount > 0 || pendingTransactionsCount > 0 || totalUnsettledCash > 0) && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
-            <Link href="/admin/users" className={`p-4 rounded-2xl border flex justify-between items-center group transition-all ${pendingUsersCount > 0 ? 'bg-warning/10 border-warning/30 hover:border-warning' : 'hidden'}`}>
-                <div className="flex items-center gap-3">
-                    <ShieldAlert className="text-warning" size={20} />
-                    <div className="flex flex-col">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-warning">Pending Clearances</span>
-                        <span className="text-xs font-bold text-text-muted group-hover:text-text transition-colors">Review personnel requests</span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            {pendingUsersCount > 0 && (
+                <Link href="/admin/users" className="p-4 rounded-2xl border bg-warning/5 border-warning/20 flex justify-between items-center group hover:bg-warning/10 transition-all">
+                    <div className="flex items-center gap-3">
+                        <ShieldAlert className="text-warning" size={20} />
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-warning">Pending Clearances</span>
+                            <span className="text-xs font-bold text-text-muted">Review {pendingUsersCount} personnel requests</span>
+                        </div>
                     </div>
-                </div>
-                <span className="text-xl font-black text-warning">{pendingUsersCount}</span>
-            </Link>
+                    <span className="text-xl font-black text-warning">{pendingUsersCount}</span>
+                </Link>
+            )}
 
-            <Link href="/approvals" className={`p-4 rounded-2xl border flex justify-between items-center group transition-all ${pendingTransactionsCount > 0 ? 'bg-danger/10 border-danger/30 hover:border-danger' : 'hidden'}`}>
-                <div className="flex items-center gap-3">
-                    <Clock className="text-danger" size={20} />
-                    <div className="flex flex-col">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-danger">Unverified Entries</span>
-                        <span className="text-xs font-bold text-text-muted group-hover:text-text transition-colors">Field data awaiting approval</span>
+            {pendingTransactionsCount > 0 && (
+                <Link href="/approvals" className="p-4 rounded-2xl border bg-danger/5 border-danger/20 flex justify-between items-center group hover:bg-danger/10 transition-all">
+                    <div className="flex items-center gap-3">
+                        <Clock className="text-danger" size={20} />
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-danger">Unverified Entries</span>
+                            <span className="text-xs font-bold text-text-muted">Awaiting audit approval</span>
+                        </div>
                     </div>
-                </div>
-                <span className="text-xl font-black text-danger">{pendingTransactionsCount}</span>
-            </Link>
+                    <span className="text-xl font-black text-danger">{pendingTransactionsCount}</span>
+                </Link>
+            )}
 
-            <Link href="/finance/settlements" className={`p-4 rounded-2xl border flex justify-between items-center group transition-all ${totalUnsettledCash > 0 ? 'bg-primary/10 border-primary/30 hover:border-primary' : 'hidden'}`}>
-                <div className="flex items-center gap-3">
-                    <Wallet className="text-primary" size={20} />
-                    <div className="flex flex-col">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-primary">Unsettled Cash</span>
-                        <span className="text-xs font-bold text-text-muted group-hover:text-text transition-colors">Reconcile field collections</span>
+            {totalUnsettledCash > 0 && (
+                <Link href="/finance/settlements" className="p-4 rounded-2xl border bg-primary/5 border-primary/20 flex justify-between items-center group hover:bg-primary/10 transition-all">
+                    <div className="flex items-center gap-3">
+                        <Wallet className="text-primary" size={20} />
+                        <div className="flex flex-col">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-primary">Physical Cash</span>
+                            <span className="text-xs font-bold text-text-muted">Unreconciled collections</span>
+                        </div>
                     </div>
-                </div>
-                <span className="text-lg font-black font-mono text-primary">Rs. {totalUnsettledCash.toLocaleString()}</span>
-            </Link>
+                    <span className="text-lg font-black font-mono text-primary">Rs. {totalUnsettledCash.toLocaleString()}</span>
+                </Link>
+            )}
         </div>
       )}
 
-      {/* --- COMPACT KPI GRID (2x2 on Mobile) --- */}
+      {/* --- KPI GRID --- */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
         <StatCard icon="👧" label="Children" value={kidsCount} sub="Active Intake" variant="primary" />
         <StatCard icon="👩‍🏫" label="Staff" value={staffCount} sub="On-Duty" variant="secondary" />
 
-        {/* Finance Balance */}
-        <div className="bg-card p-4 md:p-6 rounded-2xl md:rounded-dashboard border border-border shadow-sm flex flex-col hover:translate-y-[-2px] transition-all duration-300">
-          <div className="flex justify-between items-center md:items-start mb-2 md:mb-4">
+        <div className="bg-card p-4 md:p-6 rounded-2xl border border-border shadow-sm flex flex-col transition-all">
+          <div className="flex justify-between items-center mb-2 md:mb-4">
             <div className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-[9px] md:text-[10px] font-black border ${currentBalance < 0 ? 'bg-danger/10 text-danger border-danger/20' : 'bg-success/10 text-success border-success/20'}`}>
               NPR
             </div>
@@ -146,80 +158,57 @@ export default async function Home() {
           <span className={`text-xl md:text-2xl font-black truncate tracking-tighter ${currentBalance < 0 ? 'text-danger' : 'text-success'}`}>
             Rs. {currentBalance.toLocaleString()}
           </span>
-          <p className="hidden md:block text-[10px] font-black text-text-muted mt-2 uppercase tracking-widest opacity-60">Main Ledger Balance</p>
+          <p className="hidden md:block text-[10px] font-black text-text-muted mt-2 uppercase tracking-widest opacity-60">Ledger Balance</p>
         </div>
         <AlertStatCard count={urgentActions.length} />
       </div>
 
+      {/* --- FEED SECTION --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-10">
-        
-        {/* Your Existing Quick Action Sidebar */}
         <QuickActionSidebar />
-
-        <div className="lg:col-span-2 flex flex-col gap-6 md:gap-10">
+        <div className="lg:col-span-2 flex flex-col gap-10">
           
           {/* URGENT CARE FEED */}
-          <div id="urgent" className="bg-card rounded-[2rem] border border-border overflow-hidden shadow-sm">
+          <div className="bg-card rounded-[2rem] border border-border overflow-hidden shadow-sm">
             <div className="p-5 md:p-6 border-b border-border bg-shaded flex justify-between items-center">
-              <h2 className="font-ubuntu font-black text-[10px] md:text-[11px] uppercase tracking-[0.2em] flex items-center gap-3 text-text">
+              <h2 className="font-ubuntu font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3">
                 <Activity className={`w-4 h-4 ${urgentActions.length > 0 ? 'text-danger animate-pulse' : 'text-success'}`} />
                 Critical Care Feed
               </h2>
-              <Link href="/children/actions" className="text-[9px] font-black text-primary hover:tracking-widest transition-all uppercase">View All →</Link>
+              <Link href="/children/actions" className="text-[9px] font-black text-primary uppercase">View All →</Link>
             </div>
 
             <div className="flex flex-col">
               {urgentActions.length === 0 ? (
-                <div className="p-16 text-center opacity-30">
-                  <p className="font-black uppercase tracking-widest text-[10px]">Security Protocol Nominal // No Alerts</p>
-                </div>
+                <div className="p-16 text-center opacity-30 italic text-[10px] uppercase tracking-widest">No Alerts</div>
               ) : (
                 urgentActions.map((plan: any, idx: number) => (
-                  <Link
-                    key={plan._id}
-                    href={`/children/${plan.childId?._id}?tab=actions&planId=${plan._id}`}
-                    className={`p-5 md:p-6 flex justify-between items-center group cursor-pointer border-l-4 border-l-transparent hover:border-l-primary transition-all ${idx % 2 === 0 ? 'bg-card' : 'bg-alt'}`}
-                  >
+                  <Link key={plan._id} href={`/children/${plan.childId?._id}`} className={`p-5 flex justify-between items-center border-l-4 border-l-transparent hover:border-l-primary transition-all ${idx % 2 === 0 ? 'bg-card' : 'bg-alt'}`}>
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-surface border border-border flex items-center justify-center text-lg group-hover:border-primary/50 transition-all">
-                        {plan.category === 'MEDICAL' ? '⚕️' : '⚖️'}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-bold text-text group-hover:text-primary transition-colors truncate">{plan.title}</p>
-                        <p className="text-[9px] md:text-[10px] font-black text-text-muted uppercase tracking-widest mt-1">
-                          {plan.childId?.firstName} {plan.childId?.lastName} // <span className="text-primary">{plan.category}</span>
-                        </p>
+                      <div className="w-10 h-10 rounded-xl bg-surface border border-border flex items-center justify-center text-lg">{plan.category === 'MEDICAL' ? '⚕️' : '⚖️'}</div>
+                      <div>
+                        <p className="font-bold text-sm">{plan.title}</p>
+                        <p className="text-[9px] font-black text-text-muted uppercase tracking-widest">{plan.childId?.firstName} // <span className="text-primary">{plan.category}</span></p>
                       </div>
                     </div>
-                    <div className="flex flex-col items-end gap-2 shrink-0">
-                      <span className="bg-danger/10 text-danger text-[9px] font-black px-3 py-1.5 rounded-lg border border-danger/20 uppercase">
-                        {plan.priority}
-                      </span>
-                      <span className="text-[8px] font-black text-primary uppercase opacity-0 group-hover:opacity-100 transition-opacity tracking-tighter">
-                        Open File →
-                      </span>
-                    </div>
+                    <span className="bg-danger/10 text-danger text-[9px] font-black px-3 py-1.5 rounded-lg border border-danger/20 uppercase">{plan.priority}</span>
                   </Link>
                 ))
               )}
             </div>
           </div>
 
-          {/* INVENTORY TRAY */}
-          <div className="bg-card rounded-[2rem] border border-border p-6 md:p-8 shadow-sm">
-            <h2 className="font-ubuntu text-[10px] font-black text-text-muted uppercase tracking-[0.3em] mb-6">Stock Depletion</h2>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4">
+          {/* STOCK DEPLETION */}
+          <div className="bg-card rounded-[2rem] border border-border p-6 shadow-sm">
+            <h2 className="font-ubuntu text-[10px] font-black text-text-muted uppercase tracking-[0.3em] mb-6">Stock Alerts</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               {lowStockItems.length === 0 ? (
-                  <p className="text-[10px] font-black text-text-muted uppercase tracking-widest col-span-full opacity-50">Supply lines stable.</p>
+                  <p className="text-[10px] font-black text-text-muted uppercase opacity-50">Supply lines stable.</p>
               ) : (
                 lowStockItems.map((item: any) => (
-                  <Link
-                    key={item._id}
-                    href={`/inventory?search=${encodeURIComponent(item.name)}`}
-                    className="bg-surface border border-border p-4 rounded-2xl group hover:border-danger/30 transition-all"
-                  >
+                  <Link key={item._id} href={`/inventory?search=${item.name}`} className="bg-surface border border-border p-4 rounded-2xl group hover:border-danger/30 transition-all">
                     <p className="text-[9px] font-black text-danger uppercase mb-1 tracking-widest">{item.currentStock} {item.unit} left</p>
-                    <p className="font-bold text-xs md:text-sm text-text truncate group-hover:text-danger transition-colors capitalize">{item.name}</p>
+                    <p className="font-bold text-xs truncate group-hover:text-danger capitalize">{item.name}</p>
                   </Link>
                 ))
               )}
@@ -227,18 +216,16 @@ export default async function Home() {
           </div>
         </div>
       </div>
-    </div >
+    </div>
   );
 }
 
 function StatCard({ icon, label, value, sub, variant }: any) {
   const isPrimary = variant === "primary";
   return (
-    <div className="bg-card p-4 md:p-6 rounded-2xl md:rounded-dashboard border border-border shadow-sm hover:translate-y-[-2px] transition-all duration-300 group">
-      <div className="flex justify-between items-center md:items-start mb-2 md:mb-4">
-        <div className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center text-lg border transition-all ${isPrimary ? 'bg-primary/10 text-primary border-primary/20' : 'bg-shaded text-text-muted border-border'}`}>
-          {icon}
-        </div>
+    <div className="bg-card p-4 md:p-6 rounded-2xl border border-border shadow-sm hover:translate-y-[-2px] transition-all duration-300 group">
+      <div className="flex justify-between items-center mb-2 md:mb-4">
+        <div className={`w-8 h-8 rounded-xl flex items-center justify-center text-lg border ${isPrimary ? 'bg-primary/10 text-primary border-primary/20' : 'bg-shaded text-text-muted border-border'}`}>{icon}</div>
         <span className="text-[9px] md:text-[10px] font-black text-text-muted uppercase tracking-widest">{label}</span>
       </div>
       <span className="text-2xl md:text-4xl font-black text-text tracking-tighter">{value || 0}</span>

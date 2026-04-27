@@ -1,32 +1,29 @@
 "use client";
 
 import React from "react";
-import { Wallet, Clock, CheckCircle, XCircle, Plus, Receipt, Info } from "lucide-react";
+import { Wallet, Clock, CheckCircle, XCircle, Plus, Receipt } from "lucide-react";
 import { Button } from "@/components/atoms/Button";
 import { useUIModals } from "@/hooks/useUIModal";
 
 export const MyFinancesDashboard = ({ 
     transactions, 
     netBalance, 
-    pendingAmount = 0, // ✨ NEW PROP
+    pendingAmount = 0, 
     profile, 
     userName 
 }: { 
     transactions: any[], 
     netBalance: number, 
-    pendingAmount?: number, // ✨ NEW PROP
+    pendingAmount?: number, 
     profile: any, 
     userName: string 
 }) => {
     const { openTransactionForm } = useUIModals();
 
-    // Logic: If netBalance is Positive, the Orphanage owes the Staff (Reimbursement).
-    // If netBalance is Negative, the Staff is holding Orphanage Cash.
     const isOwedToStaff = netBalance > 0; 
     const displayBalance = Math.abs(netBalance);
     const advanceLimit = profile?.financialControls?.maxAdvanceLimit || 0;
     
-    // Holding cash logic for the limit bar
     const isHoldingCash = netBalance < 0;
     const isNearLimit = isHoldingCash && displayBalance > (advanceLimit * 0.8);
 
@@ -72,7 +69,6 @@ export const MyFinancesDashboard = ({
                             {netBalance === 0 ? "Account Balanced" : isOwedToStaff ? "Reimbursement Due to You" : "Orphanage Cash in Hand"}
                         </p>
                         
-                        {/* ✨ NEW: PENDING NOTIFICATION */}
                         {pendingAmount > 0 && (
                             <span className="flex items-center gap-1 text-[9px] font-black bg-warning/20 text-warning px-2 py-0.5 rounded border border-warning/30 animate-pulse">
                                 <Clock size={10} /> NPR {pendingAmount.toLocaleString()} PENDING
@@ -86,7 +82,6 @@ export const MyFinancesDashboard = ({
                         NPR {displayBalance.toLocaleString()}
                     </p>
                     
-                    {/* LIMIT BAR (Only shows if they are holding Orphanage Cash) */}
                     {isHoldingCash && advanceLimit > 0 && (
                         <div className="mt-4 flex items-center gap-2">
                             <div className="flex-1 h-2 bg-black/10 rounded-full overflow-hidden max-w-[200px]">
@@ -101,7 +96,6 @@ export const MyFinancesDashboard = ({
                         </div>
                     )}
                 </div>
-                <Wallet className={`absolute -right-4 -bottom-8 w-48 h-48 opacity-5 ${isOwedToStaff ? 'text-success' : 'text-warning'}`} />
             </div>
 
             {/* TRANSACTION HISTORY */}
@@ -110,11 +104,6 @@ export const MyFinancesDashboard = ({
                     <div className="flex items-center gap-3">
                         <Receipt size={18} className="text-text-muted" />
                         <h3 className="font-black text-[11px] uppercase tracking-[0.2em] text-text">Submission History</h3>
-                    </div>
-                    {/* Status Legend */}
-                    <div className="hidden md:flex gap-4 opacity-40">
-                         <div className="flex items-center gap-1 text-[8px] font-bold uppercase tracking-tighter"><Clock size={10}/> Pending</div>
-                         <div className="flex items-center gap-1 text-[8px] font-bold uppercase tracking-tighter"><CheckCircle size={10}/> Verified</div>
                     </div>
                 </div>
 
@@ -132,10 +121,13 @@ export const MyFinancesDashboard = ({
                                         <span className={`text-sm font-mono font-black ${tx.type === 'INCOME' ? 'text-success' : 'text-danger'}`}>
                                             {tx.type === 'INCOME' ? '+' : '-'} NPR {tx.amount.toLocaleString()}
                                         </span>
+                                        {/* ✨ UPDATED: Pulls category name instead of  string */}
                                         <span className={`text-[9px] px-2 py-0.5 rounded-md font-black uppercase tracking-widest border ${
-                                            tx.paymentMethod === 'OUT_OF_POCKET' ? 'bg-primary/5 border-primary/20 text-primary' : 'bg-surface border-border text-text-muted'
+                                            tx.paymentCategory?.type === 'PERSONAL' 
+                                                ? 'bg-primary/5 border-primary/20 text-primary' 
+                                                : 'bg-surface border-border text-text-muted'
                                         }`}>
-                                            {tx.paymentMethod?.replace(/_/g, ' ')}
+                                            {tx.paymentCategory?.name || "Uncategorized"}
                                         </span>
                                     </div>
                                     <p className="text-xs font-bold text-text truncate max-w-[300px]">{tx.description}</p>

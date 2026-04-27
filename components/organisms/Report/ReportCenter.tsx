@@ -21,11 +21,12 @@ export default function ReportCenter({
             title: "Daily Transaction Daybook",
             subtitle: `Date: ${today}`,
             filename: `Daybook_${today}`,
-            headers: [["Account", "Description", "Method", "Amount"]],
+            headers: [["Account Head", "Description", "Source/Category", "Amount"]],
             data: todayData.map((t) => [
-                t.accountHead?.name,
+                t.accountHead?.name || "Uncategorized",
                 t.description,
-                t.paymentMethod,
+                // ✨ UPDATED: Pulling from the new PaymentCategory relationship
+                t.paymentCategory?.name || "General", 
                 t.type === "INCOME" ? `+${t.amount}` : `-${t.amount}`,
             ]),
             colorCodeAmount: true,
@@ -37,7 +38,8 @@ export default function ReportCenter({
         const monthName = now.toLocaleString("default", { month: "long" });
 
         const monthData = transactions.filter(
-            (t) => new Date(t.date).getMonth() === now.getMonth()
+            (t) => new Date(t.date).getMonth() === now.getMonth() &&
+                   new Date(t.date).getFullYear() === now.getFullYear()
         );
 
         const total = monthData.reduce(
@@ -51,11 +53,12 @@ export default function ReportCenter({
             filename: `Report_${monthName}_${now.getFullYear()}`,
             summaryLabel: "Net Cashflow for Month",
             summaryValue: `NPR ${total.toLocaleString()}`,
-            headers: [["Date", "Account", "Description", "Amount"]],
+            headers: [["Date", "Account Head", "Category", "Amount"]],
             data: monthData.map((t) => [
                 new Date(t.date).toLocaleDateString("en-GB"),
-                t.accountHead?.name,
-                t.description,
+                t.accountHead?.name || "Misc",
+                // ✨ UPDATED: category name for monthly audit trail
+                t.paymentCategory?.name || "General",
                 t.type === "INCOME" ? `+${t.amount}` : `-${t.amount}`,
             ]),
             colorCodeAmount: true,
@@ -79,7 +82,6 @@ export default function ReportCenter({
     };
 
     return (
-        // Updated: bg-white -> bg-card, border-zinc-200 -> border-border
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-card p-6 rounded-dashboard border border-border shadow-glow transition-colors duration-500">
 
             {/* FINANCIAL */}
@@ -92,7 +94,6 @@ export default function ReportCenter({
                     <Button
                         onClick={handleDaybook}
                         variant="ghost"
-                        // Updated: bg-white -> bg-bg, border-zinc-200 -> border-border
                         className="justify-start bg-bg border border-border text-xs font-bold hover:bg-shaded transition-all"
                     >
                         📄 Daybook (Today)
@@ -125,7 +126,7 @@ export default function ReportCenter({
                 </div>
             </div>
 
-            {/* INFO PANEL: Updated to use Invert tokens for high contrast */}
+            {/* INFO PANEL */}
             <div className="flex items-center justify-center p-6 bg-bg-invert rounded-xl shadow-glow">
                 <p className="text-[11px] text-text-invert text-center font-black uppercase tracking-widest leading-relaxed opacity-80">
                     Audit-Ready <br /> PDF Generation

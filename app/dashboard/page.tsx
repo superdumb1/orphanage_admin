@@ -43,7 +43,6 @@ export default async function Home() {
   return (
     <div className="flex flex-col gap-6 max-w-7xl mx-auto  md:p-6 md:pt-6 lg:p-8 animate-in fade-in duration-500">
 
-      {/* --- KREE STANDARD HEADER --- */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-card p-5 md:p-6 rounded-[2rem] shadow-sm border border-border">
         <div className="flex items-center gap-4 w-full">
           <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center text-2xl border border-primary/20 shrink-0">
@@ -54,7 +53,7 @@ export default async function Home() {
               System Overview
             </h1>
             <p className="font-ubuntu text-[10px] text-text-muted uppercase tracking-[0.3em] font-black opacity-60">
-              Kree Corp // Management Portal
+              Tara Namaste Baal gram // Management Portal
             </p>
           </div>
         </div>

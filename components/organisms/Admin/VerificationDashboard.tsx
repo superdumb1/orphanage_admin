@@ -72,7 +72,7 @@ export const VerificationDashboard = ({ pendingTransactions }: { pendingTransact
                 </div>
                 <div className="flex flex-col gap-1">
 
-                  {/* AMOUNT, TYPE & PAYMENT METHOD BADGES */}
+                  {/* AMOUNT & TYPE BADGES */}
                   <div className="flex items-center flex-wrap gap-2 md:gap-3">
                     <span className="text-lg font-black text-text font-mono">
                       NPR {tx.amount.toLocaleString()}
@@ -81,20 +81,19 @@ export const VerificationDashboard = ({ pendingTransactions }: { pendingTransact
                       {tx.type}
                     </span>
 
-                    {/* ✨ NEW: Payment Method Visibility */}
-                    <span className={`text-[9px] px-2 py-0.5 rounded-md font-black uppercase tracking-widest border ${tx.paymentMethod === 'OUT_OF_POCKET'
+                    {/* ✨ UPDATED: Now shows the Name of the Account (Nabil Bank, Personal Cash, etc.) */}
+                    <span className={`text-[9px] px-2 py-0.5 rounded-md font-black uppercase tracking-widest border ${tx.paymentCategory?.type === 'PERSONAL'
                         ? 'bg-warning/10 text-warning border-warning/30'
                         : 'bg-shaded text-text-muted border-border'
                       }`}>
-                      {tx.paymentMethod?.replace(/_/g, ' ')}
+                      {tx.paymentCategory?.name || "Uncategorized"}
                     </span>
                   </div>
 
                   <p className="text-sm font-bold text-text-muted mt-1">{tx.description}</p>
 
-                  {/* ✨ NEW: Show the Account Head Category */}
                   <p className="text-[10px] font-black text-primary uppercase tracking-widest mt-1">
-                    Category: {tx.accountHead?.name} ({tx.accountHead?.code})
+                    Ledger: {tx.accountHead?.name} ({tx.accountHead?.code})
                   </p>
 
                   <div className="flex items-center gap-4 mt-2 text-[10px] font-bold text-text-muted/60 uppercase tracking-widest">
@@ -103,6 +102,7 @@ export const VerificationDashboard = ({ pendingTransactions }: { pendingTransact
                   </div>
                 </div>
               </div>
+
               {/* ACTIONS */}
               <div className="flex items-center gap-3 shrink-0 border-t md:border-t-0 md:border-l border-border/50 pt-4 md:pt-0 md:pl-6">
                 <Button

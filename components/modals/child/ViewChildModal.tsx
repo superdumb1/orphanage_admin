@@ -162,7 +162,7 @@ export const ChildDossierModal = ({
       {/* AUDIT FOOTER */}
       <div className="pt-6 border-t border-border opacity-40">
         <p className="font-ubuntu text-[9px] font-black text-text-muted uppercase tracking-[0.4em] text-center">
-          End of Record // Kree Corp Internal Child Protocol
+          End of Record // Tara Namaste Baalgram Internal Child Protocol
         </p>
       </div>
     </div >
