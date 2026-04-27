@@ -62,6 +62,13 @@ export function useUIModals() {
                 { child }
             )
         },
+        openChildStatusCategoriesForm:({onSaved}:{onSaved:()=>void})=>{
+            openModal(
+                "CHILD_STATUS",
+                `child status catagories`,
+                {onSaved}
+            )
+        },
 
         // --- STAFF ---
         openStaffForm: ({ staff, pendingUsers }: { staff?: any, pendingUsers?: any[] } = {}) =>
@@ -78,11 +85,11 @@ export function useUIModals() {
                 !!initialData ? "Edit Transaction" : "New Transaction",
                 { initialData }
             ),
-        openAddCateGoryForm: ({ onSaved }: { onSaved?: () => void } = {}) => {
+        openAddCateGoryForm: ({ initialData, onSaved }: { onSaved?: () => void, initialData?: any } = {}) => {
             openModal(
                 "PAYMENT_CATEGORY_FORM",
                 "Add Category",
-                { onSaved } // ✨ Pass the callback into the modal props
+                { onSaved, initialData } // ✨ Pass the callback into the modal props
             );
         },
         openInternalTransfer: () =>

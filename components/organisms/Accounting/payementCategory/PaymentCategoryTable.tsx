@@ -2,9 +2,10 @@
 import React from "react";
 import { Shield, Trash2, Edit3, Circle } from "lucide-react";
 import { deletePaymentCategory } from "@/app/actions/addCategory";
+import { useUIModals } from "@/hooks/useUIModal";
 
 export function PaymentCategoryTable({ initialData }: { initialData: any[] }) {
-    
+    const {openAddCateGoryForm}=useUIModals()
     const handleDelete = async (id: string) => {
         if (confirm("Are you sure? This could orphan existing transactions.")) {
             const res = await deletePaymentCategory(id);
@@ -43,7 +44,7 @@ export function PaymentCategoryTable({ initialData }: { initialData: any[] }) {
                         </td>
                         <td className="p-5 text-right">
                             <div className="flex justify-end gap-2">
-                                <button className="p-2 hover:bg-primary/10 rounded-lg text-text-muted hover:text-primary transition-all">
+                                <button onClick={()=>openAddCateGoryForm({initialData:cat})} className="p-2 hover:bg-primary/10 rounded-lg text-text-muted hover:text-primary transition-all">
                                     <Edit3 size={16} />
                                 </button>
                                 {!cat.isSystem && (

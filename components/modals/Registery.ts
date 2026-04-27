@@ -9,6 +9,7 @@ export const MODAL_COMPONENTS: Record<string, React.ComponentType<any>> = {
     CHILD_FORM: dynamic(() => import("./child/ChildForm").then(mod => mod.ChildForm)),
     CHILD_ACTION: dynamic(() => import("./child/ChildAction").then(mod => mod.ChildAction)),
     CHILD_PROFILE: dynamic(() => import("./child/ViewChildModal").then(mod => mod.ChildDossierModal)),
+    CHILD_STATUS:dynamic(()=>import("./child/AddCurrentStatusModal").then(mod=>mod.default)),
 
     STAFF_FORM: dynamic(() => import("./staff/StaffForm").then(mod => mod.StaffForm)),
     INTERNAL_TRANSFER: dynamic(() => import("./finances/transaction/InternalTransfers").then(mod => mod.InternalTransferForm)),

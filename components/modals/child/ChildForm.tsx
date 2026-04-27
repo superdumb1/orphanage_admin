@@ -17,6 +17,7 @@ import {
     FolderLock,
     AlertCircle
 } from "lucide-react";
+import SelectChildStatus from "@/components/molecules/SelectChildCurrentStatus";
 
 export const ChildForm = ({ initialData, closeModal }: { initialData?: any, closeModal?: () => void }) => {
     const actionToUse = initialData ? updateChild : createChild;
@@ -106,7 +107,7 @@ export const ChildForm = ({ initialData, closeModal }: { initialData?: any, clos
                                 { label: 'Other', value: 'OTHER' }
                             ]}
                         />
-                        <SelectField
+                        {/* <SelectField
                             label="Current Status"
                             name="status"
                             required
@@ -118,7 +119,8 @@ export const ChildForm = ({ initialData, closeModal }: { initialData?: any, clos
                                 { label: 'Adopted', value: 'ADOPTED' },
                                 { label: 'Reunited', value: 'REUNITED' }
                             ]}
-                        />
+                        /> */}
+                        <SelectChildStatus/>
                         <FormField label="Date of Birth" name="dateOfBirth" type="date" required defaultValue={dob} />
                         <FormField label="Admission Date" name="admissionDate" type="date" required defaultValue={adminDate} />
                     </div>

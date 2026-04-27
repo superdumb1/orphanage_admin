@@ -7,6 +7,7 @@ import { SelectField } from "@/components/molecules/SelectField";
 import { Button } from "@/components/atoms/Button";
 import { addTransaction } from "@/app/actions/transactions";
 import SelectPaymentCategory from "@/components/molecules/SelectPaymentCategory";
+import SelectAccountHead from "@/components/molecules/SelectAccontHead";
 
 interface AddTransactionModalProps {
   closeModal: () => void;
@@ -120,21 +121,10 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
         />
 
         <div className="flex flex-col gap-2">
-          <label className="text-[10px] uppercase font-black text-text-muted tracking-[0.15em]">
-            Account Head *
-          </label>
-          <select
-            name="accountHead"
-            value={selectedAccountId}
-            onChange={(e) => setSelectedAccountId(e.target.value)}
-            required
-            className="w-full p-3.5 text-sm border border-border rounded-xl bg-bg text-text focus:ring-2 focus:ring-primary outline-none transition-all font-medium"
-          >
-            <option value="">Select Account...</option>
-            {filteredAccounts.map((acc: any) => (
-              <option key={acc._id} value={acc._id}>{acc.name} ({acc.code})</option>
-            ))}
-          </select>
+          <SelectAccountHead transactionType={transactionType}
+            selectedAccountId={selectedAccountId}
+            setSelectedAccountId={setSelectedAccountId}
+            initialData={initialData} />
         </div>
 
         {availableSubTypes.length > 0 && (
@@ -151,7 +141,7 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
       {/* PAYMENT CONTEXT */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-shaded p-6 rounded-2xl border border-border">
         {/* ✨ UPDATED: Unified Category Selector */}
-        <SelectPaymentCategory 
+        <SelectPaymentCategory
           name="paymentCategoryId" // Ensure your component uses this name prop
           defaultValue={initialData?.paymentCategory?._id || initialData?.paymentCategory || ""}
         />
@@ -203,9 +193,8 @@ export const TransactionForm: React.FC<AddTransactionModalProps> = ({
         <Button
           type="submit"
           disabled={isPending || !selectedAccountId}
-          className={`px-8 font-black text-xs uppercase tracking-widest text-text-invert h-11 ${
-            transactionType === "INCOME" ? "bg-success" : "bg-danger"
-          }`}
+          className={`px-8 font-black text-xs uppercase tracking-widest text-text-invert h-11 ${transactionType === "INCOME" ? "bg-success" : "bg-danger"
+            }`}
         >
           {isPending ? "PROCESSING..." : (initialData ? "Update Record" : "Save Transaction")}
         </Button>
