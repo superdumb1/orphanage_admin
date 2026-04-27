@@ -4,6 +4,7 @@ import React, { useActionState } from "react";
 import { Wallet, ArrowRightLeft, UserCheck } from "lucide-react";
 import { Button } from "@/components/atoms/Button";
 import { settleStaffCash } from "@/app/actions/settlements";
+import SelectPaymentCategory from "@/components/molecules/SelectPaymentCategory";
 
 // ✨ 1. Updated Interface to match our new Aggregation
 interface StaffBalance {
@@ -115,18 +116,7 @@ const SettlementCard = ({ staff, bankAccounts }: { staff: StaffBalance, bankAcco
 
       {/* Action Controls */}
       <div className="flex flex-col gap-3 mt-auto">
-        <select 
-          name="bankAccountId" 
-          required 
-          className="w-full p-3 text-xs border border-border rounded-xl bg-bg text-text focus:ring-1 focus:ring-primary outline-none"
-        >
-          <option value="">
-            {isOwedToStaff ? "Select Payment Source..." : "Select Destination Bank..."}
-          </option>
-          {bankAccounts.map((acc) => (
-            <option key={acc._id} value={acc._id}>{acc.name} ({acc.code})</option>
-          ))}
-        </select>
+       <SelectPaymentCategory forceType="BANK"/>
 
         <Button 
           type="submit" 

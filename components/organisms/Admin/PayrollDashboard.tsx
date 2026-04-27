@@ -1,24 +1,25 @@
 "use client";
 
-import React, { useActionState } from "react";
+import React, { useActionState, useState } from "react";
 import {  CalendarDays, CheckCircle, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/atoms/Button";
 import { processMonthlyPayroll } from "@/app/actions/payroll";
+import SelectPaymentCategory from "@/components/molecules/SelectPaymentCategory";
+import SelectAccountHead from "@/components/molecules/SelectAccontHead";
 
 export const PayrollDashboard = ({ 
   staffList, 
-  bankAccounts, 
-  salaryHeads 
+
 }: { 
   staffList: any[], 
-  bankAccounts: any[],
-  salaryHeads: any[]
+
 }) => {
 const [state, formAction, isPending] = useActionState(processMonthlyPayroll as any, { error: null, success: false, count: 0 });
   // Current Month/Year for default value
   const currentMonthYear = new Date().toISOString().slice(0, 7); 
   
   const totalPayroll = staffList.reduce((sum, staff) => sum + staff.grossSalary, 0);
+  const [selectAccountId, setSelectedAccountId]=useState("")
 
   if (state?.success) {
     return (
@@ -77,19 +78,11 @@ const [state, formAction, isPending] = useActionState(processMonthlyPayroll as a
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-bold text-text uppercase tracking-widest">Source Bank Account</label>
-                <select name="bankAccountId" required className="w-full p-3 text-sm border border-border rounded-xl bg-bg text-text focus:ring-1 focus:ring-primary outline-none">
-                    <option value="">Select funding source...</option>
-                    {bankAccounts.map(acc => <option key={acc._id} value={acc._id}>{acc.name} ({acc.code})</option>)}
-                </select>
+             <SelectPaymentCategory forceType="BANK"/>
             </div>
 
             <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-bold text-text uppercase tracking-widest">Expense Category</label>
-                <select name="salaryAccountHeadId" required className="w-full p-3 text-sm border border-border rounded-xl bg-bg text-text focus:ring-1 focus:ring-primary outline-none">
-                    <option value="">Select ledger category...</option>
-                    {salaryHeads.map(acc => <option key={acc._id} value={acc._id}>{acc.name} ({acc.code})</option>)}
-                </select>
+               <SelectAccountHead selectedAccountId={selectAccountId} setSelectedAccountId={setSelectedAccountId} transactionType="EXPENSE"/>
             </div>
 
             <div className="mt-4 pt-6 border-t border-border">

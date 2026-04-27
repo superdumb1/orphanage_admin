@@ -4,20 +4,26 @@ import React, { useActionState, useEffect, useState } from "react";
 import { FormField } from "@/components/molecules/FormField";
 import { SelectField } from "@/components/molecules/SelectField";
 import { Button } from "@/components/atoms/Button";
-import { AlertCircle, CreditCard, Building2, Smartphone } from "lucide-react";
+import { CreditCard, Building2, Smartphone } from "lucide-react";
 import { savePaymentCategory } from "@/app/actions/addCategory";
+
 interface PaymentCategoryFormProps {
   initialData?: any;
   closeModal: () => void;
-  onSaved?: () => void; // ✨ Receive the callback
+  onSaved?: () => void;
+  defaultIdentifier?: any; // ✨ This matches what you pass from the Select
 }
 
 const PaymentCategoryForm: React.FC<PaymentCategoryFormProps> = ({
   initialData,
   closeModal,
-  onSaved
+  onSaved,
+  defaultIdentifier // ✨ Destructure it here
 }) => {
-  const [categoryType, setCategoryType] = useState(initialData?.type || "CASH");
+  // ✨ Logic: Priority 1: initialData (Editing) | Priority 2: defaultIdentifier (Forced via Select) | Default: "CASH"
+  const [categoryType, setCategoryType] = useState(
+    initialData?.type || defaultIdentifier || "CASH"
+  );
 
   const [state, formAction, isPending] = useActionState(
     savePaymentCategory,
@@ -26,13 +32,16 @@ const PaymentCategoryForm: React.FC<PaymentCategoryFormProps> = ({
 
   useEffect(() => {
     if (state?.success) {
-      if (onSaved) onSaved(); // ✨ Trigger the refresh in the Select component
+      if (onSaved) onSaved();
       closeModal();
     }
   }, [state?.success, closeModal, onSaved]);
 
   return (
     <form action={formAction} className="flex flex-col gap-8 w-full animate-in fade-in duration-500">
+      
+      {/* HIDDEN INPUT: Ensure the default identifier is sent to the server even if select is disabled */}
+      <input type="hidden" name="type" value={categoryType} />
 
       {/* HEADER */}
       <div className="flex items-center gap-4 bg-shaded p-5 rounded-2xl border border-border shrink-0">
@@ -41,7 +50,9 @@ const PaymentCategoryForm: React.FC<PaymentCategoryFormProps> = ({
         </div>
         <div>
           <h2 className="text-[10px] font-black text-text-muted uppercase tracking-[0.2em]">Finance Setup</h2>
-          <p className="text-sm font-black text-text">Payment Method Configuration</p>
+          <p className="text-sm font-black text-text">
+            {defaultIdentifier ? `Register New ${defaultIdentifier}` : "Payment Method Configuration"}
+          </p>
         </div>
       </div>
 
@@ -50,15 +61,17 @@ const PaymentCategoryForm: React.FC<PaymentCategoryFormProps> = ({
           label="Method Name *"
           name="name"
           required
-          placeholder="e.g. Nabil Bank, eSewa, Office Safe"
+          placeholder={categoryType === "BANK" ? "e.g. Nabil Bank" : "e.g. Office Safe"}
           defaultValue={initialData?.name || ""}
         />
 
         <SelectField
           label="System Type *"
-          name="type"
+          // Removed 'name' here because we are using the hidden input above to prevent double-submitting 
+          // and to handle the 'disabled' state logic properly
           required
           value={categoryType}
+          disabled={!!defaultIdentifier} // ✨ Lock the field if a type was forced
           onChange={(e) => setCategoryType(e.target.value)}
           options={[
             { label: "Physical Cash", value: "CASH" },
@@ -69,7 +82,7 @@ const PaymentCategoryForm: React.FC<PaymentCategoryFormProps> = ({
         />
       </div>
 
-      {/* ✨ DYNAMIC DETAILS BLOCK (Bank or Wallet) */}
+      {/* DYNAMIC DETAILS BLOCK */}
       {(categoryType === "BANK" || categoryType === "WALLET") && (
         <div className="p-6 bg-primary/5 border border-primary/20 rounded-2xl animate-in slide-in-from-top-4 duration-500">
           <div className="flex items-center gap-3 mb-4 border-b border-primary/10 pb-3">
@@ -91,21 +104,21 @@ const PaymentCategoryForm: React.FC<PaymentCategoryFormProps> = ({
             <FormField
               label={categoryType === "BANK" ? "Branch Name" : "Provider Name"}
               name="providerDetail"
-              placeholder={categoryType === "BANK" ? "e.g. Birtamode Branch" : "e.g. eSewa, Khalti"}
+              placeholder={categoryType === "BANK" ? "e.g. Birtamode Branch" : "e.g. eSewa"}
               defaultValue={initialData?.providerDetail || ""}
             />
           </div>
         </div>
       )}
 
-      {/* GL LINKING & STATUS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           label="GL Mapping Code"
           name="identifier"
           placeholder="e.g. ASSET-BANK-01"
           className="font-mono uppercase"
-          defaultValue={initialData?.identifier || ""}
+          // If forced to BANK, we can suggest a prefix
+          defaultValue={initialData?.identifier || (defaultIdentifier ? `${defaultIdentifier}-` : "")}
         />
         <div className="flex items-center pt-6">
           <label className="flex items-center gap-3 cursor-pointer group">
@@ -121,13 +134,6 @@ const PaymentCategoryForm: React.FC<PaymentCategoryFormProps> = ({
           </label>
         </div>
       </div>
-
-      <FormField
-        label="Description / Remarks"
-        name="description"
-        placeholder="Audit trail notes for this payment channel..."
-        defaultValue={initialData?.description || ""}
-      />
 
       {/* FOOTER */}
       <div className="flex justify-end items-center gap-4 pt-6 border-t border-border mt-2">

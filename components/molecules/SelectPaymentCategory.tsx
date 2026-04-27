@@ -9,26 +9,26 @@ interface CategoryOption {
     value: string;
 }
 
-const SelectPaymentCategory = ({ defaultValue = "", ...props }) => {
+// ✨ Added forceType to strictly filter the list (e.g., "BANK")
+const SelectPaymentCategory = ({ defaultValue = "", forceType = "", ...props }) => {
     const [options, setOptions] = useState<CategoryOption[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const { openAddCateGoryForm } = useUIModals();
-    
-    // ✨ This key will act as our "manual trigger"
     const [refreshKey, setRefreshKey] = useState(0);
-
-    const handleCategoryAdded = () => {
-        setRefreshKey(prev => prev + 1); 
-    };
 
     useEffect(() => {
         const fetchCategories = async () => {
-            setIsLoading(true); // Show loading state during re-fetch
+            setIsLoading(true);
             try {
                 const response = await fetch('/api/finances/payment-categories');
                 const data = await response.json();
 
-                const formatted = data.map((cat: any) => ({
+                // ✨ Filter by identifier if forceType is provided
+                const filtered = forceType 
+                    ? data.filter((cat: any) => cat.identifier === forceType)
+                    : data;
+
+                const formatted = filtered.map((cat: any) => ({
                     label: `${cat.name} (${cat.identifier})`,
                     value: cat._id,
                 }));
@@ -42,16 +42,19 @@ const SelectPaymentCategory = ({ defaultValue = "", ...props }) => {
         };
 
         fetchCategories();
-    }, [refreshKey]); // ✨ IMPORTANT: Adding refreshKey here makes it re-fetch on change
+    }, [refreshKey, forceType]); // Re-fetch if forceType changes
 
     return (
         <SelectField
             {...props}
-            label={isLoading ? 'Updating List...' : 'Payment Source'}
+            label={isLoading ? 'Updating List...' : props.label || 'Payment Source'}
             options={options}
             disabled={isLoading}
             defaultValue={defaultValue}
-            onAddItem={() => openAddCateGoryForm({ onSaved: handleCategoryAdded })} 
+            onAddItem={() => openAddCateGoryForm({ 
+                defaultIdentifier: forceType, // Pass to form to auto-select type
+                onSaved: () => setRefreshKey(prev => prev + 1) 
+            })} 
         />
     );
 };

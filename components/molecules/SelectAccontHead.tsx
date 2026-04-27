@@ -5,11 +5,13 @@ import { SelectField } from './SelectField';
 import { useUIModals } from "@/hooks/useUIModal";
 
 interface SelectAccountHeadProps {
-    transactionType: "INCOME" | "EXPENSE";
+    // ✨ Expanded types for full financial registry
+    transactionType: "INCOME" | "EXPENSE" | "ASSET" | "LIABILITY";
     selectedAccountId: string;
     setSelectedAccountId: (id: string) => void;
     initialData?: any;
     required?: boolean;
+    name?: string; // Allow custom name for form data
 }
 
 const SelectAccountHead: React.FC<SelectAccountHeadProps> = ({
@@ -17,14 +19,14 @@ const SelectAccountHead: React.FC<SelectAccountHeadProps> = ({
     selectedAccountId,
     setSelectedAccountId,
     initialData,
-    required = false
+    required = false,
+    name = "accountHead"
 }) => {
     const [accounts, setAccounts] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [refreshKey, setRefreshKey] = useState(0);
     const { openAccountHeadForm } = useUIModals();
 
-    // 1. FETCH ACCOUNT HEADS
     useEffect(() => {
         const fetchHeads = async () => {
             setIsLoading(true);
@@ -41,7 +43,6 @@ const SelectAccountHead: React.FC<SelectAccountHeadProps> = ({
         fetchHeads();
     }, [refreshKey]);
 
-    // 2. FILTER & FORMAT
     const filteredOptions = accounts
         .filter((acc) => acc.type === transactionType)
         .map((acc) => ({
@@ -55,7 +56,7 @@ const SelectAccountHead: React.FC<SelectAccountHeadProps> = ({
     return (
         <div className="flex flex-col gap-6 w-full">
             <SelectField
-                name="accountHead"
+                name={name}
                 label={`Account Head (${transactionType})`}
                 required={required}
                 value={selectedAccountId}
@@ -63,18 +64,16 @@ const SelectAccountHead: React.FC<SelectAccountHeadProps> = ({
                 options={filteredOptions}
                 disabled={isLoading}
                 onAddItem={() => openAccountHeadForm({ 
-                    defaultType: transactionType,
+                    defaultType: transactionType, 
                     onSaved: () => setRefreshKey(prev => prev + 1) 
                 })}
             />
 
-            {/* Render Sub-Types if available for the selected head */}
             {availableSubTypes.length > 0 && (
                 <div className="animate-in slide-in-from-top-2 duration-300">
                     <SelectField
-                        id="subType"
                         name="subType"
-                        label="Head Sub-Type"
+                        label={`${transactionType} Sub-Type`}
                         defaultValue={initialData?.subType || ""}
                         options={availableSubTypes.map((t: string) => ({ label: t, value: t }))}
                     />

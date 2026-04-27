@@ -85,11 +85,11 @@ export function useUIModals() {
                 !!initialData ? "Edit Transaction" : "New Transaction",
                 { initialData }
             ),
-        openAddCateGoryForm: ({ initialData, onSaved }: { onSaved?: () => void, initialData?: any } = {}) => {
+        openAddCateGoryForm: ({ initialData, onSaved ,defaultIdentifier}: { onSaved?: () => void, initialData?: any,defaultIdentifier?:any } = {}) => {
             openModal(
                 "PAYMENT_CATEGORY_FORM",
                 "Add Category",
-                { onSaved, initialData } // ✨ Pass the callback into the modal props
+                { onSaved, initialData ,defaultIdentifier} // ✨ Pass the callback into the modal props
             );
         },
         // Inside useUIModals.ts
